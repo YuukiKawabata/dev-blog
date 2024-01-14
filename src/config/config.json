@@ -3,9 +3,9 @@
     "title": "Yuki`s Blog",
     "base_url": "https://Yuki`s_Blog.io",
     "base_path": "/",
-    "favicon": "/favicon.png",
-    "logoLight": "/logoLight.png",
-    "logoDark": "/logoDark.png",
+    "favicon": "/myLogo.png",
+    "logoLight": "/myLogo.png",
+    "logoDark": "/myLogo.png",
     "lang": "ja",
     "description": "Webエンジニア",
     "pageSize": 6
