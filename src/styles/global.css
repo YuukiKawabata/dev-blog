@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  .prose {
+    @apply text-zinc-700;
+  }
+  .dark .prose {
+    @apply text-zinc-200;
+  }
   .prose code {
     @apply text-base;
   }
@@ -20,6 +26,12 @@
   blockquote,
   table * {
     @apply text-zinc-700 dark:text-zinc-300;
+  }
+  strong {
+    @apply text-zinc-700;
+  }
+  .dark strong {
+    @apply text-zinc-200;
   }
   kbd {
     @apply bg-white text-zinc-700;
