@@ -6,6 +6,7 @@ import HamburgerIcon from '@icons/HamburgerIcon.astro';
 import CloseIcon from '@icons/CloseIcon.astro';
 import HomeIcon from '@icons/HomeIcon.astro';
 import ThemeIcon from '@components/ThemeIcon.astro';
+import social from '@config/social';
 
 export interface NavigationLink {
   name: string;
@@ -13,6 +14,7 @@ export interface NavigationLink {
 }
 
 const { main }: { main: NavigationLink[] } = menu;
+const socialItems = social.networks;
 ---
 
 <header class="bg-zinc-50 dark:bg-zinc-900">
@@ -48,10 +50,23 @@ const { main }: { main: NavigationLink[] } = menu;
           </figure>
         </a>
       </div> -->
+      <div>
+        <h1 class="mb-0 text-lg font-bold text-zinc-900 sm:text-3xl md:text-2xl dark:text-white">
+          {config.author.name}
+        </h1>
+        <div class="m-auto flex space-x-5 pt-8">
+          {
+            socialItems?.map((item) => (
+              <a href={item.url} target="_blank" rel="noopener noreferrer">
+                <figure>
+                  <Fragment set:html={item.svg} />
+                </figure>
+              </a>
+            ))
+          }
+        </div>
+      </div>
 
-      <h1 class="mb-0 text-lg font-bold text-zinc-900 sm:text-3xl md:text-2xl dark:text-white">
-        {config.author.name}
-      </h1>
       <div class="relative order-3 flex">
         <!-- navbar toggler -->
         <input id="nav-toggle" type="checkbox" class="hidden" />

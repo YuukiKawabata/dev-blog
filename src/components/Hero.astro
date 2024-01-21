@@ -1,12 +1,12 @@
 ---
-import config from "@config/config.json";
-import social from "@config/social";
+import config from '@config/config.json';
+import social from '@config/social';
 
 const socialItems = social.networks;
 ---
 
 <section class="bg-zinc-50 dark:bg-zinc-900">
-  <div class="mx-auto max-w-screen-lg px-4 py-0 sm:px-6 pb-6 sm:pb-12 lg:px-8">
+  <div class="mx-auto max-w-screen-lg px-4 py-0 pb-6 sm:px-6 sm:pb-12 lg:px-8">
     <div class="flex items-start justify-between">
       <div class="rounded-lg">
         <!-- <h1
@@ -14,10 +14,10 @@ const socialItems = social.networks;
         >
           {config.author.name}
         </h1> -->
-        <p class="mt-1.5 text-sm md:text-lg text-zinc-500 dark:text-zinc-400">
+        <p class="mt-1.5 text-sm text-zinc-500 md:text-lg dark:text-zinc-400">
           {config.author.bio}
         </p>
-        <div class="flex space-x-5 pt-8 m-auto">
+        <!-- <div class="flex space-x-5 pt-8 m-auto">
           {
             socialItems?.map((item) => (
               <a href={item.url} target="_blank" rel="noopener noreferrer">
@@ -27,7 +27,7 @@ const socialItems = social.networks;
               </a>
             ))
           }
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
