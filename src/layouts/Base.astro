@@ -61,7 +61,7 @@ const ogImage = createOgImage({
       href={`${config.site.base_url}/${Astro.url.pathname.replace("/", "")}`}
       item-prop="url"
     />
-    <!-- {noindex && <meta name="robots" content="noindex,nofollow" />} -->
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta
       name="description"
       content={description ? description : config.metadata.meta_description}
