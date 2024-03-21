@@ -22,6 +22,7 @@ export interface Props {
 
 const { title, meta_title, description, noindex, blogpost } = Astro.props;
 
+console.log(noindex);
 const ogImage = createOgImage({
   title: meta_title ? meta_title : title ? title : config.site.title,
   meta: [config.site.title, config.site.base_url].join(" · "),
@@ -60,7 +61,7 @@ const ogImage = createOgImage({
       href={`${config.site.base_url}/${Astro.url.pathname.replace("/", "")}`}
       item-prop="url"
     />
-    {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <!-- {noindex && <meta name="robots" content="noindex,nofollow" />} -->
     <meta
       name="description"
       content={description ? description : config.metadata.meta_description}
