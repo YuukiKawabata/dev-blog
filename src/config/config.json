@@ -1,13 +1,13 @@
 {
   "site": {
-    "title": "Yuki`s Blog",
-    "base_url": "https://Yuki`s_Blog.io",
+    "title": "Yuki`s DevBlog",
+    "base_url": "https://yuki-dev-blog.vercel.app/",
     "base_path": "/",
     "favicon": "/myLogo.jpg",
     "logoLight": "/myLogo.jpg",
     "logoDark": "/myLogo.jpg",
     "lang": "ja",
-    "description": "フロントエンドエンジニアのブログ",
+    "description": "エンジニアの日常ブログ",
     "pageSize": 6
   },
   "features": {
@@ -16,11 +16,11 @@
   },
   "metadata": {
     "meta_author": "Yuki",
-    "meta_description": "フロントエンドエンジニア"
+    "meta_description": "エンジニア"
   },
   "author": {
     "name": "Yuki",
-    "avatar": "/public/favicon.png",
-    "bio": "HTML、CSS、JavaScript、TypeScriptなどの基本的な技術から、ReactやNext.js、Astro、Angularなどの最新のフレームワークまで、幅広く使いこなしています。Pythonなど他の言語も得意です。このブログでは、私が日々学んでいる技術のことを皆さんと共有していきたいと思っています。一緒に新しいことを学んで、成長していきましょう。このブログが皆さんの知識の一部になれば嬉しいです。"
+    "avatar": "/favicon.png",
+    "bio": "HTML、CSS、JavaScript、TypeScriptなどの基本的な技術から、ReactやNext.js、Astroなどの最新のフレームワークまで、幅広く使いこなしています。Pythonなど他の言語も得意です。このブログでは、私が日々学んでいる技術のことを皆さんと共有していきたいと思っています。一緒に新しいことを学んで、成長していきましょう。このブログが皆さんの知識の一部になれば嬉しいです。"
   }
 }
