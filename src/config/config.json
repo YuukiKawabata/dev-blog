@@ -3,9 +3,9 @@
     "title": "Yuki`s DevBlog",
     "base_url": "https://yuki-dev-blog.vercel.app/",
     "base_path": "/",
-    "favicon": "/myLogo.jpg",
-    "logoLight": "/myLogo.jpg",
-    "logoDark": "/myLogo.jpg",
+    "favicon": "/myLogo.png",
+    "logoLight": "/myLogo.png",
+    "logoDark": "/myLogo.png",
     "lang": "ja",
     "description": "Webエンジニアの日常ブログ",
     "pageSize": 6
