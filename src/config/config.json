@@ -1,26 +1,106 @@
 {
   "site": {
-    "title": "Yuki`s DevBlog",
+    "title": "AI-Powered Development Blog",
     "base_url": "https://yuki-dev-blog.vercel.app/",
     "base_path": "/",
     "favicon": "/favicon.png",
     "logoLight": "/favicon.png",
     "logoDark": "/favicon.png",
     "lang": "ja",
-    "description": "Webエンジニアの日常ブログ",
+    "description": "AI支援開発で革新するフルスタックエンジニア - Cursor、Claude Code活用によるモダン開発手法",
     "pageSize": 6
   },
   "features": {
     "youtube": false,
-    "dark_mode": true
+    "dark_mode": true,
+    "search": true,
+    "comments": false
   },
   "metadata": {
-    "meta_author": "Yuki",
-    "meta_description": "Webエンジニア"
+    "meta_author": "河畑祐輝 (Yuki Kawabata)",
+    "meta_description": "AI支援開発ツール（Cursor、Claude Code）を駆使するフルスタックエンジニア。5年間の開発経験とAI技術を組み合わせた次世代開発手法について発信。",
+    "meta_keywords": "AI開発, Cursor, Claude Code, React, Next.js, Angular, TypeScript, JavaScript, Java, Python, フルスタック, AI支援プログラミング, 開発効率化",
+    "og_image": "/og-image.png"
   },
   "author": {
-    "name": "Yuki",
+    "name": "河畑祐輝 (Yuki Kawabata)",
     "avatar": "/favicon.png",
-    "bio": "このブログを通じて、学びを皆さんと共有したいと思います。一緒に新しいことを学び、成長していきましょう！このブログが、皆さんの知識の一助となれば幸いです。"
+    "bio": "AI支援開発の最前線で活動するフルスタックエンジニア。Cursor、Claude Codeを日常的に活用し、従来の開発効率を大幅に向上させる手法を実践。React、Next.js、Angular等のモダンフレームワークからJava、Pythonを使ったバックエンド開発まで、AI技術と組み合わせた次世代開発スタイルを追求。新人エンジニアへのAI活用指導にも注力し、未来の開発スタイルを共有しています。",
+    "role": "AI支援フルスタックエンジニア",
+    "company": "",
+    "experience": "5年 + AI開発支援2年",
+    "skills": ["AI支援開発", "Cursor", "Claude Code", "React", "Next.js", "Angular", "TypeScript", "JavaScript", "Java", "Python", "Spring Framework", "AWS"],
+    "ai_tools": ["Cursor", "Claude Code", "GitHub Copilot", "ChatGPT"],
+    "social": {
+      "github": "https://github.com/YuukiKawabata",
+      "linkedin": "",
+      "twitter": ""
+    }
+  },
+  "navigation": {
+    "main": [
+      {
+        "name": "ホーム",
+        "url": "/"
+      },
+      {
+        "name": "AI開発手法",
+        "url": "/ai-development"
+      },
+      {
+        "name": "プロジェクト",
+        "url": "/projects"
+      },
+      {
+        "name": "プロフィール",
+        "url": "/about"
+      }
+    ]
+  },
+  "projects": {
+    "featured": [
+      {
+        "name": "Momo Nail Salon",
+        "url": "https://momo-nail-salon.vercel.app/",
+        "description": "AI支援開発によるネイルサロン向けWebサイト - 高速開発の実践例"
+      },
+      {
+        "name": "BoatRace AI",
+        "url": "https://project-bolt-bolt-nextjs-shadcn.vercel.app/",
+        "description": "AI技術を活用したボートレース分析アプリ - 機械学習による予測システム"
+      },
+      {
+        "name": "VocabBoost",
+        "url": "https://play.google.com/store/apps/details?id=com.yuuki.ja.vocabboost",
+        "description": "AI支援による効率的な英語学習モバイルアプリ"
+      },
+      {
+        "name": "NextGrow",
+        "url": "https://next-grow-app-alpha.vercel.app/",
+        "description": "AI支援開発で構築したNext.jsアプリケーション"
+      },
+      {
+        "name": "BoatRace AI",
+        "url": "https://project-bolt-bolt-nextjs-shadcn.vercel.app/",
+        "description": "AI技術を活用したボートレース分析アプリ"
+      }
+    ]
+  },
+  "career": {
+    "current_position": "AI支援フルスタックエンジニア",
+    "current_project": "エンタープライズシステム開発（AI開発手法活用）",
+    "specialties": [
+      "Cursor × React/Next.js による高速フロントエンド開発",
+      "Claude Code による効率的なバックエンド構築", 
+      "AI支援によるJava/Spring Framework 開発",
+      "Python × AI技術を活用したWebアプリケーション開発",
+      "AI開発ツールを使ったAWS サーバーレス開発",
+      "新人エンジニアへのAI活用開発手法指導"
+    ],
+    "ai_development": {
+      "daily_tools": ["Cursor", "Claude Code"],
+      "approach": "AI支援による開発効率化と品質向上",
+      "focus": "従来開発手法とAI技術の最適な組み合わせ"
+    }
   }
 }
