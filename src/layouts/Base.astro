@@ -5,6 +5,7 @@ import FeaturedVideos from '@components/FeaturedVideos.astro';
 import Footer from '@components/Footer.astro';
 import config from '@config/config.json';
 import { createOgImage } from '@utils/createOgImage';
+import Analytics from '@vercel/analytics/astro';
 
 import '@styles/global.css';
 
@@ -71,6 +72,7 @@ const ogImage = createOgImage({
     <script is:inline src="/registerSW.js"></script>
     <link rel="manifest" href="/manifest.webmanifest" />
     <ViewTransitions />
+    <Analytics />
   </head>
   <body class="bg-white dark:bg-zinc-900/95">
     <Header />
