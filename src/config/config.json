@@ -15,11 +15,11 @@
     "dark_mode": true
   },
   "metadata": {
-    "meta_author": "Yuki",
+    "meta_author": "BAATA",
     "meta_description": "AI支援開発ツール（Cursor、Claude Code）を駆使するフルスタックエンジニア。5年間の開発経験とAI技術を組み合わせた次世代開発手法について発信。"
   },
   "author": {
-    "name": "Yuki",
+    "name": "BAATA",
     "avatar": "/favicon.png",
     "bio": "AI支援開発の最前線で活動するフルスタックエンジニア。Cursor、Claude Codeを日常的に活用し、従来の開発効率を大幅に向上させる手法を実践。React、Next.js、Angular等のモダンフレームワークからJava、Pythonを使ったバックエンド開発まで、AI技術と組み合わせた次世代開発スタイルを追求。新人エンジニアへのAI活用指導にも注力し、未来の開発スタイルを共有しています。" 
   }
