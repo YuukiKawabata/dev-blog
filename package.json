@@ -38,6 +38,7 @@
     "astro-compress/sharp": "0.33.1"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "astro-compressor": "^0.4.1"
   }
 }
