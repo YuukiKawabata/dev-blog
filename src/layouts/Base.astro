@@ -21,13 +21,17 @@ export interface Props {
   blogpost?: boolean;
 }
 
-const { title, meta_title, description, noindex, blogpost } = Astro.props;
+const { title, meta_title, description, noindex, blogpost, image } = Astro.props;
 
 console.log(noindex);
-const ogImage = createOgImage({
-  title: meta_title ? meta_title : title ? title : config.site.title,
-  meta: [config.site.title, config.site.base_url].join(' · '),
-});
+const ogImage = image
+  ? image.startsWith('http')
+    ? image
+    : `${config.site.base_url}${image.replace(/^\//, '')}`
+  : createOgImage({
+      title: meta_title ? meta_title : title ? title : config.site.title,
+      meta: [config.site.title, config.site.base_url].join(' · '),
+    });
 ---
 
 <!doctype html>
