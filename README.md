@@ -176,11 +176,11 @@ npm run sync:zenn -- --dry-run
 npm run sync:zenn
 ```
 
-出力先はデフォルトで `../zenn-articles/zenn-articles/articles` です。
+出力先はデフォルトで `../zenn-articles/articles` です。
 ワークスペース構成が違う場合は `--dest` で変更できます。
 
 ```bash
-npm run sync:zenn -- --dest /absolute/path/to/zenn-articles/zenn-articles/articles
+npm run sync:zenn -- --dest /absolute/path/to/zenn-articles/articles
 ```
 
 ### 3) CIで自動化（dev-blog更新 → zenn-articlesにPR作成）

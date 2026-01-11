@@ -48,7 +48,7 @@ Usage:
 
 Defaults:
   --src  ./src/content/blog
-  --dest ../zenn-articles/zenn-articles/articles  (or $ZENN_ARTICLES_DIR)
+  --dest ../zenn-articles/articles  (or $ZENN_ARTICLES_DIR)
 
 Frontmatter:
   Add a 'zenn' key to enable sync.
@@ -145,7 +145,7 @@ async function main() {
   const blogRepoRoot = path.resolve(__dirname, '..');
   const srcDir = path.resolve(blogRepoRoot, args.src ?? 'src/content/blog');
 
-  const defaultDest = path.resolve(blogRepoRoot, '../zenn-articles/zenn-articles/articles');
+  const defaultDest = path.resolve(blogRepoRoot, '../zenn-articles/articles');
   const destDir = path.resolve(blogRepoRoot, args.dest ?? process.env.ZENN_ARTICLES_DIR ?? defaultDest);
 
   const allMarkdown = await listMarkdownFilesRecursively(srcDir);

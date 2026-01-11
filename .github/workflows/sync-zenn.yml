@@ -48,7 +48,7 @@ jobs:
           token: ${{ secrets.ZENN_SYNC_TOKEN }}
 
       - name: Generate Zenn articles into zenn-articles repo
-        run: npm run sync:zenn -- --dest ./zenn-articles/zenn-articles/articles
+        run: npm run sync:zenn -- --dest ./zenn-articles/articles
 
       - name: Create PR in zenn-articles if changed
         env:
