@@ -1,0 +1,80 @@
+name: Sync Zenn articles
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - src/content/blog/**
+      - scripts/sync-zenn.cjs
+      - package.json
+      - package-lock.json
+
+concurrency:
+  group: sync-zenn-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dev-blog
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Checkout zenn-articles
+        uses: actions/checkout@v4
+        with:
+          repository: YuukiKawabata/zenn-articles
+          path: zenn-articles
+          token: ${{ secrets.ZENN_SYNC_TOKEN }}
+
+      - name: Generate Zenn articles into zenn-articles repo
+        run: npm run sync:zenn -- --dest ./zenn-articles/zenn-articles/articles
+
+      - name: Create PR in zenn-articles if changed
+        env:
+          GH_TOKEN: ${{ secrets.ZENN_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          cd zenn-articles
+
+          # Configure author for commits made by the workflow
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "No changes detected in zenn-articles."
+            exit 0
+          fi
+
+          BRANCH="sync/zenn-from-dev-blog-${GITHUB_RUN_ID}"
+          git checkout -b "$BRANCH"
+
+          git add -A
+          git commit -m "chore: sync articles from dev-blog"
+          git push -u origin "$BRANCH"
+
+          # Avoid duplicate PRs when re-running a job
+          EXISTING=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number')
+          if [[ -n "${EXISTING:-}" ]]; then
+            echo "PR already exists: #$EXISTING"
+            exit 0
+          fi
+
+          gh pr create \
+            --title "chore: sync articles from dev-blog" \
+            --body "Automated sync from dev-blog via GitHub Actions." \
+            --base main \
+            --head "$BRANCH"

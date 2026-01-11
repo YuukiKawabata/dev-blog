@@ -47,14 +47,15 @@ Clone this repository to your local machine using Git.
 git clone https://github.com/gndx/ev0-astro-theme.git your-project-name
 ```
 
-| Command           | Action                                       |
-| :---------------- | :------------------------------------------- |
-| `npm install`     | Installs dependencies                        |
-| `npm run dev`     | Starts local dev server at `localhost:4321`  |
-| `npm run build`   | Build your production site to `./dist/`      |
-| `npm run preview` | Preview your build locally, before deploying |
-| `npm run youtube` | Fetches the Latest YouTube Channel Videos    |
-| `npm run newpost` | Generate a New Blogpost Markdown Entry       |
+| Command             | Action                                       |
+| :------------------ | :------------------------------------------- |
+| `npm install`       | Installs dependencies                        |
+| `npm run dev`       | Starts local dev server at `localhost:4321`  |
+| `npm run build`     | Build your production site to `./dist/`      |
+| `npm run preview`   | Preview your build locally, before deploying |
+| `npm run youtube`   | Fetches the Latest YouTube Channel Videos    |
+| `npm run newpost`   | Generate a New Blogpost Markdown Entry       |
+| `npm run sync:zenn` | Sync posts to Zenn repo (see below)          |
 
 Edit the HTML files in the `src/pages` directory to add your projects, experiences, and personal information.
 
@@ -143,6 +144,75 @@ npm run newpost
 ```
 
 Follow the instructions and this will generate a new markdown file in the `src/content/blog` directory. Edit the file to add your post content.
+
+## 📰 Zenn Sync (初心者向け)
+
+このリポジトリ（ブログ記事）から、別リポジトリ `zenn-articles` の `articles/` にZenn用Markdownを自動生成して同期します。
+
+### 1) どの記事をZennに出すかを指定する
+
+ブログ記事のfrontmatterに `zenn:` を追加した記事だけが同期対象になります。
+
+例: `src/content/blog/xxxx.md`
+
+```yaml
+zenn:
+  slug: your-zenn-slug
+  emoji: '🚀'
+  type: 'tech'
+  topics: ['astro', 'mdx', 'blog', 'vercel']
+  published: false
+```
+
+### 2) ローカルで同期する（まずはdry-run推奨）
+
+```bash
+npm run sync:zenn -- --dry-run
+```
+
+実際にファイルを書き出す場合:
+
+```bash
+npm run sync:zenn
+```
+
+出力先はデフォルトで `../zenn-articles/zenn-articles/articles` です。
+ワークスペース構成が違う場合は `--dest` で変更できます。
+
+```bash
+npm run sync:zenn -- --dest /absolute/path/to/zenn-articles/zenn-articles/articles
+```
+
+### 3) CIで自動化（dev-blog更新 → zenn-articlesにPR作成）
+
+GitHub Actionsで、ブログ更新時に `zenn-articles` 側へブランチpush & PR作成まで自動化しています。
+ワークフロー定義は [.github/workflows/sync-zenn.yml](.github/workflows/sync-zenn.yml) です。
+
+#### (A) トークンを作成する
+
+`zenn-articles` にpush/PR作成するため、GitHubのPersonal Access Token (PAT) が必要です。
+Fine-grained PAT推奨です。
+
+1. GitHub右上アイコン → Settings
+2. Developer settings → Personal access tokens → Fine-grained tokens
+3. 対象リポジトリを `YuukiKawabata/zenn-articles` に限定
+4. 権限を付与
+   - Repository permissions: `Contents: Read and write`
+   - Repository permissions: `Pull requests: Read and write`
+5. Tokenを発行して控える（この画面でしか見れません）
+
+#### (B) dev-blogにSecretを登録する
+
+`yuki-dev-blog` リポジトリの
+Settings → Secrets and variables → Actions → New repository secret で、以下を登録します。
+
+- Name: `ZENN_SYNC_TOKEN`
+- Value: (上で作ったPAT)
+
+#### (C) 動かし方
+
+- 通常は `main` へのpush（`src/content/blog/**` 変更）で自動実行されます。
+- 初回は手動実行が安心です: GitHub → Actions → "Sync Zenn articles" → Run workflow
 
 ## 📂 Project Structure
 
