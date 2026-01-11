@@ -1,14 +1,7 @@
-name: Astro Studio
-
-env:
-  ASTRO_STUDIO_APP_TOKEN: ${{secrets.ASTRO_STUDIO_APP_TOKEN }}
+name: Astro Studio (manual)
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, reopened, synchronize]
+  workflow_dispatch:
 
 jobs:
   DB:
@@ -24,3 +17,5 @@ jobs:
           node-version: 20
       - uses: jaid/action-npm-install@v1.2.1
       - uses: withastro/action-studio@main
+        env:
+          ASTRO_STUDIO_APP_TOKEN: ${{ secrets.ASTRO_STUDIO_APP_TOKEN }}
