@@ -32,6 +32,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate required secrets
+        run: |
+          set -euo pipefail
+          if [[ -z "${{ secrets.ZENN_SYNC_TOKEN }}" ]]; then
+            echo "::error title=Missing secret::ZENN_SYNC_TOKEN is not set (or empty). Add it in dev-blog → Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
       - name: Checkout zenn-articles
         uses: actions/checkout@v4
         with:
