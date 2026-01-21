@@ -1,83 +1,92 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        heading: ["Outfit", ...defaultTheme.fontFamily.sans],
+      },
+      colors: {
+        // Overriding neutral grays to Slate for a cooler, more technical feel
+        gray: colors.slate,
+        // Primary brand color
+        primary: colors.violet,
+      },
       typography: (theme) => ({
         DEFAULT: {
           css: {
+            '--tw-prose-body': theme('colors.slate.600'),
+            '--tw-prose-headings': theme('colors.slate.800'),
+            '--tw-prose-lead': theme('colors.slate.500'),
+            '--tw-prose-links': theme('colors.violet.600'),
+            '--tw-prose-bold': theme('colors.slate.800'),
+            '--tw-prose-counters': theme('colors.slate.400'),
+            '--tw-prose-bullets': theme('colors.slate.300'),
+            '--tw-prose-hr': theme('colors.slate.200'),
+            '--tw-prose-quotes': theme('colors.slate.800'),
+            '--tw-prose-quote-borders': theme('colors.violet.200'),
+            '--tw-prose-captions': theme('colors.slate.400'),
+            '--tw-prose-code': theme('colors.violet.600'),
+            '--tw-prose-pre-code': theme('colors.slate.200'),
+            '--tw-prose-pre-bg': theme('colors.slate.800'),
+            '--tw-prose-th-borders': theme('colors.slate.200'),
+            '--tw-prose-td-borders': theme('colors.slate.100'),
+            '--tw-prose-invert-body': theme('colors.slate.300'),
+            '--tw-prose-invert-headings': theme('colors.white'),
+            '--tw-prose-invert-lead': theme('colors.slate.400'),
+            '--tw-prose-invert-links': theme('colors.violet.400'),
+            '--tw-prose-invert-bold': theme('colors.white'),
+            '--tw-prose-invert-counters': theme('colors.slate.400'),
+            '--tw-prose-invert-bullets': theme('colors.slate.600'),
+            '--tw-prose-invert-hr': theme('colors.slate.700'),
+            '--tw-prose-invert-quotes': theme('colors.slate.100'),
+            '--tw-prose-invert-quote-borders': theme('colors.violet.700'),
+            '--tw-prose-invert-captions': theme('colors.slate.400'),
+            '--tw-prose-invert-code': theme('colors.violet.300'),
+            '--tw-prose-invert-pre-code': theme('colors.slate.300'),
+            '--tw-prose-invert-pre-bg': 'rgb(0 0 0 / 50%)',
+            '--tw-prose-invert-th-borders': theme('colors.slate.600'),
+            '--tw-prose-invert-td-borders': theme('colors.slate.700'),
+            
             a: {
               'text-decoration': 'none',
+              'background-image': 'linear-gradient(transparent 70%, theme("colors.violet.200") 0%)',
               'background-repeat': 'no-repeat',
-              'background-size': '100% 1.5px',
-              'background-position': '0 100%',
-              'background-image':
-                'linear-gradient(to right, rgb(var(--color-text-link)/1), rgb(var(--color-text-link)/1))',
+              'background-size': '100% 30%', 
+              'background-position': '0 90%',
+              transition: 'all 0.2s ease',
               '&:hover': {
-                color: 'rgb(var(--color-text-link))',
+                 'background-size': '100% 100%',
+                 color: theme('colors.violet.900'),
+              },
+            },
+            '.dark a': {
+               'background-image': 'linear-gradient(transparent 70%, theme("colors.violet.800") 0%)',
+               '&:hover': {
+                 color: theme('colors.violet.100'),
               },
             },
             'h1, h2, h3, h4, h5': {
-              color: 'rgb(var(--color-text-heading))',
-            },
-            iframe: {
-              'border-radius': '0.5rem',
+              fontFamily: theme('fontFamily.heading').join(', '),
+              fontWeight: '700',
+              letterSpacing: '-0.025em',
             },
             code: {
-              'background-color': 'rgb(var(--color-code-bg))',
-              color: 'rgb(var(--color-code-text))',
-              padding: '0.25rem 0.5rem',
-              'border-radius': '0.25rem',
-              'font-size': '0.875rem',
-              'line-height': '1.5',
-              'font-family': "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+              backgroundColor: theme('colors.slate.100'),
+              padding: '0.2rem 0.4rem',
+              borderRadius: '0.25rem',
+              fontWeight: '500',
             },
-            'ol > li::before': {
-              color: 'rgb(var(--color-text-bold))',
-            },
-            li: {
-              'margin-bottom': '0.5rem',
-              color: 'rgb(var(--color-code-text))',
-              'font-size': '1rem',
-              'line-height': '1.5',
-              'font-family': "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
-            },
-            'code::before': {
-              content: 'none',
-            },
-            'code::after': {
-              content: 'none',
-            },
+            'code::before': { content: '""' },
+            'code::after': { content: '""' },
             blockquote: {
-              border: 'none',
-              position: 'relative',
-              width: '96%',
-              margin: '0 auto',
-              'font-size': '1.0625em',
-              'padding-top': '1.5rem',
-              'padding-bottom': '0.5rem',
-              'padding-left': '1.5rem',
-              'padding-right': '1.5rem',
-            },
-            'blockquote::before': {
-              'font-family': 'Arial',
-              content: "'“'",
-              'font-size': '4em',
-              color: 'rgb(var(--color-text-bold))',
-              position: 'absolute',
-              left: '-10px',
-              top: '-10px',
-            },
-            'blockquote::after': {
-              content: '',
-            },
-            'blockquote p:first-of-type::before': {
-              content: '',
-            },
-            'blockquote p:last-of-type::after': {
-              content: '',
+              fontStyle: 'italic',
+              fontWeight: '400',
             },
           },
         },

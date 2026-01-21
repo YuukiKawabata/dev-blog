@@ -3,46 +3,52 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-700 antialiased transition-colors duration-300;
+  }
+
+  .dark body {
+    @apply bg-gray-900 text-gray-200;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', system-ui, sans-serif;
+    @apply font-bold text-gray-900 dark:text-white tracking-tight !important;
+  }
+
+  /* Prose Enhancements */
   .prose {
-    @apply text-zinc-700;
+    @apply text-gray-600 dark:text-gray-300 max-w-none;
   }
-  .dark .prose {
-    @apply text-zinc-200;
-  }
+  
   .prose code {
-    @apply text-base;
+    @apply text-violet-600 dark:text-violet-300 font-medium;
   }
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply text-zinc-800 dark:text-zinc-200 !important;
+  
+  .prose strong {
+    @apply text-gray-900 dark:text-white font-semibold;
   }
-  p,
-  li,
-  strong,
-  blockquote,
-  table * {
-    @apply text-zinc-700 dark:text-zinc-300;
+  
+  /* Utilities */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400;
   }
-  strong {
-    @apply text-zinc-700;
-  }
-  .dark strong {
-    @apply text-zinc-200;
-  }
-  kbd {
-    @apply bg-white text-zinc-700;
-  }
-  mark {
-    @apply bg-yellow-300;
-  }
+}
+
+/* Custom Components / Utilities */
+.glass-panel {
+  @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-sm;
 }
 
 .video-wrapper {
   aspect-ratio: 16 / 9;
+  @apply rounded-xl overflow-hidden shadow-lg my-8;
 }
 
 .video-wrapper iframe {
@@ -50,32 +56,21 @@
   height: 100%;
 }
 
-input#nav-toggle:checked ~ label#show-button {
-  @apply hidden;
-}
-
-input#nav-toggle:checked ~ label#hide-button {
-  @apply flex md:hidden;
-}
-
-input#nav-toggle:checked ~ #nav-menu {
-  @apply block md:flex;
-}
-
+/* Theme Toggle Transitions */
 .sun {
-  @apply stroke-zinc-500 transition-all;
+  @apply stroke-gray-500 transition-all duration-300;
 }
 .moon {
-  @apply stroke-transparent transition-all;
+  @apply stroke-transparent transition-all duration-300;
 }
 .dark .sun {
   @apply stroke-transparent;
 }
 .dark .moon {
-  @apply stroke-zinc-400;
+  @apply stroke-gray-400;
 }
 #themeToggle:hover .sun {
-  @apply stroke-zinc-800;
+  @apply stroke-gray-800;
 }
 #themeToggle:hover .moon {
   @apply stroke-transparent;
@@ -84,5 +79,5 @@ input#nav-toggle:checked ~ #nav-menu {
   @apply stroke-transparent;
 }
 .dark #themeToggle:hover .moon {
-  @apply stroke-zinc-200;
+  @apply stroke-gray-200;
 }

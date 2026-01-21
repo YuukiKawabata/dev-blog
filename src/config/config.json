@@ -1,13 +1,13 @@
 {
   "site": {
-    "title": "AI-Powered Development Blog",
+    "title": "BAATA Tech Note",
     "base_url": "https://yuki-dev-blog.vercel.app/",
     "base_path": "/",
-    "favicon": "/k3y3dq.jpg",
-    "logoLight": "/k3y3dq.jpg",
-    "logoDark": "/k3y3dq.jpg",
+    "favicon": "/baata_tech_note_logo.png",
+    "logoLight": "/baata_tech_note_logo.png",
+    "logoDark": "/baata_tech_note_logo.png",
     "lang": "ja",
-    "description": "AI支援開発で革新するフルスタックエンジニア - Cursor、Claude Code活用によるモダン開発手法",
+    "description": "日々の暮らしと技術の交差点。心地よい開発スタイルと、役立つ知見を丁寧に綴ります。",
     "pageSize": 6
   },
   "features": {
@@ -16,11 +16,11 @@
   },
   "metadata": {
     "meta_author": "BAATA",
-    "meta_description": "AI支援開発ツール（Cursor、Claude Code）を駆使するフルスタックエンジニア。5年間の開発経験とAI技術を組み合わせた次世代開発手法について発信。"
+    "meta_description": "日々の暮らしと技術の交差点。心地よい開発スタイルと、役立つ知見を丁寧に綴ります。"
   },
   "author": {
     "name": "BAATA",
-    "avatar": "/favicon.png",
-    "bio": "AI支援開発の最前線で活動するフルスタックエンジニア。Cursor、Claude Codeを日常的に活用し、従来の開発効率を大幅に向上させる手法を実践。React、Next.js、Angular等のモダンフレームワークからJava、Pythonを使ったバックエンド開発まで、AI技術と組み合わせた次世代開発スタイルを追求。新人エンジニアへのAI活用指導にも注力し、未来の開発スタイルを共有しています。" 
+    "avatar": "/k3y3dq.jpg",
+    "bio": "複雑なものを、のんびりと紐解いていくのが好きです。技術の力で、毎日を少しだけ便利に、豊かにするヒントを探しています。コーヒーでも飲みながら、ゆっくりしていってください。" 
   }
 }

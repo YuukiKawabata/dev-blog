@@ -8,6 +8,14 @@ import { createOgImage } from '@utils/createOgImage';
 
 import '@styles/global.css';
 
+// Font imports
+import '@fontsource/outfit/400.css';
+import '@fontsource/outfit/600.css';
+import '@fontsource/outfit/700.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+
 import { ViewTransitions } from 'astro:transitions';
 
 export interface Props {
@@ -34,7 +42,7 @@ const ogImage = image
 ---
 
 <!doctype html>
-<html lang={config.site.lang}>
+<html lang={config.site.lang} class="scroll-smooth">
   <head>
     <meta name="google-site-verification" content="Zqz8CHfQz5W8Rbohpg9h4xL2ZIo6B1OpWM1dSLXhjxU" />
     <!-- favicon -->
@@ -76,7 +84,7 @@ const ogImage = image
     <link rel="manifest" href="/manifest.webmanifest" />
     <ViewTransitions />
   </head>
-  <body class="bg-white dark:bg-zinc-900/95">
+  <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <Header />
     {!blogpost && <Hero />}
     <main class="mx-auto max-w-screen-lg px-4 py-8 sm:px-6 sm:py-12 lg:px-8">

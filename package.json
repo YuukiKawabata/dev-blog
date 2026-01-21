@@ -40,6 +40,8 @@
     "astro-compress/sharp": "0.33.1"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/outfit": "^5.2.8",
     "astro-compressor": "^0.4.1"
   }
 }
