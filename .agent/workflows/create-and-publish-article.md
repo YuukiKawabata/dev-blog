@@ -36,7 +36,7 @@ This workflow automates the entire process of creating a blog post from a "seed 
           emoji: "📝"
           type: "tech"
           topics: ["topic1", "topic2"]
-          published: false
+          published: true
         ---
         ```
 
@@ -66,3 +66,7 @@ This workflow automates the entire process of creating a blog post from a "seed 
         git pull --rebase origin main
         git push origin main
         ```
+
+9.  **Cleanup**
+    *   Delete the Seed File to keep the workspace clean.
+    *   `rm [Seed File Path]`
