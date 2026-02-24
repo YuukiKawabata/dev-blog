@@ -2,7 +2,7 @@
 title: "1週間で「まともなアプリ」が作れる時代の個人開発サバイバル術 ＆ 立ち塞がる「20人テスト制限」を一緒に突破しませんか？"
 description: "React Native (Expo) × Supabase × AIで爆速開発が可能になった今、個人開発者に立ち塞がるAndroidアプリの「20人・14日間クローズドテスト」制限。この壁を突破するための相互テストのお願いと、開発中のアプリ「Respo」の紹介です。"
 pubDate: "2026-02-24T12:27:54.849Z"
-heroImage: "/images/20260224_hero.png"
+heroImage: "/images/hero/Gemini_Generated_Image_pssaqwpssaqwpssa.png"
 categories: ["App Development", "Android", "React Native"]
 tags: ["Android", "個人開発", "Expo", "Supabase", "Gemini"]
 author: "Yuki"
