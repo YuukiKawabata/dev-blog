@@ -7,7 +7,8 @@ This workflow automates the entire process of creating a blog post from a "seed 
 # Steps
 
 1.  **Input Seed File**
-    *   Ask the user for the path to the research note or draft file (e.g., `src/content/blog/Web標準動向...md`).
+    *   Ask the user for the path to the research note or draft file.
+    *   **Important**: To prevent Astro build errors, ensure the seed file is NOT placed directly in `src/content/blog/` without frontmatter. Either prefix its filename with `_` (e.g., `_draft.md`) or place it in another directory.
     *   Read the content of this file using `view_file`.
 
 2.  **Analyze and Supplement**
@@ -47,11 +48,15 @@ This workflow automates the entire process of creating a blog post from a "seed 
 6.  **Review**
     *   Ask the user to review the generated blog post and image.
 
-7.  **Sync to Zenn**
+7.  **Cleanup**
+    *   Delete the Seed File to keep the workspace clean and prevent Vercel build errors during deployment.
+    *   `rm [Seed File Path]`
+
+8.  **Sync to Zenn**
     *   Run `npm run sync:zenn -- --dry-run` to verify.
     *   If successful, run `npm run sync:zenn`.
 
-8.  **Deploy (Multi-Repo)**
+9.  **Deploy (Multi-Repo)**
     *   **yuki-dev-blog**:
         ```bash
         git add .
@@ -66,7 +71,3 @@ This workflow automates the entire process of creating a blog post from a "seed 
         git pull --rebase origin main
         git push origin main
         ```
-
-9.  **Cleanup**
-    *   Delete the Seed File to keep the workspace clean.
-    *   `rm [Seed File Path]`
