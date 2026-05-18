@@ -17,7 +17,32 @@ npm run dev
 | `npm run build` | ビルド |
 | `npm run preview` | ビルド成果物のプレビュー |
 | `npm run newpost` | 新規記事ファイルの作成 |
+| `npm run sync:obsidian` | Obsidianから記事を同期（下記参照） |
 | `npm run sync:zenn` | Zenn用記事を別リポジトリへ同期（下記参照） |
+
+## 📝 記事の作成とObsidian同期
+
+当ブログは **Obsidian を記事のマスター（執筆元）** として運用しています。
+
+### 1) Obsidianで記事を書く
+
+iPhoneやMacのObsidianを開き、以下のフォルダで記事を作成・編集します。
+- **公開用（同期対象）**: `個人/記事/published`
+- **下書き（同期対象外）**: `個人/記事/drafts`
+
+### 2) ブログへ同期する
+
+記事を書き終え、ブログへ反映させたい場合は、ターミナルで以下のコマンドを実行します。
+
+```bash
+npm run sync:obsidian
+```
+
+> **注意**: このコマンドを実行すると、Obsidianの `published` フォルダの中身が `src/content/blog/` に一方通行で同期（コピー）されます。ブログリポジトリ側で直接Markdownを編集すると、次回の同期時にObsidian側の内容で上書きされるため注意してください。
+
+### 3) デプロイ
+
+同期によって `src/content/blog/` に変更が加わったら、通常通りGitでコミットしてPushしてください。
 
 ## 記事の追加
 
