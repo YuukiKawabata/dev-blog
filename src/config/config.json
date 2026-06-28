@@ -1,13 +1,15 @@
 {
   "site": {
-    "title": "BAATA Tech Note",
+    "title": "河畑祐輝 | Web開発とAIの技術ノート",
+    "brand": "河畑祐輝",
     "base_url": "https://yuki-dev-blog.vercel.app/",
     "base_path": "/",
     "favicon": "/baata_tech_note_logo.png",
     "logoLight": "/baata_tech_note_logo.png",
     "logoDark": "/baata_tech_note_logo.png",
+    "ogImage": "/og-home.png",
     "lang": "ja",
-    "description": "日々の暮らしと技術の交差点。心地よい開発スタイルと、役立つ知見を丁寧に綴ります。",
+    "description": "河畑祐輝（Yuuki Kawabata）の技術ブログ。React・Next.js・AstroなどのWeb開発から、CursorやClaude CodeといったAI開発ツールの活用法まで、現場で役立つ実践的な知見を丁寧に綴ります。",
     "pageSize": 6
   },
   "features": {
@@ -15,12 +17,14 @@
     "dark_mode": true
   },
   "metadata": {
-    "meta_author": "BAATA",
-    "meta_description": "日々の暮らしと技術の交差点。心地よい開発スタイルと、役立つ知見を丁寧に綴ります。"
+    "meta_author": "河畑祐輝",
+    "meta_description": "河畑祐輝（Yuuki Kawabata）の技術ブログ。React・Next.js・AstroなどのWeb開発から、CursorやClaude CodeといったAI開発ツールの活用法まで、現場で役立つ実践的な知見を丁寧に綴ります。",
+    "twitter": "@Yuki_K25"
   },
   "author": {
-    "name": "BAATA",
+    "name": "河畑祐輝",
+    "alternateName": "Yuuki Kawabata",
     "avatar": "/k3y3dq.jpg",
-    "bio": "複雑なものを、のんびりと紐解いていくのが好きです。技術の力で、毎日を少しだけ便利に、豊かにするヒントを探しています。コーヒーでも飲みながら、ゆっくりしていってください。" 
+    "bio": "複雑なものを、のんびりと紐解いていくのが好きです。技術の力で、毎日を少しだけ便利に、豊かにするヒントを探しています。コーヒーでも飲みながら、ゆっくりしていってください。"
   }
 }

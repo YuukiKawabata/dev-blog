@@ -1,6 +1,6 @@
 ---
 import Base from "@layouts/Base.astro";
-import CategoryIcon from "@components/icons/CategoryIcon.astro";
+import FormattedDate from "@components/FormattedDate.astro";
 import { getTaxonomy } from "@utils/getAllTags";
 import { getSinglePage } from "@utils/getAllTags";
 import { taxonomyFilter } from "@utils/getAllTags";
@@ -22,21 +22,24 @@ const posts = await getSinglePage("blog");
 const filterByTags = taxonomyFilter(posts, "tags", tag);
 ---
 
-<Base>
-  <h1 class="text-2xl md:text-3xl font-bold mb-8">Tag: {deslugify(tag)}</h1>
-  <ul class="space-y-4 text-left ml-4 text-zinc-500 dark:text-zinc-400">
+<Base meta_title={`Tag: ${deslugify(tag)}`}>
+  <p class="text-xs uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Tag</p>
+  <h1 class="mt-2 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">#{deslugify(tag)}</h1>
+
+  <div class="mt-10 divide-y divide-gray-200 border-t border-gray-200 dark:divide-gray-800 dark:border-gray-800">
     {
       filterByTags?.map((post) => (
-        <li class="flex items-center space-x-1">
-          <CategoryIcon />
-          <a
-            href={`/blog/${post.slug}`}
-            class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800"
-          >
-            {post.data.title}
+        <article class="group py-6">
+          <a href={`/blog/${post.slug}`} class="block">
+            <div class="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">
+              <FormattedDate date={post.data.pubDate} />
+            </div>
+            <h2 class="mt-2 font-heading text-xl font-semibold leading-snug text-gray-900 transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-300">
+              {post.data.title}
+            </h2>
           </a>
-        </li>
+        </article>
       ))
     }
-  </ul>
+  </div>
 </Base>

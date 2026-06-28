@@ -1,13 +1,12 @@
 ---
-import RightArrowIcon from "@components/icons/RightArrowIcon.astro";
 ---
 
-<div class="m-auto text-center mt-12">
+<div class="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
   <a
-    class="inline-flex items-center gap-2 rounded-full border border-violet-600/30 px-8 py-3 text-sm font-semibold text-violet-600 hover:bg-violet-600 hover:text-white dark:text-violet-400 dark:hover:bg-violet-600 dark:hover:text-white transition-all shadow-sm hover:shadow-md"
+    class="group inline-flex items-center gap-2 text-sm font-medium text-gray-900 underline decoration-gray-300 decoration-1 underline-offset-4 transition-colors hover:text-indigo-700 hover:decoration-indigo-400 dark:text-white dark:decoration-gray-600 dark:hover:text-indigo-300"
     href="/blog"
   >
-    All Posts
-    <RightArrowIcon class="w-4 h-4" />
+    すべての記事を見る
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
   </a>
 </div>

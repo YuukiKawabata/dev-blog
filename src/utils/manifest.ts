@@ -3,14 +3,14 @@ import config from '../config/config.json';
 
 export const manifest: Partial<ManifestOptions> = {
   name: config.site.title,
-  short_name: config.site.title,
+  short_name: config.site.brand,
   description: config.site.description,
   theme_color: '#ffffff',
-  background_color: '#0e0d0d',
+  background_color: '#0a0a0a',
   display: 'minimal-ui',
   start_url: '/',
   scope: '/',
-  lang: 'ES',
+  lang: 'ja',
   icons: [
     {
       src: '/favicons/favicon-192x192.png',

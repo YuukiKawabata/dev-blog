@@ -4,17 +4,19 @@ import Hero from '@components/Hero.astro';
 import FeaturedVideos from '@components/FeaturedVideos.astro';
 import Footer from '@components/Footer.astro';
 import config from '@config/config.json';
-import { createOgImage } from '@utils/createOgImage';
+import social from '@config/social';
 
 import '@styles/global.css';
 
-// Font imports
-import '@fontsource/outfit/400.css';
-import '@fontsource/outfit/600.css';
-import '@fontsource/outfit/700.css';
+// Font imports — Inter (body) + Fraunces (editorial serif headings)
 import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/500.css';
+import '@fontsource/fraunces/600.css';
+import '@fontsource/fraunces/600-italic.css';
 
 import { ViewTransitions } from 'astro:transitions';
 
@@ -26,19 +28,68 @@ export interface Props {
   noindex?: boolean;
   canonical?: string;
   blogpost?: boolean;
+  home?: boolean;
+  pubDate?: Date;
+  updatedDate?: Date;
 }
 
-const { title, meta_title, description, noindex, blogpost, image } = Astro.props;
+const { title, meta_title, description, noindex, blogpost, home, image, pubDate, updatedDate } =
+  Astro.props;
 
-console.log(noindex);
-const ogImage = image
-  ? image.startsWith('http')
-    ? image
-    : `${config.site.base_url}${image.replace(/^\//, '')}`
-  : createOgImage({
-      title: meta_title ? meta_title : title ? title : config.site.title,
-      meta: [config.site.title, config.site.base_url].join(' · '),
-    });
+const siteRoot = config.site.base_url.replace(/\/$/, '');
+const toAbsolute = (path: string) =>
+  path.startsWith('http') ? path : `${siteRoot}/${path.replace(/^\//, '')}`;
+
+// Page <title>: subpages get "<page> | <brand>"; home uses the full SEO title.
+const pageLabel = meta_title || title;
+const pageTitle = pageLabel ? `${pageLabel} | ${config.site.brand}` : config.site.title;
+const pageDescription = description || config.metadata.meta_description;
+
+const canonicalURL = new URL(Astro.url.pathname, config.site.base_url).href;
+
+// OG image: explicit image → default site OG image fallback (never a broken URL).
+const ogImage = toAbsolute(image || config.site.ogImage);
+
+// Social profile URLs for structured-data sameAs.
+const sameAs = social.networks.map((n) => n.url).filter(Boolean);
+
+const person = {
+  '@type': 'Person',
+  name: config.author.name,
+  alternateName: config.author.alternateName,
+  url: config.site.base_url,
+  image: toAbsolute(config.author.avatar),
+  sameAs,
+};
+
+const jsonLd: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: config.site.title,
+    alternateName: config.site.brand,
+    url: config.site.base_url,
+    inLanguage: 'ja',
+    description: config.site.description,
+    publisher: person,
+  },
+];
+
+if (blogpost && pubDate) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: meta_title || title || config.site.title,
+    description: pageDescription,
+    image: ogImage,
+    datePublished: new Date(pubDate).toISOString(),
+    dateModified: new Date(updatedDate || pubDate).toISOString(),
+    author: person,
+    publisher: person,
+    inLanguage: 'ja',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL },
+  });
+}
 ---
 
 <!doctype html>
@@ -50,44 +101,61 @@ const ogImage = image
     <!-- theme meta -->
     <meta name="theme-name" content="bookworm-light-astro" />
     <meta name="msapplication-TileColor" content="#000000" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
     <meta name="generator" content={Astro.generator} />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <!-- responsive meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
 
-    <title>{meta_title ? meta_title : title ? title : config.site.title}</title>
-    <meta name="title" content={meta_title ? meta_title : title ? title : config.site.title} />
-    <link rel="canonical" href={`${config.site.base_url}/${Astro.url.pathname.replace('/', '')}`} item-prop="url" />
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <link rel="canonical" href={canonicalURL} />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
-    <meta name="description" content={description ? description : config.metadata.meta_description} />
-    <!-- author from config.json -->
+    <meta name="description" content={pageDescription} />
     <meta name="author" content={config.metadata.meta_author} />
-    <!-- og-title -->
-    <meta property="og:title" content={meta_title ? meta_title : title ? title : config.site.title} />
-    <!-- og-description -->
-    <meta property="og:description" content={description ? description : config.metadata.meta_description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={`${config.site.base_url}/${Astro.url.pathname.replace('/', '')}`} />
 
-    <!-- twitter-title -->
-    <meta name="twitter:title" content={meta_title ? meta_title : title ? title : config.site.title} />
-    <!-- twitter-description -->
-    <meta name="twitter:description" content={description ? description : config.metadata.meta_description} />
-    <!-- og-image -->
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content={blogpost ? 'article' : 'website'} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={config.site.brand} />
+    <meta property="og:locale" content="ja_JP" />
     <meta property="og:image" content={ogImage} />
-    <!-- twitter-image -->
-    <meta name="twitter:image" content={ogImage} />
+    <meta property="og:image:alt" content={pageTitle} />
+    {blogpost && pubDate && (
+      <meta property="article:published_time" content={new Date(pubDate).toISOString()} />
+    )}
+    {blogpost && (updatedDate || pubDate) && (
+      <meta property="article:modified_time" content={new Date(updatedDate || pubDate).toISOString()} />
+    )}
+    {blogpost && <meta property="article:author" content={config.author.name} />}
+
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={config.metadata.twitter} />
+    <meta name="twitter:creator" content={config.metadata.twitter} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title={config.site.title} href={`${siteRoot}/rss.xml`} />
+
+    <!-- Structured data -->
+    {jsonLd.map((schema) => (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
 
     <script is:inline src="/registerSW.js"></script>
     <link rel="manifest" href="/manifest.webmanifest" />
     <ViewTransitions />
   </head>
-  <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <body class="bg-white dark:bg-gray-950 transition-colors duration-300">
     <Header />
-    {!blogpost && <Hero />}
-    <main class="mx-auto max-w-screen-lg px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    {home && <Hero />}
+    <main class="mx-auto max-w-3xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
       <slot />
     </main>
     {!blogpost && config.features.youtube && <FeaturedVideos />}

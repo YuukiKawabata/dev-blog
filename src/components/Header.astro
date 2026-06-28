@@ -15,36 +15,34 @@ export interface NavigationLink {
 const { main }: { main: NavigationLink[] } = menu;
 ---
 
-<header class="sticky top-0 z-50 w-full transition-all duration-300 border-b border-transparent bg-white/80 dark:bg-gray-900/80 backdrop-blur-md dark:border-gray-800">
-  <div class="mx-auto max-w-screen-lg px-4 py-4 sm:px-6 lg:px-8">
+<header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md transition-colors duration-300 dark:border-gray-800 dark:bg-gray-950/80">
+  <div class="mx-auto max-w-3xl px-5 py-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
-      
-      <!-- Brand / Logo -->
-      <a href="/" class="flex items-center gap-3 group" aria-label="Home">
-        <div class="relative overflow-hidden rounded-full shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 transition-transform group-hover:scale-105">
-           <Image
-            src={config.site.logoLight}
-            alt={config.site.title}
-            class="w-10 h-10 object-cover"
-            width={40}
-            height={40}
-            decoding="async"
-            loading="lazy"
-          />
-        </div>
-        <span class="font-heading font-bold text-xl text-gray-900 dark:text-white hidden sm:block">
-          {config.site.title}
+
+      <!-- Brand / Wordmark -->
+      <a href="/" class="group flex items-center gap-2.5" aria-label="Home">
+        <Image
+          src={config.site.logoLight}
+          alt={config.site.brand}
+          class="h-7 w-7 rounded-full object-cover"
+          width={28}
+          height={28}
+          decoding="async"
+          loading="lazy"
+        />
+        <span class="font-heading text-base font-semibold tracking-tight text-gray-900 dark:text-white">
+          {config.site.brand}
         </span>
       </a>
 
       <!-- Desktop Navigation & Actions -->
-      <div class="flex items-center gap-4">
-        
+      <div class="flex items-center gap-5">
+
         <!-- Desktop Menu -->
-        <nav class="hidden md:flex items-center gap-6">
+        <nav class="hidden items-center gap-6 md:flex">
           {
             main?.map((menu) => (
-              <a href={menu?.url} class="text-sm font-medium text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400 transition-colors relative group">
+              <a href={menu?.url} class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                 {menu?.name === 'Home' ? <span class="sr-only">Home</span> : menu?.name}
                 {menu?.name === 'Home' && <HomeIcon class="w-5 h-5" />}
               </a>
@@ -52,8 +50,8 @@ const { main }: { main: NavigationLink[] } = menu;
           }
         </nav>
 
-        <div class="hidden md:block h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
-        
+        <div class="hidden h-5 w-px bg-gray-200 dark:bg-gray-800 md:block"></div>
+
         {config.features.dark_mode && <ThemeIcon />}
 
         <!-- Mobile Menu Toggle -->
@@ -61,7 +59,7 @@ const { main }: { main: NavigationLink[] } = menu;
           <input id="nav-toggle" type="checkbox" class="peer hidden" />
           <label
             for="nav-toggle"
-            class="cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-900"
             aria-label="Toggle Navigation"
           >
             <div class="peer-checked:hidden">
@@ -77,13 +75,13 @@ const { main }: { main: NavigationLink[] } = menu;
             id="nav-menu"
             class="absolute right-0 top-12 z-50 w-64 origin-top-right scale-95 opacity-0 invisible peer-checked:scale-100 peer-checked:opacity-100 peer-checked:visible transition-all duration-200 ease-out"
           >
-             <div class="rounded-xl border border-gray-100 bg-white p-2 shadow-xl dark:border-gray-800 dark:bg-gray-900 ring-1 ring-black/5">
+             <div class="rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-800 dark:bg-gray-950">
                 <ul class="flex flex-col gap-1">
                   {main?.map((menu) => (
                     <li>
                       <a
                         href={menu?.url}
-                        class="flex items-center w-full px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-violet-50 hover:text-violet-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-violet-300 transition-colors"
+                        class="flex w-full items-center rounded-lg px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-900 dark:hover:text-white"
                       >
                         {menu?.name}
                       </a>

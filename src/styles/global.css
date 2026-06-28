@@ -7,45 +7,40 @@
     font-family: 'Inter', system-ui, sans-serif;
     scroll-behavior: smooth;
   }
-  
+
   body {
-    @apply bg-gray-50 text-gray-700 antialiased transition-colors duration-300;
+    @apply bg-white text-gray-700 antialiased transition-colors duration-300;
   }
 
   .dark body {
-    @apply bg-gray-900 text-gray-200;
+    @apply bg-gray-950 text-gray-300;
   }
 
-  /* Headings */
+  /* Headings — editorial serif */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', system-ui, sans-serif;
-    @apply font-bold text-gray-900 dark:text-white tracking-tight !important;
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    @apply font-semibold text-gray-900 dark:text-white tracking-tight !important;
   }
 
   /* Prose Enhancements */
   .prose {
-    @apply text-gray-600 dark:text-gray-300 max-w-none;
+    @apply text-gray-700 dark:text-gray-300 max-w-none;
   }
-  
-  .prose code {
-    @apply text-violet-600 dark:text-violet-300 font-medium;
-  }
-  
+
   .prose strong {
     @apply text-gray-900 dark:text-white font-semibold;
   }
-  
-  /* Utilities */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400;
+
+  /* Selection */
+  ::selection {
+    @apply bg-gray-900 text-white;
+  }
+  .dark ::selection {
+    @apply bg-white text-gray-900;
   }
 }
 
 /* Custom Components / Utilities */
-.glass-panel {
-  @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-sm;
-}
-
 .video-wrapper {
   aspect-ratio: 16 / 9;
   @apply rounded-xl overflow-hidden shadow-lg my-8;
