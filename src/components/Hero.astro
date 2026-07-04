@@ -4,32 +4,80 @@ import config from '@config/config.json';
 import social from '@config/social';
 
 const socialItems = social.networks;
+
+const topics = ['AI開発', '個人開発', 'アプリ公開', 'Web / モバイル'];
+
+const proofPoints = [
+  { label: '書くこと', value: '作る過程と判断材料' },
+  { label: '得意領域', value: 'React / Next.js / AI' },
+  { label: '軸', value: '公開して改善する' },
+];
 ---
 
-<section class="border-b border-gray-200 dark:border-gray-800">
-  <div class="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-20 lg:px-8">
-    <div class="flex flex-col-reverse gap-10 sm:flex-row sm:items-center sm:justify-between sm:gap-12">
-      <div class="max-w-xl">
-        <p class="text-xs font-medium uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
-          {config.site.brand}
+<section class="border-b border-gray-200 bg-gray-50/70 dark:border-gray-800 dark:bg-gray-950">
+  <div class="mx-auto max-w-4xl px-5 py-14 sm:px-6 sm:py-20 lg:px-8">
+    <div class="grid gap-10 md:grid-cols-[minmax(0,1fr)_220px] md:items-end md:gap-12">
+      <div>
+        <p class="text-sm font-semibold text-teal-700 dark:text-teal-300">
+          AI時代の個人開発ログ
         </p>
 
-        <h1 class="mt-5 font-heading text-4xl font-semibold leading-[1.1] tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-          複雑なものを、<br class="hidden sm:block" />のんびりと紐解く。
+        <h1 class="mt-4 font-heading text-4xl font-semibold leading-[1.12] text-gray-950 dark:text-white sm:text-5xl">
+          作って、届けて、<br class="hidden sm:block" />改善する。
         </h1>
 
-        <p class="mt-6 text-base leading-relaxed text-gray-600 dark:text-gray-400">
-          {config.author.bio}
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300 sm:text-lg">
+          React / Next.js / TypeScript、SwiftUI、Expo、AI API。個人開発の企画から実装、ストア公開、運用まで、実際に試したことを記録します。
         </p>
 
-        <div class="mt-8 flex items-center gap-5">
+        <div class="mt-6 flex flex-wrap gap-2" aria-label="主な発信テーマ">
+          {topics.map((topic) => (
+            <span class="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm font-medium text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
+              {topic}
+            </span>
+          ))}
+        </div>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href="#latest-posts"
+            class="inline-flex items-center rounded-full bg-gray-950 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-700 dark:bg-white dark:text-gray-950 dark:hover:bg-teal-200"
+          >
+            最新記事を読む
+          </a>
+          <a
+            href="/about/"
+            class="inline-flex items-center rounded-full border border-gray-300 px-5 py-2.5 text-sm font-semibold text-gray-800 transition-colors hover:border-teal-600 hover:text-teal-700 dark:border-gray-700 dark:text-gray-200 dark:hover:border-teal-300 dark:hover:text-teal-300"
+          >
+            プロフィール
+          </a>
+        </div>
+      </div>
+
+      <aside class="border-t border-gray-200 pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0 dark:border-gray-800">
+        <Image
+          src={config.author.avatar}
+          alt={config.author.name}
+          width={320}
+          height={320}
+          decoding="async"
+          loading="eager"
+          class="h-24 w-24 rounded-full border border-gray-200 object-cover dark:border-gray-800"
+        />
+        <p class="mt-4 text-sm font-semibold text-gray-950 dark:text-white">
+          {config.author.name}
+        </p>
+        <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          Web / モバイル / AIを横断して、企画から公開・運用まで進めるプロダクトエンジニア。
+        </p>
+        <div class="mt-5 flex items-center gap-5">
           {
             socialItems?.map((item) => (
               <a
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 transition-colors hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
+                class="text-gray-400 transition-colors hover:text-teal-700 dark:text-gray-500 dark:hover:text-teal-300"
               >
                 <span class="sr-only">{item.name}</span>
                 <div class="h-5 w-5">
@@ -39,19 +87,18 @@ const socialItems = social.networks;
             ))
           }
         </div>
-      </div>
-
-      <div class="shrink-0">
-        <Image
-          src={config.author.avatar}
-          alt={config.author.name}
-          width={320}
-          height={320}
-          decoding="async"
-          loading="eager"
-          class="h-28 w-28 rounded-full border border-gray-200 object-cover sm:h-36 sm:w-36 dark:border-gray-800"
-        />
-      </div>
+      </aside>
     </div>
+
+    <dl class="mt-10 grid gap-5 border-t border-gray-200 pt-6 sm:grid-cols-3 dark:border-gray-800">
+      {
+        proofPoints.map((item) => (
+          <div>
+            <dt class="text-sm font-medium text-gray-500 dark:text-gray-500">{item.label}</dt>
+            <dd class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100">{item.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
   </div>
 </section>

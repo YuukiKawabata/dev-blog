@@ -4,53 +4,60 @@ import Base from '@layouts/Base.astro';
 import Page from '@layouts/Page.astro';
 ---
 
-<Base meta_title="About">
-  <Page title="About Me">
-    <p>
-      はじめまして、河畑祐輝（かわばた ゆうき / Yuuki Kawabata）です。<br />
-      大阪を拠点に活動しているエンジニアです。<br />
-      React / Next.js / Angular / TypeScript を中心に、Webアプリ開発・既存システム改修・管理画面開発に取り組んでいます。<br />
-      本業では業務システム開発に携わりながら、個人でもWebサービスやモバイルアプリの開発、AIを活用したプロダクトづくりを進めています。
+<Base
+  meta_title="プロフィール"
+  description="河畑祐輝（Yuuki Kawabata）のプロフィール。React、Next.js、TypeScript、モバイルアプリ、AI APIを使い、企画から公開・運用まで進めるプロダクト志向のエンジニアです。"
+>
+  <Page title="プロフィール">
+    <p class="lead">
+      河畑祐輝（かわばた ゆうき / Yuuki Kawabata）です。大阪を拠点に、React / Next.js / TypeScript を中心としたWeb開発と、SwiftUI / React Native / Expo を使ったモバイルアプリ開発に取り組んでいます。
     </p>
 
-    <div class="mt-8">
-      <h2 class="text-2xl font-bold mb-4">できること</h2>
-  <p class="mb-6">
-    フロントエンド開発を中心に、Webアプリの画面実装、既存システムの改修、管理画面の開発、API連携などに対応しています。<br />
-    React / Next.js / Angular / TypeScript を使った開発のほか、Firebase や AI API を活用した小規模アプリ開発、Google Apps Script による業務自動化も行っています。<br />
-    「まずは小さく作って試す」「既存の仕組みを壊さず改善する」「運用しやすい形に整える」といった開発を大切にしています。
-  </p>
+    <p>
+      営業・接客の現場で「技術的な説明ができないもどかしさ」を感じたことをきっかけにプログラミングを学び、エンジニアへ転身しました。今は業務システム開発に携わりながら、個人でもアプリやWebサービスを企画し、実装し、公開し、改善するところまで続けています。
+    </p>
 
-  <h2 class="text-2xl font-bold mb-4">開発で大切にしていること</h2>
-  <p class="mb-6">
-    ただ機能を作るだけでなく、使う人にとって分かりやすく、運用する人にとって扱いやすい形にすることを意識しています。<br />
-    業務システム開発の経験から、仕様の確認、影響範囲の把握、既存機能を壊さない実装、テストしやすい構成を大切にしています。<br />
-    また、個人開発ではアイデアを形にするためのMVP設計や、AIを使った機能追加にも積極的に取り組んでいます。
-  </p>
+    <h2>このブログで書くこと</h2>
+    <p>
+      このブログは、きれいにまとまった正解集ではなく、実際に作っている途中で得た判断材料を残す場所です。AI開発ツール、個人開発、アプリ公開、審査対応、Web / モバイル開発の話を、失敗や詰まりも含めて書きます。
+    </p>
+    <ul>
+      <li>AI時代の開発フローと、人間が仕様・レビュー・責任を持つ部分</li>
+      <li>React / Next.js / TypeScript を使ったWebアプリ開発</li>
+      <li>SwiftUI / React Native / Expo を使ったiOS・Androidアプリ開発</li>
+      <li>App Store / Google Play の公開、審査、ストア改善</li>
+      <li>Obsidian、音声入力、開発環境などの生産性まわり</li>
+    </ul>
 
-  <h2 class="text-2xl font-bold mb-4">このブログについて</h2>
-  <p class="mb-6">
-    このブログでは、日々の開発で学んだこと、個人開発の記録、AI活用、Webアプリ開発の工夫などを発信しています。<br />
-    難しい技術をただ紹介するだけではなく、「実際に使ってどうだったか」「どこでつまずいたか」「どう改善したか」を残すことを大切にしています。<br />
-    読んでくださった方の開発や学習、個人開発のヒントになるような内容を発信していきます。
-  </p>
+    <h2>作っているもの</h2>
+    <p>
+      個人開発では、写真で食事を記録する健康管理アプリ「Respo」、スクリーンショットをOCRとAIで整理する「Atode」、AI時代に人間の言葉を残すSNS「HitoLog」、その場限りの近距離チャット「AirTalk」などを作っています。
+    </p>
+    <p>
+      便利なものを作るだけでなく、使う人の負担が軽くなるか、続けられる設計になっているか、公開後に改善できるかを大切にしています。
+    </p>
 
-  <h2 class="text-2xl font-bold mb-4">Skill Set</h2>
-  <p class="mb-6">
-    Frontend：React, Next.js, Angular, AngularJS, TypeScript, JavaScript, HTML, CSS, Sass<br />
-    Backend：Java, Spring Boot, PHP, Laravel, Node.js, Python<br />
-    Mobile / App：React Native, Expo, Flutter, SwiftUI<br />
-    Cloud / Infra：AWS, Vercel, Firebase, Docker<br />
-    AI / Automation：OpenAI API, Gemini API, Google Apps Script, Google Sheets API, Stable Diffusion, DALL·E
-  </p>
+    <h2>開発で大切にしていること</h2>
+    <ul>
+      <li>まず動くものを作り、実際の反応を見て改善する</li>
+      <li>技術の流行より、ユーザー課題と運用できる形を優先する</li>
+      <li>AIは調査・設計・実装・レビューに使い倒し、最終判断は自分で持つ</li>
+      <li>後から見る人が理解しやすいコードと説明を残す</li>
+      <li>分からないことを分かったふりで進めず、調べて確認する</li>
+    </ul>
 
-  <h2 class="text-2xl font-bold mb-4">対応できるご相談</h2>
-  <p>
-    Webアプリの新規開発、既存システムの改修、管理画面の実装、Firebase連携、AI API連携、GASによる業務効率化などに対応できます。<br />
-    副業では、土日・平日夜を中心に対応可能です。<br />
-    小さな改修や技術相談からでも、お気軽にご相談ください。
-  </p>
-</div>
+    <h2>技術領域</h2>
+    <p>
+      Frontend: React, Next.js, Angular, TypeScript, Tailwind CSS<br />
+      Mobile: SwiftUI, React Native, Expo, Android, iOS<br />
+      Backend / BaaS: Java, Spring Boot, Node.js, Firebase, Supabase, PostgreSQL<br />
+      AI / Automation: OpenAI API, Gemini API, Google ML Kit, Apple Vision OCR, Google Apps Script<br />
+      Infra / Release: Vercel, AWS, GitHub Actions, EAS Build, App Store Connect, Google Play Console
+    </p>
 
+    <h2>相談できること</h2>
+    <p>
+      Webアプリの新規開発、既存システムの改修、管理画面の実装、モバイルアプリのMVP、Firebase / Supabase連携、AI API連携、アプリ公開前後の整理などに対応できます。小さな改修や技術相談でも、目的と制約を見ながら現実的な形に落とし込みます。
+    </p>
   </Page>
 </Base>

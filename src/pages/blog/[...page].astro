@@ -17,10 +17,12 @@ export async function getStaticPaths({ paginate }) {
 const { page } = Astro.props;
 ---
 
-<Base meta_title="Blog">
-  <h1 class="mb-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">Blog</h1>
-  <p class="mb-10 text-sm text-gray-500 dark:text-gray-400">すべての記事</p>
-  <Posts posts={page.data} />
+<Base meta_title="記事一覧">
+  <h1 class="mb-3 font-heading text-3xl font-semibold sm:text-4xl">記事一覧</h1>
+  <p class="mb-10 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+    AI開発、個人開発、Web / モバイル、アプリ公開の記録を新しい順に並べています。
+  </p>
+  <Posts posts={page.data} showIntro={false} />
   <Pagination
     length={page.lastPage}
     currentUrl={page.url.current}

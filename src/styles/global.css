@@ -19,7 +19,8 @@
   /* Headings — editorial serif */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
-    @apply font-semibold text-gray-900 dark:text-white tracking-tight !important;
+    letter-spacing: 0 !important;
+    @apply font-semibold text-gray-900 dark:text-white !important;
   }
 
   /* Prose Enhancements */

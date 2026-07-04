@@ -16,7 +16,7 @@ module.exports = {
         // True-neutral grays for a clean, editorial ink palette
         gray: colors.neutral,
         // Single restrained accent, used sparingly (links / focus / small labels)
-        primary: colors.indigo,
+        primary: colors.teal,
       },
       typography: (theme) => ({
         DEFAULT: {
@@ -63,21 +63,21 @@ module.exports = {
               fontWeight: '500',
               transition: 'color 0.2s ease, text-decoration-color 0.2s ease',
               '&:hover': {
-                color: theme('colors.indigo.700'),
-                'text-decoration-color': theme('colors.indigo.400'),
+                color: theme('colors.teal.700'),
+                'text-decoration-color': theme('colors.teal.400'),
               },
             },
             '.dark a': {
               'text-decoration-color': theme('colors.neutral.600'),
               '&:hover': {
-                color: theme('colors.indigo.300'),
-                'text-decoration-color': theme('colors.indigo.500'),
+                color: theme('colors.teal.300'),
+                'text-decoration-color': theme('colors.teal.500'),
               },
             },
             'h1, h2, h3, h4, h5': {
               fontFamily: theme('fontFamily.heading').join(', '),
               fontWeight: '600',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0',
             },
             code: {
               fontFamily: theme('fontFamily.mono').join(', '),

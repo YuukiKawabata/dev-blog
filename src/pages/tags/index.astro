@@ -5,19 +5,19 @@ import { getTaxonomy } from "@utils/getAllTags";
 const tags = await getTaxonomy("blog", "tags");
 ---
 
-<Base meta_title="Tags">
+<Base meta_title="タグ">
   <section>
-    <h1 class="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">Tags</h1>
-    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">タグから記事をたどる</p>
+    <h1 class="font-heading text-3xl font-semibold sm:text-4xl">タグ</h1>
+    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">技術名や関心テーマから記事を探せます。</p>
 
     <ul class="mt-10 flex flex-wrap gap-x-5 gap-y-3">
       {
         tags.map((tag) => (
           <li>
             <a
-              class="text-base text-gray-600 underline decoration-gray-300 decoration-1 underline-offset-4 transition-colors hover:text-indigo-700 hover:decoration-indigo-400 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-indigo-300"
+              class="text-base text-gray-600 underline decoration-gray-300 decoration-1 underline-offset-4 transition-colors hover:text-teal-700 hover:decoration-teal-400 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-teal-300"
               href={`/tags/${tag.slug}`}
-              title={`View posts with the tag: ${tag.name}`}
+              title={`${tag.name}タグの記事を見る`}
             >
               {tag.name}
             </a>

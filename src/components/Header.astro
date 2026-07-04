@@ -16,11 +16,11 @@ const { main }: { main: NavigationLink[] } = menu;
 ---
 
 <header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md transition-colors duration-300 dark:border-gray-800 dark:bg-gray-950/80">
-  <div class="mx-auto max-w-3xl px-5 py-4 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl px-5 py-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between">
 
       <!-- Brand / Wordmark -->
-      <a href="/" class="group flex items-center gap-2.5" aria-label="Home">
+      <a href="/" class="group flex items-center gap-2.5" aria-label="ホーム">
         <Image
           src={config.site.logoLight}
           alt={config.site.brand}
@@ -30,7 +30,7 @@ const { main }: { main: NavigationLink[] } = menu;
           decoding="async"
           loading="lazy"
         />
-        <span class="font-heading text-base font-semibold tracking-tight text-gray-900 dark:text-white">
+        <span class="font-heading text-base font-semibold text-gray-900 dark:text-white">
           {config.site.brand}
         </span>
       </a>
@@ -43,8 +43,8 @@ const { main }: { main: NavigationLink[] } = menu;
           {
             main?.map((menu) => (
               <a href={menu?.url} class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                {menu?.name === 'Home' ? <span class="sr-only">Home</span> : menu?.name}
-                {menu?.name === 'Home' && <HomeIcon class="w-5 h-5" />}
+                {menu?.name === 'ホーム' ? <span class="sr-only">ホーム</span> : menu?.name}
+                {menu?.name === 'ホーム' && <HomeIcon class="w-5 h-5" />}
               </a>
             ))
           }

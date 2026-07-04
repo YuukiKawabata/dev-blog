@@ -1,19 +1,19 @@
 {
   "main": [
     {
-      "name": "Home",
+      "name": "ホーム",
       "url": "/"
     },
     {
-      "name": "About",
+      "name": "プロフィール",
       "url": "/about"
     },
     {
-      "name": "Tags",
+      "name": "タグ",
       "url": "/tags"
     },
     {
-      "name": "Categories",
+      "name": "カテゴリ",
       "url": "/categories"
     }
   ]

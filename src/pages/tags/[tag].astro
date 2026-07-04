@@ -22,19 +22,19 @@ const posts = await getSinglePage("blog");
 const filterByTags = taxonomyFilter(posts, "tags", tag);
 ---
 
-<Base meta_title={`Tag: ${deslugify(tag)}`}>
-  <p class="text-xs uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Tag</p>
-  <h1 class="mt-2 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">#{deslugify(tag)}</h1>
+<Base meta_title={`タグ: ${deslugify(tag)}`}>
+  <p class="text-sm font-semibold text-teal-700 dark:text-teal-300">タグ</p>
+  <h1 class="mt-2 font-heading text-3xl font-semibold sm:text-4xl">#{deslugify(tag)}</h1>
 
   <div class="mt-10 divide-y divide-gray-200 border-t border-gray-200 dark:divide-gray-800 dark:border-gray-800">
     {
       filterByTags?.map((post) => (
         <article class="group py-6">
           <a href={`/blog/${post.slug}`} class="block">
-            <div class="text-xs uppercase tracking-[0.15em] text-gray-400 dark:text-gray-500">
+            <div class="text-xs font-medium text-gray-500 dark:text-gray-500">
               <FormattedDate date={post.data.pubDate} />
             </div>
-            <h2 class="mt-2 font-heading text-xl font-semibold leading-snug text-gray-900 transition-colors group-hover:text-indigo-700 dark:text-white dark:group-hover:text-indigo-300">
+            <h2 class="mt-2 font-heading text-xl font-semibold leading-snug text-gray-950 transition-colors group-hover:text-teal-700 dark:text-white dark:group-hover:text-teal-300">
               {post.data.title}
             </h2>
           </a>
