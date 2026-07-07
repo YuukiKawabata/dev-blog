@@ -2,9 +2,6 @@
 import { Image } from 'astro:assets';
 import menu from '@config/menu.json';
 import config from '@config/config.json';
-import HamburgerIcon from '@icons/HamburgerIcon.astro';
-import CloseIcon from '@icons/CloseIcon.astro';
-import HomeIcon from '@icons/HomeIcon.astro';
 import ThemeIcon from '@components/ThemeIcon.astro';
 
 export interface NavigationLink {
@@ -13,85 +10,173 @@ export interface NavigationLink {
 }
 
 const { main }: { main: NavigationLink[] } = menu;
+
+// The wordmark links home; keep the desktop nav to secondary destinations only.
+const desktopMenu = main?.filter((item) => item.url !== '/');
 ---
 
-<header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md transition-colors duration-300 dark:border-gray-800 dark:bg-gray-950/80">
-  <div class="mx-auto max-w-4xl px-5 py-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between">
+<header
+  transition:persist="site-header"
+  class="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-paper/85 backdrop-blur-md transition-colors duration-300 dark:border-gray-800/80 dark:bg-gray-950/85"
+>
+  <div class="relative mx-auto max-w-3xl px-6 lg:px-8">
+    <input id="nav-toggle" type="checkbox" class="hidden" />
 
+    <!-- Scrim — メニュー外タップで閉じる(label なので JS 不要) -->
+    <label
+      for="nav-toggle"
+      class="nav-scrim fixed inset-0 -z-10 cursor-default bg-gray-950/25 backdrop-blur-[2px] dark:bg-gray-950/60 md:hidden"
+      aria-hidden="true"></label>
+
+    <div class="flex items-center justify-between py-4">
       <!-- Brand / Wordmark -->
       <a href="/" class="group flex items-center gap-2.5" aria-label="ホーム">
         <Image
           src={config.site.logoLight}
           alt={config.site.brand}
-          class="h-7 w-7 rounded-full object-cover"
-          width={28}
-          height={28}
+          class="h-6 w-6 rounded-full object-cover"
+          width={24}
+          height={24}
           decoding="async"
           loading="lazy"
         />
-        <span class="font-heading text-base font-semibold text-gray-900 dark:text-white">
+        <span class="font-heading text-[15px] font-semibold tracking-wide text-gray-900 dark:text-white">
           {config.site.brand}
         </span>
       </a>
 
-      <!-- Desktop Navigation & Actions -->
+      <!-- Navigation & Actions -->
       <div class="flex items-center gap-5">
-
-        <!-- Desktop Menu -->
         <nav class="hidden items-center gap-6 md:flex">
-          {
-            main?.map((menu) => (
-              <a href={menu?.url} class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                {menu?.name === 'ホーム' ? <span class="sr-only">ホーム</span> : menu?.name}
-                {menu?.name === 'ホーム' && <HomeIcon class="w-5 h-5" />}
-              </a>
-            ))
-          }
+          {desktopMenu?.map((item) => (
+            <a href={item.url} class="nav-link">
+              {item.name}
+            </a>
+          ))}
         </nav>
 
-        <div class="hidden h-5 w-px bg-gray-200 dark:bg-gray-800 md:block"></div>
+        <div class="hidden h-4 w-px bg-gray-200 dark:bg-gray-800 md:block"></div>
 
         {config.features.dark_mode && <ThemeIcon />}
 
-        <!-- Mobile Menu Toggle -->
-        <div class="relative md:hidden">
-          <input id="nav-toggle" type="checkbox" class="peer hidden" />
-          <label
-            for="nav-toggle"
-            class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-900"
-            aria-label="Toggle Navigation"
-          >
-            <div class="peer-checked:hidden">
-                <HamburgerIcon />
-            </div>
-            <div class="hidden peer-checked:block">
-                <CloseIcon />
-            </div>
-          </label>
-            
-          <!-- Mobile Dropdown -->
-          <div
-            id="nav-menu"
-            class="absolute right-0 top-12 z-50 w-64 origin-top-right scale-95 opacity-0 invisible peer-checked:scale-100 peer-checked:opacity-100 peer-checked:visible transition-all duration-200 ease-out"
-          >
-             <div class="rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-800 dark:bg-gray-950">
-                <ul class="flex flex-col gap-1">
-                  {main?.map((menu) => (
-                    <li>
-                      <a
-                        href={menu?.url}
-                        class="flex w-full items-center rounded-lg px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-900 dark:hover:text-white"
-                      >
-                        {menu?.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-             </div>
-          </div>
-        </div>
+        <!-- Mobile menu toggle — 2本のヘアラインが X にモーフ -->
+        <label
+          for="nav-toggle"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900 md:hidden"
+          aria-label="メニューを開閉"
+        >
+          <span class="menu-bars" aria-hidden="true"></span>
+        </label>
       </div>
+    </div>
+
+    <!-- Mobile panel — ヘッダー直下に全幅で展開、項目はスタッガー表示 -->
+    <div id="nav-menu" class="absolute inset-x-0 top-full md:hidden">
+      <nav
+        class="border-b border-gray-200 bg-paper px-6 pb-3 pt-1 shadow-[0_32px_56px_-28px_rgba(28,25,23,0.25)] dark:border-gray-800 dark:bg-gray-950"
+        aria-label="モバイルナビゲーション"
+      >
+        <ul>
+          {main?.map((item, i) => (
+            <li
+              class="menu-item border-b border-gray-200/70 last:border-0 dark:border-gray-800/70"
+              style={`--i: ${i}`}
+            >
+              <a href={item.url} class="group flex items-baseline gap-4 py-4">
+                <span class="font-mono text-xs tabular-nums text-accent-700 dark:text-accent-400">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="font-heading text-xl font-semibold text-gray-900 transition-colors group-hover:text-accent-700 dark:text-white dark:group-hover:text-accent-400">
+                  {item.name}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   </div>
 </header>
+
+<style>
+  .menu-bars {
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 14px;
+  }
+  .menu-bars::before,
+  .menu-bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition:
+      top 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      bottom 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .menu-bars::before {
+    top: 1px;
+  }
+  .menu-bars::after {
+    bottom: 1px;
+  }
+  #nav-toggle:checked ~ div .menu-bars::before {
+    top: 6px;
+    transform: rotate(45deg);
+  }
+  #nav-toggle:checked ~ div .menu-bars::after {
+    bottom: 6.5px;
+    transform: rotate(-45deg);
+  }
+
+  .nav-scrim {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+  }
+  #nav-toggle:checked ~ .nav-scrim {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #nav-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0.3s;
+  }
+  #nav-toggle:checked ~ #nav-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .menu-item {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #nav-toggle:checked ~ #nav-menu .menu-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(0.06s + var(--i) * 0.05s);
+  }
+</style>
+
+<script>
+  // ヘッダーは transition:persist で残るため、ページ遷移時に開いたメニューを畳む
+  const closeMenu = () => {
+    const toggle = document.getElementById('nav-toggle') as HTMLInputElement | null;
+    if (toggle) toggle.checked = false;
+  };
+  document.addEventListener('astro:after-swap', closeMenu);
+</script>

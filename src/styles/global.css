@@ -4,47 +4,202 @@
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-white text-gray-700 antialiased transition-colors duration-300;
+    @apply bg-paper text-gray-700 antialiased transition-colors duration-300;
+    line-break: strict;
+    font-feature-settings: 'kern';
   }
 
   .dark body {
     @apply bg-gray-950 text-gray-300;
   }
 
-  /* Headings — editorial serif */
+  /* Paper grain — barely-there washi texture over everything */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    opacity: 0.028;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .dark body::after {
+    opacity: 0.05;
+  }
+
+  /* Headings — Fraunces × 明朝 editorial pairing, tightened JP spacing */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
-    letter-spacing: 0 !important;
-    @apply font-semibold text-gray-900 dark:text-white !important;
+    font-family: 'Fraunces', 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, 'Noto Serif JP', Georgia, serif;
+    font-feature-settings: 'palt';
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  /* Natural Japanese line breaking where supported (progressive enhancement) */
+  @supports (word-break: auto-phrase) {
+    h1, h2, h3, .jp-phrase {
+      word-break: auto-phrase;
+    }
   }
 
   /* Prose Enhancements */
   .prose {
-    @apply text-gray-700 dark:text-gray-300 max-w-none;
+    @apply max-w-none text-gray-700 dark:text-gray-300;
   }
 
   .prose strong {
-    @apply text-gray-900 dark:text-white font-semibold;
+    @apply font-semibold text-gray-900 dark:text-white;
   }
 
-  /* Selection */
+  /* Selection — sumi ink */
   ::selection {
-    @apply bg-gray-900 text-white;
+    @apply bg-gray-900 text-paper;
   }
   .dark ::selection {
-    @apply bg-white text-gray-900;
+    @apply bg-gray-100 text-gray-950;
+  }
+
+  /* Keyboard focus */
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.500');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Animated hairline underline for nav links */
+  .nav-link {
+    @apply relative text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+
+  /* Reading progress — pure CSS scroll-driven animation */
+  .reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 90;
+    height: 2px;
+    width: 100%;
+    background: theme('colors.accent.600');
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    animation: grow-progress linear;
+    animation-timeline: scroll(root);
+    view-transition-name: reading-progress;
+  }
+  .dark .reading-progress {
+    background: theme('colors.accent.500');
+  }
+  @supports not (animation-timeline: scroll()) {
+    .reading-progress {
+      display: none;
+    }
+  }
+}
+
+@keyframes grow-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ——— Motion system(reduced motion 環境ではすべて無効) ——— */
+@media (prefers-reduced-motion: no-preference) {
+  /* Masked line reveal — hero の大型タイポが下からせり上がる */
+  .line-mask {
+    display: block;
+    overflow: hidden;
+    /* ディセンダ(p, g など)がクリップされないよう余白を確保 */
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
+  .line-rise {
+    display: block;
+    transform: translateY(115%);
+    animation: line-rise 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes line-rise {
+    to { transform: translateY(0); }
+  }
+
+  /* 補助テキスト・著者行のソフトな入場 */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes fade-up {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 朱のピリオドは行が着地したあと弾んで現れる */
+  .period-pop {
+    display: inline-block;
+    transform: scale(0);
+    transform-origin: 50% 70%;
+    animation: period-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes period-pop {
+    to { transform: scale(1); }
+  }
+
+  /* スクロールで視界に入った行が浮かび上がる(対応ブラウザのみ) */
+  @supports (animation-timeline: view()) {
+    .scroll-reveal {
+      animation: scroll-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 55%;
+    }
+  }
+  @keyframes scroll-rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ページ遷移 — 新しいページがふわりと持ち上がる(ヘッダーは persist で不動) */
+  ::view-transition-old(root) {
+    animation: vt-fade-out 0.2s ease both;
+  }
+  ::view-transition-new(root) {
+    animation: vt-rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes vt-fade-out {
+    to { opacity: 0; }
+  }
+  @keyframes vt-rise-in {
+    from { opacity: 0; transform: translateY(10px); }
   }
 }
 
 /* Custom Components / Utilities */
 .video-wrapper {
   aspect-ratio: 16 / 9;
-  @apply rounded-xl overflow-hidden shadow-lg my-8;
+  @apply my-8 overflow-hidden rounded-xl shadow-lg;
 }
 
 .video-wrapper iframe {

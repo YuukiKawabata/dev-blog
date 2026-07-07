@@ -8,20 +8,21 @@ const uniqueCategories = [...new Set(allCategories.map(item => item.slug))].map(
 
 <Base meta_title="カテゴリ">
   <section>
-    <h1 class="font-heading text-3xl font-semibold sm:text-4xl">カテゴリ</h1>
-    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">テーマごとに記事をたどれます。</p>
+    <p class="font-mono text-xs font-medium uppercase tracking-[0.25em] text-accent-700 dark:text-accent-400">Categories</p>
+    <h1 class="mt-3 font-heading text-3xl font-semibold sm:text-4xl">カテゴリ</h1>
+    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">テーマごとに記事をたどれます。</p>
 
     <ul class="mt-10 divide-y divide-gray-200 border-t border-gray-200 dark:divide-gray-800 dark:border-gray-800">
       {
         uniqueCategories.map((category) => (
           <li>
             <a
-              class="group flex items-center justify-between py-4 text-lg text-gray-700 transition-colors hover:text-teal-700 dark:text-gray-300 dark:hover:text-teal-300"
+              class="group flex items-center justify-between py-4 text-lg text-gray-700 transition-colors hover:text-accent-700 dark:text-gray-300 dark:hover:text-accent-400"
               href={`/categories/${category.slug}`}
               title={`${category.name}カテゴリの記事を見る`}
             >
               <span class="capitalize">{category.name}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-300 transition-all group-hover:translate-x-1 group-hover:text-teal-600 dark:text-gray-600 dark:group-hover:text-teal-300"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-gray-300 transition-all group-hover:translate-x-1 group-hover:text-accent-600 dark:text-gray-600 dark:group-hover:text-accent-400"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
           </li>
         ))
