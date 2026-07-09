@@ -1,11 +1,12 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { type CollectionEntry } from "astro:content";
 
 import BlogPost from "@layouts/BlogPost.astro";
 import Code from "@components/mdx/Code.astro";
+import { getSinglePage } from "@utils/getAllTags";
 
 export async function getStaticPaths() {
-  const posts = (await getCollection("blog")).sort(
+  const posts = (await getSinglePage("blog")).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
   return posts.map((post, index) => {

@@ -1,4 +1,12 @@
-# **2026年度版 iPhoneおよびMacユーザーにおけるブラウザアーキテクチャと最適解に関する総合調査報告書**
+---
+title: "2026年度版 iPhoneおよびMacユーザーにおけるブラウザアーキテクチャと最適解に関する総合調査報告書"
+description: "iPhoneおよびMacユーザー向けブラウザ選定に関する下書き調査記事です。"
+pubDate: "2026-07-09"
+tags: ["Browser", "iPhone", "Mac"]
+categories: ["Tech"]
+authors: ["Yuki"]
+draft: true
+---
 
 ## **1\. 市場構造とユーザー行動の深層分析：2026年における力学の変容**
 

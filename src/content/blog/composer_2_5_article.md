@@ -1,9 +1,11 @@
 ---
 title: "Cursorの新モデル「Composer 2.5」とは？改善点をわかりやすく整理"
-description: "Cursorで新しく利用可能になった「Composer 2.5」の特徴や改善点、技術要素について整理して解説します。"
+description: "Cursorの新モデルComposer 2.5の改善点を整理する下書き記事です。"
 pubDate: "2026-05-18"
-categories: ["Editor"]
-tags: ["Cursor", "Composer"]
+tags: ["AI", "Cursor"]
+categories: ["AI", "Tech"]
+authors: ["Yuki"]
+draft: true
 ---
 
 > 参照元: Cursor公式ブログ「Composer 2.5 の紹介」

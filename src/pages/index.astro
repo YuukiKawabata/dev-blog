@@ -1,10 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import HomePagination from "@components/HomePagination.astro";
 import Base from "@layouts/Base.astro";
 import Posts from "@layouts/Posts.astro";
+import { getSinglePage } from "@utils/getAllTags";
 
-const posts = (await getCollection("blog")).sort(
+const posts = (await getSinglePage("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 ---
