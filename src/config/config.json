@@ -1,15 +1,15 @@
 {
   "site": {
-    "title": "河畑祐輝 | AI時代の個人開発とWeb・モバイル開発",
+    "title": "河畑祐輝 | 元コンビニ店長、アプリ8本。個人開発の本音",
     "brand": "Yuki Kawabata",
-    "base_url": "https://yuki-dev-blog.vercel.app/",
+    "base_url": "https://dev-blog-pi-six.vercel.app/",
     "base_path": "/",
     "favicon": "/baata_tech_note_logo.png",
     "logoLight": "/baata_tech_note_logo.png",
     "logoDark": "/baata_tech_note_logo.png",
-    "ogImage": "/og-home.png",
+    "ogImage": "/og-yuki-kawabata-2026.png",
     "lang": "ja",
-    "description": "河畑祐輝（Yuuki Kawabata）の技術ブログ。React、Next.js、TypeScript、SwiftUI、Expo、AI APIを使った個人開発、アプリ公開、審査対応、運用改善を実体験ベースで記録します。",
+    "description": "元コンビニ店長から30歳手前でエンジニアへ。アプリ8本の売上は月の珈琲代以下。AI開発・個人開発の本音と失敗談を大阪から届けます。",
     "pageSize": 6
   },
   "features": {
@@ -18,13 +18,13 @@
   },
   "metadata": {
     "meta_author": "河畑祐輝",
-    "meta_description": "河畑祐輝（Yuuki Kawabata）の技術ブログ。React、Next.js、TypeScript、SwiftUI、Expo、AI APIを使った個人開発、アプリ公開、審査対応、運用改善を実体験ベースで記録します。",
+    "meta_description": "元コンビニ店長から30歳手前でエンジニアへ。アプリ8本の売上は月の珈琲代以下。AI開発・個人開発の本音と失敗談を大阪から届けます。",
     "twitter": "@Yuki_K25"
   },
   "author": {
     "name": "河畑祐輝",
     "alternateName": "Yuuki Kawabata",
     "avatar": "/k3y3dq.jpg",
-    "bio": "AI・Web・モバイルを使って、アイデアを実際に動くプロダクトとして公開し、改善していく過程を書いています。失敗や詰まりも隠さず、同じように作る人の判断材料になるブログです。"
+    "bio": "元コンビニ店長からエンジニアへ。アプリ8本を公開し、個人開発で月10万円を目指しています。AI開発と失敗談を、大阪から発信中。"
   }
 }

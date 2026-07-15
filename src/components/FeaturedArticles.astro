@@ -1,0 +1,99 @@
+---
+const articles = [
+  {
+    slug: '20260202',
+    label: 'AI時代の開発',
+    title: 'AI全盛期にプログラミング学習は必要か',
+    note: '便利になったのに、学ぶことは減らなかった話。',
+  },
+  {
+    slug: '20260224-android-closed-test-survival',
+    label: '個人開発',
+    title: '1週間で「まともなアプリ」が作れる時代の個人開発サバイバル術',
+    note: '作るより、世に出すほうが大変でした。',
+  },
+  {
+    slug: '20260213-claude-code-skills',
+    label: 'AI開発',
+    title: 'Claude CodeとAgent Skillsが変える開発の未来',
+    note: 'AIを道具ではなくチームとして考えてみる。',
+  },
+  {
+    slug: '20260302-iphone-mac-note-taking-apps-2026',
+    label: '生産性',
+    title: 'iPhone & Mac 向けメモアプリ最適解',
+    note: 'メモアプリを選ぶためのメモが増えた人へ。',
+  },
+  {
+    slug: '20260307-respo-health-app',
+    label: '開発記',
+    title: 'Respoを作った理由',
+    note: '極度のめんどくさがりが健康管理に挑みます。',
+  },
+];
+
+const topics = [
+  { label: 'AI時代の開発', href: '/categories/AI/' },
+  { label: '個人開発とアプリ公開', href: '/tags/個人開発/' },
+  { label: 'モバイル開発', href: '/tags/React-Native/' },
+  { label: '生産性・Obsidian', href: '/tags/Productivity/' },
+  { label: 'Web・フロントエンド', href: '/categories/Web開発/' },
+];
+---
+
+<section
+  id="featured"
+  class="scroll-mt-24 border-t border-gray-200 pt-16 dark:border-gray-800"
+  aria-labelledby="featured-heading"
+>
+  <p class="font-mono text-xs font-medium uppercase tracking-[0.22em] text-accent-700 dark:text-accent-400">
+    Start Here — 05
+  </p>
+  <h2 id="featured-heading" class="jp-phrase mt-4 text-3xl leading-tight sm:text-4xl">まずは、この5本。</h2>
+  <p class="mt-5 text-sm leading-[1.9] text-gray-500 sm:text-base dark:text-gray-400">
+    成功談だけ集めるほど成功していないので、失敗も含めて置いてあります。
+  </p>
+
+  <div class="mt-9 divide-y divide-gray-200 border-y border-gray-200 dark:divide-gray-800 dark:border-gray-800">
+    {
+      articles.map((article, index) => (
+        <article>
+          <a
+            href={`/blog/${article.slug}/`}
+            class="group grid gap-3 py-6 sm:grid-cols-[44px_minmax(0,1fr)_auto] sm:items-center sm:gap-5"
+          >
+            <span class="font-mono text-xs tabular-nums text-gray-400">{String(index + 1).padStart(2, '0')}</span>
+            <span>
+              <span class="block text-[11px] font-semibold tracking-wide text-accent-700 dark:text-accent-400">
+                {article.label}
+              </span>
+              <h3 class="jp-phrase mt-1.5 text-lg leading-snug transition-colors group-hover:text-accent-700 sm:text-xl dark:group-hover:text-accent-400">
+                {article.title}
+              </h3>
+              <span class="mt-2 block text-xs leading-relaxed text-gray-500 dark:text-gray-400">{article.note}</span>
+            </span>
+            <span
+              class="hidden text-gray-300 transition-transform group-hover:translate-x-1 group-hover:text-accent-500 sm:block dark:text-gray-700"
+              aria-hidden="true"
+            >
+              →
+            </span>
+          </a>
+        </article>
+      ))
+    }
+  </div>
+
+  <nav class="mt-7 flex flex-wrap gap-2" aria-label="記事カテゴリ">
+    {
+      topics.map((topic) => (
+        <a
+          href={topic.href}
+          class="rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-600 transition-colors hover:border-accent-300 hover:text-accent-700 dark:border-gray-800 dark:text-gray-400 dark:hover:border-accent-800 dark:hover:text-accent-400"
+        >
+          {topic.label}
+        </a>
+      ))
+    }
+  </nav>
+</section>

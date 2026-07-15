@@ -22,11 +22,13 @@ const desktopMenu = main?.filter((item) => item.url !== '/');
   <div class="relative mx-auto max-w-3xl px-6 lg:px-8">
     <input id="nav-toggle" type="checkbox" class="hidden" />
 
-    <!-- Scrim — メニュー外タップで閉じる(label なので JS 不要) -->
-    <label
-      for="nav-toggle"
-      class="nav-scrim fixed inset-0 -z-10 cursor-default bg-gray-950/25 backdrop-blur-[2px] dark:bg-gray-950/60 md:hidden"
-      aria-hidden="true"></label>
+    <!-- Scrim — メニュー外タップで閉じる -->
+    <button
+      type="button"
+      data-nav-close
+      class="nav-scrim absolute left-1/2 top-full -z-10 h-[calc(100dvh-4.5rem)] w-screen -translate-x-1/2 cursor-default bg-gray-950/25 backdrop-blur-[2px] md:hidden dark:bg-gray-950/60"
+      onclick="document.getElementById('nav-toggle').checked = false"
+      aria-label="メニューを閉じる"></button>
 
     <div class="flex items-center justify-between py-4">
       <!-- Brand / Wordmark -->
@@ -48,21 +50,23 @@ const desktopMenu = main?.filter((item) => item.url !== '/');
       <!-- Navigation & Actions -->
       <div class="flex items-center gap-5">
         <nav class="hidden items-center gap-6 md:flex">
-          {desktopMenu?.map((item) => (
-            <a href={item.url} class="nav-link">
-              {item.name}
-            </a>
-          ))}
+          {
+            desktopMenu?.map((item) => (
+              <a href={item.url} class="nav-link">
+                {item.name}
+              </a>
+            ))
+          }
         </nav>
 
-        <div class="hidden h-4 w-px bg-gray-200 dark:bg-gray-800 md:block"></div>
+        <div class="hidden h-4 w-px bg-gray-200 md:block dark:bg-gray-800"></div>
 
         {config.features.dark_mode && <ThemeIcon />}
 
         <!-- Mobile menu toggle — 2本のヘアラインが X にモーフ -->
         <label
           for="nav-toggle"
-          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-900 md:hidden"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 md:hidden dark:text-gray-300 dark:hover:bg-gray-900"
           aria-label="メニューを開閉"
         >
           <span class="menu-bars" aria-hidden="true"></span>
@@ -77,21 +81,23 @@ const desktopMenu = main?.filter((item) => item.url !== '/');
         aria-label="モバイルナビゲーション"
       >
         <ul>
-          {main?.map((item, i) => (
-            <li
-              class="menu-item border-b border-gray-200/70 last:border-0 dark:border-gray-800/70"
-              style={`--i: ${i}`}
-            >
-              <a href={item.url} class="group flex items-baseline gap-4 py-4">
-                <span class="font-mono text-xs tabular-nums text-accent-700 dark:text-accent-400">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span class="font-heading text-xl font-semibold text-gray-900 transition-colors group-hover:text-accent-700 dark:text-white dark:group-hover:text-accent-400">
-                  {item.name}
-                </span>
-              </a>
-            </li>
-          ))}
+          {
+            main?.map((item, i) => (
+              <li
+                class="menu-item border-b border-gray-200/70 last:border-0 dark:border-gray-800/70"
+                style={`--i: ${i}`}
+              >
+                <a href={item.url} class="group flex items-baseline gap-4 py-4">
+                  <span class="font-mono text-xs tabular-nums text-accent-700 dark:text-accent-400">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="font-heading text-xl font-semibold text-gray-900 transition-colors group-hover:text-accent-700 dark:text-white dark:group-hover:text-accent-400">
+                    {item.name}
+                  </span>
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </nav>
     </div>
@@ -136,7 +142,9 @@ const desktopMenu = main?.filter((item) => item.url !== '/');
   .nav-scrim {
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s;
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s;
   }
   #nav-toggle:checked ~ .nav-scrim {
     opacity: 1;

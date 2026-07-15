@@ -33,12 +33,10 @@ export interface Props {
   updatedDate?: Date;
 }
 
-const { title, meta_title, description, noindex, blogpost, home, image, pubDate, updatedDate } =
-  Astro.props;
+const { title, meta_title, description, noindex, blogpost, home, image, pubDate, updatedDate } = Astro.props;
 
 const siteRoot = config.site.base_url.replace(/\/$/, '');
-const toAbsolute = (path: string) =>
-  path.startsWith('http') ? path : `${siteRoot}/${path.replace(/^\//, '')}`;
+const toAbsolute = (path: string) => (path.startsWith('http') ? path : `${siteRoot}/${path.replace(/^\//, '')}`);
 
 // Page <title>: subpages get "<page> | <brand>"; home uses the full SEO title.
 const pageLabel = meta_title || title;
@@ -124,12 +122,15 @@ if (blogpost && pubDate) {
     <meta property="og:locale" content="ja_JP" />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:alt" content={pageTitle} />
-    {blogpost && pubDate && (
-      <meta property="article:published_time" content={new Date(pubDate).toISOString()} />
-    )}
-    {blogpost && (updatedDate || pubDate) && (
-      <meta property="article:modified_time" content={new Date(updatedDate || pubDate).toISOString()} />
-    )}
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {blogpost && pubDate && <meta property="article:published_time" content={new Date(pubDate).toISOString()} />}
+    {
+      blogpost && (updatedDate || pubDate) && (
+        <meta property="article:modified_time" content={new Date(updatedDate || pubDate).toISOString()} />
+      )
+    }
     {blogpost && <meta property="article:author" content={config.author.name} />}
 
     <!-- Twitter -->
@@ -139,18 +140,27 @@ if (blogpost && pubDate) {
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={pageTitle} />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title={config.site.title} href={`${siteRoot}/rss.xml`} />
 
     <!-- Structured data -->
-    {jsonLd.map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
-    ))}
+    {jsonLd.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)} />)}
 
     <script is:inline src="/registerSW.js"></script>
     <link rel="manifest" href="/manifest.webmanifest" />
     <ViewTransitions />
+
+    <!-- Vercel Web Analyticsが有効な環境では、外部リンクのクリックも記録する。 -->
+    <script is:inline>
+      window.va =
+        window.va ||
+        function () {
+          (window.vaq = window.vaq || []).push(arguments);
+        };
+    </script>
+    {import.meta.env.PROD && <script defer src="/_vercel/insights/script.js" />}
   </head>
   <body class="bg-paper transition-colors duration-300 dark:bg-gray-950">
     <Header />
@@ -160,6 +170,28 @@ if (blogpost && pubDate) {
     </main>
     {!blogpost && config.features.youtube && <FeaturedVideos />}
     <Footer />
+    <script>
+      const bindTrackedLinks = () => {
+        const analyticsWindow = window as Window & {
+          va?: CallableFunction;
+        };
+        document.querySelectorAll<HTMLAnchorElement>('a[data-track]').forEach((link) => {
+          if (link.dataset.trackingBound === 'true') return;
+          link.dataset.trackingBound = 'true';
+          link.addEventListener('click', () => {
+            const eventName = link.dataset.track;
+            if (!eventName) return;
+            analyticsWindow.va?.('event', {
+              name: 'outbound_click',
+              data: { target: eventName },
+            });
+          });
+        });
+      };
+
+      bindTrackedLinks();
+      document.addEventListener('astro:page-load', bindTrackedLinks);
+    </script>
     <script>
       // This is a hack to get vite-plugin-pwa to generate a sw.js file.
       // Do not remove this script tag.

@@ -1,13 +1,12 @@
 ---
-import config from "@config/config.json";
-import menu from "@config/menu.json";
-import social from "@config/social";
+import config from '@config/config.json';
+import menu from '@config/menu.json';
+import social from '@config/social';
 
 const year = new Date().getFullYear();
-const displayNames: Record<string, string> = { x: 'X', github: 'GitHub' };
 const socialItems = social.networks.map((item) => ({
   ...item,
-  label: displayNames[item.name] ?? item.name,
+  label: item.label ?? item.name,
 }));
 ---
 
@@ -19,41 +18,46 @@ const socialItems = social.networks.map((item) => ({
           {config.site.brand}
         </p>
         <p class="mt-2 font-heading text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
-          Build<span class="text-accent-600 dark:text-accent-500">.</span>
-          Ship<span class="text-accent-600 dark:text-accent-500">.</span>
-          Learn<span class="text-accent-600 dark:text-accent-500">.</span>
+          元店長<span class="text-accent-600 dark:text-accent-500"> →</span>
+           エンジニア<span class="text-accent-600 dark:text-accent-500"> →</span>
+           アプリ8本
         </p>
       </div>
 
       <div class="flex gap-14">
         <nav aria-label="フッターナビゲーション">
           <ul class="space-y-2.5">
-            {menu.main?.map((item) => (
-              <li>
-                <a
-                  href={item.url}
-                  class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                >
-                  {item.name}
-                </a>
-              </li>
-            ))}
+            {
+              menu.main?.map((item) => (
+                <li>
+                  <a
+                    href={item.url}
+                    class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </nav>
 
         <ul class="space-y-2.5">
-          {socialItems?.map((item) => (
-            <li>
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
+          {
+            socialItems?.map((item) => (
+              <li>
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-track={`social:${item.name}:footer`}
+                  class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
           <li>
             <a
               href="/rss.xml"
@@ -67,7 +71,8 @@ const socialItems = social.networks.map((item) => ({
     </div>
 
     <p class="mt-12 font-mono text-xs text-gray-400 dark:text-gray-600">
-      &copy; {year} {config.site.brand}
+      &copy; {year}
+      {config.site.brand}
     </p>
   </div>
 </footer>

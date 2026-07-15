@@ -2,88 +2,139 @@
 import { Image } from 'astro:assets';
 import config from '@config/config.json';
 import social from '@config/social';
+import { revenueGoal } from '@config/profile';
 
+const formatter = new Intl.NumberFormat('ja-JP');
+const progress = Math.min(100, Math.max(0, (revenueGoal.current / revenueGoal.target) * 100));
 const socialItems = social.networks;
-
-// Display lines — each rises in sequence; the vermilion period pops after landing.
-const words = ['Build', 'Ship', 'Learn'];
-const lineDelay = (i: number) => 0.15 + i * 0.12;
-const periodDelay = (i: number) => lineDelay(i) + 0.55;
 ---
 
-<section class="border-b border-gray-200 dark:border-gray-800">
-  <div class="mx-auto max-w-3xl px-6 pb-16 pt-16 sm:pb-20 sm:pt-24 lg:px-8">
-    <p
-      class="fade-up font-mono text-xs font-medium uppercase tracking-[0.25em] text-accent-700 dark:text-accent-400"
-      style="--d: 0.05s"
-    >
-      Yuki Kawabata — Dev Log
-    </p>
+<section class="overflow-hidden border-b border-gray-200 dark:border-gray-800">
+  <div class="mx-auto max-w-3xl px-6 pb-14 pt-12 sm:pb-20 sm:pt-20 lg:px-8">
+    <div class="grid gap-10 sm:grid-cols-[minmax(0,1fr)_176px] sm:items-start sm:gap-8">
+      <div>
+        <p
+          class="fade-up font-mono text-[11px] font-medium uppercase tracking-[0.23em] text-accent-700 dark:text-accent-400"
+          style="--d: 0.05s"
+        >
+          Former convenience store manager / Now shipping apps
+        </p>
+        <h1
+          class="jp-phrase mt-6 text-[clamp(2.65rem,8vw,4.05rem)] font-semibold leading-[1.12] tracking-[-0.025em] text-gray-950 dark:text-white"
+        >
+          <span class="line-mask"><span class="line-rise" style="--d: 0.12s">元コンビニ店長、</span></span>
+          <span class="line-mask"><span class="line-rise" style="--d: 0.22s">アプリを8本</span></span>
+          <span class="line-mask"
+            ><span class="line-rise" style="--d: 0.32s"
+              >出しました<span class="text-accent-600 dark:text-accent-500">。</span></span
+            ></span
+          >
+        </h1>
+        <p
+          class="fade-up jp-phrase mt-6 max-w-xl font-heading text-xl font-medium leading-[1.55] text-gray-700 sm:text-2xl dark:text-gray-200"
+          style="--d: 0.48s"
+        >
+          たぶん、まだ誰も知りません。
+        </p>
+        <p
+          class="fade-up mt-5 max-w-xl text-sm leading-[1.9] text-gray-500 sm:text-base dark:text-gray-400"
+          style="--d: 0.58s"
+        >
+          コンビニ店長を7年半。30歳手前でエンジニアに転身。AI開発・個人開発の本音と失敗談を、大阪から書いています。
+        </p>
+      </div>
 
-    <h1
-      class="mt-8 font-heading text-[clamp(4.25rem,19vw,7rem)] font-semibold leading-[1.04] tracking-[-0.015em] text-gray-950 dark:text-white"
-    >
+      <a
+        href="/about/"
+        class="fade-up group mx-auto block w-36 sm:mt-10 sm:w-44"
+        style="--d: 0.5s"
+        aria-label="河畑祐輝のプロフィール"
+      >
+        <div
+          class="relative rotate-2 rounded-[1.35rem] border border-gray-200 bg-white p-2 shadow-[0_14px_35px_-24px_rgba(28,25,23,0.55)] transition-transform group-hover:rotate-0 dark:border-gray-800 dark:bg-gray-900"
+        >
+          <Image
+            src={config.author.avatar}
+            alt={config.author.name}
+            width={220}
+            height={220}
+            decoding="async"
+            loading="eager"
+            class="aspect-square w-full rounded-2xl object-cover grayscale-[20%]"
+          />
+          <p class="px-1 pb-1 pt-2 text-center font-mono text-[10px] text-gray-500 dark:text-gray-400">
+            大阪・珈琲・個人開発
+          </p>
+        </div>
+      </a>
+    </div>
+
+    <div class="fade-up mt-9 flex flex-col gap-3 sm:flex-row sm:items-center" style="--d: 0.68s">
+      <a
+        href="https://x.com/Yuki_K25"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-track="social:x:hero"
+        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-gray-950 px-6 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 dark:bg-white dark:text-gray-950"
+      >
+        Xで続きを見る <span aria-hidden="true">↗</span>
+      </a>
+      <a
+        href="#apps"
+        class="inline-flex min-h-12 items-center justify-center rounded-full border border-gray-300 px-6 text-sm font-semibold text-gray-800 transition-colors hover:border-accent-400 hover:text-accent-700 dark:border-gray-700 dark:text-gray-200 dark:hover:border-accent-700 dark:hover:text-accent-400"
+      >
+        作ったアプリを見る
+      </a>
+    </div>
+
+    <div class="fade-up mt-7 flex flex-wrap gap-x-5 gap-y-3" style="--d: 0.75s" aria-label="ソーシャルリンク">
       {
-        words.map((word, i) => (
-          <span class="line-mask">
-            <span class="line-rise" style={`--d: ${lineDelay(i)}s`}>
-              {word}<span
-                class="period-pop text-accent-600 dark:text-accent-500"
-                style={`--d: ${periodDelay(i)}s`}
-              >.</span>
+        socialItems.map((item) => (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track={`social:${item.name}:hero`}
+            class="group inline-flex min-h-10 items-center gap-2 text-xs font-semibold text-gray-500 transition-colors hover:text-accent-700 dark:text-gray-400 dark:hover:text-accent-400"
+          >
+            <span class="h-4 w-4" aria-hidden="true">
+              <Fragment set:html={item.svg} />
             </span>
-          </span>
+            {item.label}
+          </a>
         ))
       }
-    </h1>
-
-    <p
-      class="fade-up jp-phrase mt-10 max-w-xl text-base leading-[1.95] text-gray-600 dark:text-gray-300 sm:text-lg"
-      style="--d: 0.8s"
-    >
-      AIとともに、個人開発の全過程を記録する。企画・実装・ストア公開・運用、その失敗まで。
-    </p>
+    </div>
 
     <div
-      class="fade-up mt-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-5"
-      style="--d: 0.95s"
+      class="fade-up mt-10 rounded-2xl border border-gray-200 bg-white/55 p-5 sm:p-6 dark:border-gray-800 dark:bg-gray-900/40"
+      style="--d: 0.82s"
     >
-      <a href="/about/" class="group flex items-center gap-3.5" aria-label="プロフィール">
-        <Image
-          src={config.author.avatar}
-          alt={config.author.name}
-          width={80}
-          height={80}
-          decoding="async"
-          loading="eager"
-          class="h-11 w-11 rounded-full border border-gray-200 object-cover dark:border-gray-800"
-        />
-        <span class="text-sm">
-          <span class="block font-semibold text-gray-900 transition-colors group-hover:text-accent-700 dark:text-white dark:group-hover:text-accent-400">
-            {config.author.name}
-          </span>
-          <span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
-            プロダクトエンジニア — Web / モバイル / AI
-          </span>
-        </span>
-      </a>
-
-      <div class="flex items-center gap-5">
-        {
-          socialItems?.map((item) => (
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-gray-400 transition-colors hover:text-accent-700 dark:text-gray-500 dark:hover:text-accent-400"
-            >
-              <span class="sr-only">{item.name}</span>
-              <div class="h-5 w-5">
-                <Fragment set:html={item.svg} />
-              </div>
-            </a>
-          ))
-        }
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">
+            Indie revenue quest
+          </p>
+          <p class="mt-2 font-heading text-lg font-semibold text-gray-900 dark:text-white">
+            目指せ、個人開発で月10万円。
+          </p>
+        </div>
+        <p class="shrink-0 font-mono text-xs tabular-nums text-gray-500 dark:text-gray-400">
+          ¥{formatter.format(revenueGoal.current)} / ¥{formatter.format(revenueGoal.target)}
+        </p>
+      </div>
+      <div
+        class="mt-4 h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800"
+        role="progressbar"
+        aria-label="個人開発売上の目標達成率"
+        aria-valuemin="0"
+        aria-valuemax={revenueGoal.target}
+        aria-valuenow={revenueGoal.current}
+      >
+        <div class="h-full min-w-1 rounded-full bg-accent-500" style={`width: ${progress}%`}></div>
+      </div>
+      <div class="mt-2 flex justify-between font-mono text-[10px] text-gray-400 dark:text-gray-600">
+        <span>珈琲代あたり</span><span>道のりは長い</span>
       </div>
     </div>
   </div>

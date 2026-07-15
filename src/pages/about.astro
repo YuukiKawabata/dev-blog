@@ -1,63 +1,54 @@
 ---
-
 import Base from '@layouts/Base.astro';
 import Page from '@layouts/Page.astro';
 ---
 
 <Base
   meta_title="プロフィール"
-  description="河畑祐輝（Yuuki Kawabata）のプロフィール。React、Next.js、TypeScript、モバイルアプリ、AI APIを使い、企画から公開・運用まで進めるプロダクト志向のエンジニアです。"
+  description="元コンビニ店長から30歳手前でエンジニアへ。アプリを8本公開し、個人開発で月10万円を目指す河畑祐輝のプロフィールです。"
 >
-  <Page title="プロフィール">
+  <Page title="元コンビニ店長、いまはアプリを作っています。">
     <p class="lead">
-      河畑祐輝（かわばた ゆうき / Yuuki Kawabata）です。大阪を拠点に、React / Next.js / TypeScript を中心としたWeb開発と、SwiftUI / React Native / Expo を使ったモバイルアプリ開発に取り組んでいます。
+      河畑祐輝（かわばた
+      ゆうき）です。大阪で、珈琲を飲みながらアプリを作っています。公開したアプリは8本。売上は、まだ月の珈琲代以下です。
     </p>
 
+    <h2>コンビニ店長を7年半</h2>
     <p>
-      営業・接客の現場で「技術的な説明ができないもどかしさ」を感じたことをきっかけにプログラミングを学び、エンジニアへ転身しました。今は業務システム開発に携わりながら、個人でもアプリやWebサービスを企画し、実装し、公開し、改善するところまで続けています。
+      もともとはコンビニ店長でした。発注、シフト、接客、売場づくり。お店はだいたい何でも起きるので、問題を見つけて、その場でなんとかする毎日でした。
+    </p>
+    <p>
+      振り返ると、この頃から「面倒なことを仕組みで少し楽にする」のが好きだったのだと思います。ただし、その仕組みを自分で作る技術はありませんでした。
     </p>
 
-    <h2>このブログで書くこと</h2>
+    <h2>30歳手前でエンジニアへ</h2>
     <p>
-      このブログは、きれいにまとまった正解集ではなく、実際に作っている途中で得た判断材料を残す場所です。AI開発ツール、個人開発、アプリ公開、審査対応、Web / モバイル開発の話を、失敗や詰まりも含めて書きます。
-    </p>
-    <ul>
-      <li>AI時代の開発フローと、人間が仕様・レビュー・責任を持つ部分</li>
-      <li>React / Next.js / TypeScript を使ったWebアプリ開発</li>
-      <li>SwiftUI / React Native / Expo を使ったiOS・Androidアプリ開発</li>
-      <li>App Store / Google Play の公開、審査、ストア改善</li>
-      <li>Obsidian、音声入力、開発環境などの生産性まわり</li>
-    </ul>
-
-    <h2>作っているもの</h2>
-    <p>
-      個人開発では、写真で食事を記録する健康管理アプリ「Respo」、スクリーンショットをOCRとAIで整理する「Atode」、AI時代に人間の言葉を残すSNS「HitoLog」、その場限りの近距離チャット「AirTalk」などを作っています。
+      そこでプログラミングを学び、30歳になる手前でエンジニアに転身しました。きれいなキャリア計画があったわけではありません。「作れる側に行きたい」と思って、少しずつ進んだ結果です。
     </p>
     <p>
-      便利なものを作るだけでなく、使う人の負担が軽くなるか、続けられる設計になっているか、公開後に改善できるかを大切にしています。
+      今はAIも使いながら、Webやモバイルのアプリを企画し、作り、ストアに出し、審査で止められ、直して、また出しています。
     </p>
 
-    <h2>開発で大切にしていること</h2>
-    <ul>
-      <li>まず動くものを作り、実際の反応を見て改善する</li>
-      <li>技術の流行より、ユーザー課題と運用できる形を優先する</li>
-      <li>AIは調査・設計・実装・レビューに使い倒し、最終判断は自分で持つ</li>
-      <li>後から見る人が理解しやすいコードと説明を残す</li>
-      <li>分からないことを分かったふりで進めず、調べて確認する</li>
-    </ul>
-
-    <h2>技術領域</h2>
+    <h2>そして、アプリ8本</h2>
     <p>
-      Frontend: React, Next.js, Angular, TypeScript, Tailwind CSS<br />
-      Mobile: SwiftUI, React Native, Expo, Android, iOS<br />
-      Backend / BaaS: Java, Spring Boot, Node.js, Firebase, Supabase, PostgreSQL<br />
-      AI / Automation: OpenAI API, Gemini API, Google ML Kit, Apple Vision OCR, Google Apps Script<br />
-      Infra / Release: Vercel, AWS, GitHub Actions, EAS Build, App Store Connect, Google Play Console
+      食事と運動を記録する「Respo」、スクショを行動に変える「Atode」、人間の言葉を残す「HitoLog」などを公開しました。8本も出せば何か当たると思っていましたが、世の中はそんなに親切ではありませんでした。
+    </p>
+    <p>
+      それでも、作って公開すると必ず次の失敗が見つかります。このブログでは、その失敗を成功談に加工しすぎず、個人開発とAI開発の本音として残しています。
     </p>
 
-    <h2>相談できること</h2>
-    <p>
-      Webアプリの新規開発、既存システムの改修、管理画面の実装、モバイルアプリのMVP、Firebase / Supabase連携、AI API連携、アプリ公開前後の整理などに対応できます。小さな改修や技術相談でも、目的と制約を見ながら現実的な形に落とし込みます。
-    </p>
+    <div
+      class="not-prose my-12 rounded-2xl border border-accent-200 bg-accent-50 p-6 dark:border-accent-900 dark:bg-accent-950/35"
+    >
+      <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent-700 dark:text-accent-400">Current goal</p>
+      <p class="mt-3 font-heading text-2xl font-semibold text-gray-950 dark:text-white">個人開発で月10万円。</p>
+      <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+        まずは珈琲代を超えるところから。進捗はトップページで公開しています。
+      </p>
+    </div>
+
+    <h2>使っている技術</h2>
+    <p>React / Next.js / TypeScript / SwiftUI / React Native / Expo / Supabase / Firebase / AI API</p>
+    <p>技術は目的ではなく、作りたいものを世に出すための道具として使っています。</p>
   </Page>
 </Base>

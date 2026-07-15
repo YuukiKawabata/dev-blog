@@ -1,15 +1,31 @@
 ---
-import HomePagination from "@components/HomePagination.astro";
-import Base from "@layouts/Base.astro";
-import Posts from "@layouts/Posts.astro";
-import { getSinglePage } from "@utils/getAllTags";
+import HomePagination from '@components/HomePagination.astro';
+import HomeApps from '@components/HomeApps.astro';
+import FeaturedArticles from '@components/FeaturedArticles.astro';
+import Base from '@layouts/Base.astro';
+import Posts from '@layouts/Posts.astro';
+import { getSinglePage } from '@utils/getAllTags';
 
-const posts = (await getSinglePage("blog")).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const posts = (await getSinglePage('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <Base home>
-  <Posts posts={posts} />
-  <HomePagination />
+  <div class="space-y-20 sm:space-y-24">
+    <HomeApps />
+    <FeaturedArticles />
+    <section
+      id="latest-posts"
+      class="scroll-mt-24 border-t border-gray-200 pt-16 dark:border-gray-800"
+      aria-labelledby="latest-heading"
+    >
+      <p class="font-mono text-xs font-medium uppercase tracking-[0.22em] text-accent-700 dark:text-accent-400">
+        Latest
+      </p>
+      <h2 id="latest-heading" class="mt-4 text-3xl sm:text-4xl">最近書いたもの。</h2>
+      <div class="mt-9">
+        <Posts posts={posts} showIntro={false} />
+      </div>
+      <HomePagination />
+    </section>
+  </div>
 </Base>
