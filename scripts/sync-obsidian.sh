@@ -7,7 +7,7 @@ echo "🔄 Syncing blog posts from Obsidian..."
 
 # Define paths
 # Note: Space in "YukiKawabata " is handled by quotes
-OBSIDIAN_DIR="/Users/yuki/Library/Mobile Documents/iCloud~md~obsidian/Documents/YukiKawabata /個人/記事/published"
+OBSIDIAN_DIR="/Users/yuki/Library/Mobile Documents/iCloud~md~obsidian/Documents/YukiKawabata /個人/発信/記事/公開済み"
 BLOG_DIR="src/content/blog"
 
 # Check if Obsidian directory exists
