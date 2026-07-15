@@ -1,0 +1,13 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#FBFAF8"/>
+  <circle cx="1080" cy="-15" r="250" fill="#FBE7DE"/>
+  <circle cx="1100" cy="590" r="170" fill="#FDF4F0"/>
+  <rect x="72" y="66" width="1056" height="498" rx="30" stroke="#E7E5E4" stroke-width="2"/>
+  <text x="116" y="132" fill="#A8371E" font-family="Hiragino Sans, Yu Gothic, sans-serif" font-size="22" font-weight="600" letter-spacing="4">YUKI KAWABATA — INDIE DEV LOG</text>
+  <text x="110" y="244" fill="#1C1917" font-family="Hiragino Mincho ProN, Yu Mincho, serif" font-size="66" font-weight="600">元コンビニ店長、</text>
+  <text x="110" y="332" fill="#1C1917" font-family="Hiragino Mincho ProN, Yu Mincho, serif" font-size="66" font-weight="600">アプリを8本出しました。</text>
+  <text x="114" y="408" fill="#57534E" font-family="Hiragino Mincho ProN, Yu Mincho, serif" font-size="38" font-weight="500">たぶん、まだ誰も知りません。</text>
+  <line x1="114" y1="467" x2="1086" y2="467" stroke="#D6D3D1" stroke-width="2"/>
+  <text x="114" y="514" fill="#78716C" font-family="Hiragino Sans, Yu Gothic, sans-serif" font-size="22">AI開発・個人開発の本音と失敗談｜大阪・珈琲</text>
+  <circle cx="1077" cy="514" r="10" fill="#DD5A35"/>
+</svg>

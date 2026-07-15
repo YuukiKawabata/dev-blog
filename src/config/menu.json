@@ -5,16 +5,16 @@
       "url": "/"
     },
     {
+      "name": "アプリ",
+      "url": "/#apps"
+    },
+    {
+      "name": "記事",
+      "url": "/blog"
+    },
+    {
       "name": "プロフィール",
       "url": "/about"
-    },
-    {
-      "name": "タグ",
-      "url": "/tags"
-    },
-    {
-      "name": "カテゴリ",
-      "url": "/categories"
     }
   ]
 }
