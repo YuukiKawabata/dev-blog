@@ -11,10 +11,10 @@ const developerPage = 'https://apps.apple.com/jp/developer/yuuki-kawabata/id1865
 >
   <div class="max-w-2xl">
     <p class="font-mono text-xs font-medium uppercase tracking-[0.22em] text-accent-700 dark:text-accent-400">
-      Shipped Apps — 08
+      Selected Apps
     </p>
     <h2 id="apps-heading" class="jp-phrase mt-4 text-3xl leading-tight sm:text-4xl">
-      8本出した。<br class="sm:hidden" />知名度はこれから。
+      作ったもの。<br class="sm:hidden" />知名度はこれから。
     </h2>
     <p class="mt-5 text-sm leading-[1.9] text-gray-500 sm:text-base dark:text-gray-400">
       売れた順ではありません。全部まとめても珈琲代以下なので、安心して好きなものからどうぞ。
@@ -26,15 +26,15 @@ const developerPage = 'https://apps.apple.com/jp/developer/yuuki-kawabata/id1865
       apps.map((app, index) => (
         <article class="group flex min-h-[218px] flex-col rounded-2xl border border-gray-200 bg-white/55 p-5 transition-colors hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900/40 dark:hover:border-gray-700">
           <div class="flex items-start justify-between gap-4">
-            <span
-              class:list={[
-                'flex h-11 w-11 items-center justify-center rounded-xl font-heading text-lg font-semibold',
-                app.accent,
-              ]}
-              aria-hidden="true"
-            >
-              {app.mark}
-            </span>
+            <img
+              src={app.icon}
+              alt=""
+              width="48"
+              height="48"
+              loading="lazy"
+              decoding="async"
+              class="h-12 w-12 rounded-[13px] object-cover shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+            />
             <span class="font-mono text-[11px] tabular-nums text-gray-300 dark:text-gray-700">
               {String(index + 1).padStart(2, '0')}
             </span>
