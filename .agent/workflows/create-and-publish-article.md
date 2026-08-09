@@ -38,6 +38,10 @@ This workflow automates the entire process of creating a blog post from a "seed 
           type: "tech"
           topics: ["topic1", "topic2"]
           published: true
+        x:
+          slug: "x-slug"
+          mode: "digest"
+          hashtags: ["tag1"]
         ---
         ```
 
@@ -56,7 +60,13 @@ This workflow automates the entire process of creating a blog post from a "seed 
     *   Run `npm run sync:zenn -- --dry-run` to verify.
     *   If successful, run `npm run sync:zenn`.
 
-9.  **Deploy (Multi-Repo)**
+9.  **Sync to X**
+    *   Run `npm run sync:x` and show the user the generated digest and thread from `.x/drafts/<slug>.json`.
+    *   **Do not** run `x:publish` or `x:thread` without explicit approval — those post publicly and cost money.
+    *   Publish only after the blog post is live, so the CTA link resolves.
+    *   See `docs/x-sync.md`.
+
+10. **Deploy (Multi-Repo)**
     *   **yuki-dev-blog**:
         ```bash
         git add .

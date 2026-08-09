@@ -19,6 +19,8 @@ npm run dev
 | `npm run newpost` | 新規記事ファイルの作成 |
 | `npm run sync:obsidian` | Obsidianから記事を同期（下記参照） |
 | `npm run sync:zenn` | Zenn用記事を別リポジトリへ同期（下記参照） |
+| `npm run sync:x` | X用のダイジェスト＋告知スレッドを生成（送信はしない） |
+| `npm run x:draft` / `x:publish` / `x:thread` | XへArticle下書き作成 / 公開 / スレッド投稿 |
 
 ## 📝 記事の作成とObsidian同期
 
@@ -145,6 +147,19 @@ Settings → Secrets and variables → Actions → New repository secret で、�
 - `Error: Input required and not supplied: token`
   - 原因: `ZENN_SYNC_TOKEN` が未登録、または空の値で登録されています。
   - 対処: `dev-blog` → Settings → Secrets and variables → Actions で `ZENN_SYNC_TOKEN` を作成/更新して、PAT文字列を入れた上で workflow を再実行してください。
+
+## 𝕏 X Sync
+
+frontmatter に `x:` を書いた記事を、X の Articles（ダイジェスト）＋告知スレッドとして配信します。
+Zenn 同期と同じ作法で、記事本文はブログに残したまま X から流入を戻す構成です。
+
+```bash
+npm run sync:x      # 生成のみ。ネットワークもコストも発生しない
+npm run x:publish   # Article を公開
+npm run x:thread    # 告知スレッドを投稿
+```
+
+セットアップ・frontmatter の全キー・制約は **[docs/x-sync.md](docs/x-sync.md)** を参照。
 
 ## ライセンス
 

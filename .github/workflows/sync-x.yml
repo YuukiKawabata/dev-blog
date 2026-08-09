@@ -1,0 +1,145 @@
+name: Sync X (Articles + thread)
+
+# Pushes only build and validate the payloads — nothing is sent to X.
+# Every outbound action is a deliberate manual run.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/content/blog/**
+      - scripts/sync-x.mjs
+      - scripts/lib/x-*.mjs
+      - package.json
+      - package-lock.json
+  workflow_dispatch:
+    inputs:
+      action:
+        description: What to do on X
+        required: true
+        default: build
+        type: choice
+        options:
+          - build
+          - draft
+          - publish
+          - thread
+          - publish+thread
+      slug:
+        description: Limit to one x.slug (empty = every post with an `x:` key)
+        required: false
+        type: string
+      force:
+        description: Re-create even when the content hash is unchanged
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: sync-x-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve flags
+        id: flags
+        env:
+          ACTION: ${{ github.event_name == 'workflow_dispatch' && inputs.action || 'build' }}
+          SLUG: ${{ inputs.slug }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+
+          case "$ACTION" in
+            build)          FLAGS="" ;;
+            draft)          FLAGS="--apply" ;;
+            publish)        FLAGS="--publish" ;;
+            thread)         FLAGS="--thread" ;;
+            publish+thread) FLAGS="--publish --thread" ;;
+            *) echo "::error::Unknown action: $ACTION"; exit 1 ;;
+          esac
+
+          if [[ -n "${SLUG:-}" ]]; then FLAGS="$FLAGS --only $SLUG"; fi
+          if [[ "${FORCE:-false}" == "true" ]]; then FLAGS="$FLAGS --force"; fi
+
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+          echo "flags=$FLAGS" >> "$GITHUB_OUTPUT"
+
+      - name: Validate secrets
+        if: steps.flags.outputs.action != 'build'
+        run: |
+          set -euo pipefail
+          for name in X_API_KEY X_API_SECRET X_ACCESS_TOKEN X_ACCESS_TOKEN_SECRET; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error title=Missing secret::$name is not set. Add it in Settings → Secrets and variables → Actions."
+              exit 1
+            fi
+          done
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+
+      - name: Run sync-x
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: node scripts/sync-x.mjs ${{ steps.flags.outputs.flags }} | tee "$RUNNER_TEMP/sync-x.log"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '## sync-x (${{ steps.flags.outputs.action }})'
+            echo '```'
+            cat "$RUNNER_TEMP/sync-x.log" 2>/dev/null || echo 'no output'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload generated payloads
+        uses: actions/upload-artifact@v4
+        with:
+          name: x-drafts-${{ github.run_id }}
+          path: .x/drafts/
+          if-no-files-found: ignore
+
+      # Article ids and thread ids live in .x/state.json; without committing it
+      # back, the next run would create duplicates.
+      - name: Commit state
+        if: steps.flags.outputs.action != 'build'
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [[ -z "$(git status --porcelain .x/state.json)" ]]; then
+            echo "state unchanged"
+            exit 0
+          fi
+
+          git add .x/state.json
+          git commit -m "chore: update X sync state [skip ci]"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
