@@ -4,6 +4,8 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const yaml = require('js-yaml');
 
+const DEFAULT_SITE = 'https://dev-blog-pi-six.vercel.app';
+
 function parseArgs(argv) {
   const args = {
     dryRun: false,
@@ -144,6 +146,7 @@ async function main() {
 
   const blogRepoRoot = path.resolve(__dirname, '..');
   const srcDir = path.resolve(blogRepoRoot, args.src ?? 'src/content/blog');
+  const siteUrl = (process.env.SITE_URL?.trim() || DEFAULT_SITE).replace(/\/$/, '');
 
   const defaultDest = path.resolve(blogRepoRoot, '../zenn-articles/articles');
   const destDir = path.resolve(blogRepoRoot, args.dest ?? process.env.ZENN_ARTICLES_DIR ?? defaultDest);
@@ -184,7 +187,12 @@ async function main() {
     const frontmatter = renderZennFrontmatter({ title, emoji, type, topics, published });
     const relSource = path.relative(blogRepoRoot, filePath).split(path.sep).join('/');
 
-    const output = `${frontmatter}\n\n<!-- synced from yuki-dev-blog: ${relSource} -->\n\n${body.trimStart()}`;
+    // Zenn cannot point rel=canonical at an external URL, so the only way to
+    // signal which copy is the original is to say so in the body.
+    const canonicalUrl = zennObj.canonical ?? `${siteUrl}/blog/${path.basename(filePath, '.md')}/`;
+    const canonicalNote = zennObj.canonical === false ? '' : `> この記事の初出は個人ブログです: ${canonicalUrl}\n\n`;
+
+    const output = `${frontmatter}\n\n<!-- synced from yuki-dev-blog: ${relSource} -->\n\n${canonicalNote}${body.trimStart()}`;
     const outPath = path.join(destDir, `${slug}.md`);
 
     if (args.dryRun) {

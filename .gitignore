@@ -18,6 +18,7 @@ pnpm-debug.log*
 
 # generated X payloads (.x/state.json is tracked on purpose)
 .x/drafts/
+.note/
 
 # macOS-specific files
 .DS_Store

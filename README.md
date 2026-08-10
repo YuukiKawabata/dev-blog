@@ -21,6 +21,7 @@ npm run dev
 | `npm run sync:zenn` | Zenn用記事を別リポジトリへ同期（下記参照） |
 | `npm run sync:x` | X用のダイジェスト＋告知スレッドを生成（送信はしない） |
 | `npm run x:draft` / `x:publish` / `x:thread` | XへArticle下書き作成 / 公開 / スレッド投稿 |
+| `npm run sync:note` | note へ貼り付ける本文を生成（noteは公式APIなしのため手動投稿） |
 
 ## 📝 記事の作成とObsidian同期
 

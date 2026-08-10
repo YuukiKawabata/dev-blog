@@ -14,7 +14,8 @@
     "sync:obsidian": "sh scripts/sync-obsidian.sh",
     "newpost": "astro-md-generator",
     "format": "prettier -w .",
-    "lint:eslint": "eslint . --ext .js,.ts,.astro"
+    "lint:eslint": "eslint . --ext .js,.ts,.astro",
+    "sync:note": "node scripts/sync-note.mjs"
   },
   "devDependencies": {
     "@astrojs/mdx": "^4.3.13",

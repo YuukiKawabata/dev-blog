@@ -117,6 +117,7 @@ Frontmatter:
     hashtags: ["ai", "claude"]  # appended to the last thread post
     thread: ["...", "..."]      # explicit thread, overrides generation
     thread_enabled: false       # skip the thread for this post
+    article_enabled: false      # thread only — do not create/publish an Article
     max_points: 8               # bullets in "この記事で書いたこと"
     skip_points: ["前提"]        # extra h2 headings to leave out of the bullets
     max_thread_posts: 5
@@ -379,7 +380,13 @@ async function main() {
     const articleHash = hashOf(contentState);
     const threadHash = hashOf(threadPosts);
 
-    if (record.articleId && record.articleHash === articleHash && !args.force) {
+    // Most posts only want the thread — an Article never reaches the timeline,
+    // so creating one for every post costs money and clutters the 記事 tab.
+    const articleEnabled = entry.config.article_enabled !== false;
+
+    if (!articleEnabled) {
+      log('  [skip] article disabled (article_enabled: false) — thread only');
+    } else if (record.articleId && record.articleHash === articleHash && !args.force) {
       log(`  [skip] article unchanged (${record.status ?? 'draft'}, id=${record.articleId})`);
     } else {
       const draft = await createArticleDraft(credentials, {
@@ -395,7 +402,7 @@ async function main() {
       log(`  [draft] created id=${record.articleId}`);
     }
 
-    if (args.publish && record.status !== 'published') {
+    if (args.publish && articleEnabled && record.status !== 'published') {
       const result = await publishArticle(credentials, record.articleId);
       record.status = 'published';
       record.postId = String(result.post_id ?? result.postId ?? '');
@@ -403,7 +410,7 @@ async function main() {
       stateDirty = true;
       published += 1;
       log(`  [publish] post_id=${record.postId}`);
-    } else if (args.publish) {
+    } else if (args.publish && articleEnabled) {
       log('  [skip] already published');
     }
 
@@ -428,8 +435,12 @@ async function main() {
       }
     }
 
-    state.articles[entry.slug] = record;
-    await writeState(statePath, state);
+    // A post that published nothing (thread-only, article disabled) has no ids
+    // worth remembering — writing an empty record just adds noise to the diff.
+    if (Object.keys(record).length > 0) {
+      state.articles[entry.slug] = record;
+      await writeState(statePath, state);
+    }
   }
 
   if (stateDirty) await writeState(statePath, state);

@@ -80,6 +80,7 @@ x:
 | `hashtags`         | `[]`                             | スレッド最終投稿の末尾                               |
 | `thread`           | 自動生成                         | 文字列配列を書くとスレッドを完全に手動指定           |
 | `thread_enabled`   | `true`                           | `false` でスレッドを出さない                         |
+| `article_enabled`  | `true`                           | `false` でスレッドのみ（Article を作らず課金もなし） |
 | `max_points`       | `8`                              | 「この記事で書いたこと」の箇条書き上限               |
 | `skip_points`      | `[]`                             | 箇条書きから除く h2（`はじめに` 等は既定で除外済み） |
 | `max_thread_posts` | `5`                              | スレッドの投稿数上限                                 |
@@ -122,6 +123,14 @@ node scripts/sync-x.mjs --help
 - **workflow_dispatch**: `build` / `draft` / `publish` / `thread` / `publish+thread` を選んで実行
 
 外向きの操作は必ず手動トリガーにしてある。実行後は `.x/state.json` が自動でコミットされる。
+
+## Article を出すかどうか
+
+X Articles は**タイムラインに流れない**。プロフィールの「記事」タブにしか出ないため、
+到達はすべてスレッドが担う。Article の役割は「X の中の作品棚」。
+
+通常は `article_enabled: false`（スレッドのみ）にして、代表作だけ `true` にする。
+判断基準は `.claude/skills/publish-article/references/routing.md` を参照。
 
 ## 制約と既知の割り切り
 
