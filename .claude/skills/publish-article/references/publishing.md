@@ -4,12 +4,29 @@
 
 前提: `.env` に X の認証情報4つが入っている。無い場合はその時点で止めてユーザーに伝える。
 
-## ⑥ ブログを公開する
+## ⑥ Obsidian の `公開済み` へ移す
+
+記事のマスターは Obsidian。まず `下書き` から `公開済み` へ移動する。
+
+```bash
+V="/Users/yuki/Library/Mobile Documents/iCloud~md~obsidian/Documents/YukiKawabata /個人"
+mv "$V/発信/記事/下書き/<basename>.md" "$V/発信/記事/公開済み/"
+```
+
+## ⑦ ブログへ同期して公開する
 
 最初にブログ。理由は2つ。
 
 - Zenn より先に公開しないと、検索エンジンにどちらが原典か示せない
 - X の CTA リンクの飛び先が404になる
+
+```bash
+npm run sync:obsidian
+git status --short src/content/blog/
+```
+
+`sync:obsidian` は `rsync --delete` なので、**新規1本だけが差分に出ることを必ず確認する。**
+他の記事が消える差分が出たら、Obsidian 側が欠けている。止めて報告する。
 
 ```bash
 npm run build
@@ -21,7 +38,7 @@ npm run build
 git add -A && git commit -m "feat: <記事タイトル>を公開" && git push origin main
 ```
 
-## ⑦ デプロイ完了を待つ
+## ⑧ デプロイ完了を待つ
 
 Vercel のデプロイは1〜3分かかる。**200が返るまで待つ。**
 
@@ -51,7 +68,7 @@ curl -s -L "$URL" | grep -oE 'property="og:image" content="[^"]*"'
 curl -s -o /dev/null -w "%{http_code}\n" -L "https://dev-blog-pi-six.vercel.app/images/hero/<画像名>"
 ```
 
-## ⑧ Zenn へ配信
+## ⑨ Zenn へ配信
 
 ```bash
 npm run sync:zenn
@@ -65,7 +82,7 @@ cd ../zenn-articles && git status --short
 cd ../zenn-articles && git add articles/<slug>.md && git commit -m "feat: <タイトル>を追加" && git push origin main
 ```
 
-## ⑨ X へ配信
+## ⑩ X へ配信
 
 **ブログが200を返していることを確認済みであること。**
 
@@ -84,7 +101,7 @@ node scripts/sync-x.mjs --publish --thread --only <slug>
 - プロフィール `https://x.com/Yuki_K25` の「ポスト」タブ → スレッドが並んでいるか
 - 「記事」タブ → Article を出した場合、そこに出る（ポストのタイムラインには**流れない**）
 
-## ⑩ note へ配信（`note:` がある場合のみ）
+## ⑪ note へ配信（`note:` がある場合のみ）
 
 note には公式の投稿APIがない。**ブラウザ操作で投稿する。**
 
@@ -102,7 +119,7 @@ npm run sync:note -- --only <slug>
 
 崩れていたら公開せずに報告する。note は貼り直しが効くので、慌てて公開しない。
 
-## ⑪ state.json をコミットする
+## ⑫ state.json をコミットする
 
 **忘れると次回に二重投稿する。** `.x/state.json` には article_id・post_id・本文ハッシュが入っており、
 これが無いと「未投稿」と判定されて記事もスレッドも再投稿される。

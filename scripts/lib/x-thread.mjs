@@ -128,7 +128,15 @@ function formatHashtags(tags = []) {
  * @param {number} [options.maxPosts]
  * @returns {string[]} Post texts, in order
  */
-export function buildThread({ title, description = '', points = [], url, hashtags = [], maxPosts = 5 } = {}) {
+export function buildThread({
+  title,
+  description = '',
+  points = [],
+  url,
+  hashtags = [],
+  maxPosts = 5,
+  cta = '全文はこちら',
+} = {}) {
   const opener = truncateWeighted([title, description].filter(Boolean).join('\n\n'), POST_LIMIT);
 
   const bodyBudget = Math.max(1, maxPosts - 2);
@@ -136,7 +144,7 @@ export function buildThread({ title, description = '', points = [], url, hashtag
   const body = packLines(bullets, { limit: POST_LIMIT }).slice(0, bodyBudget);
 
   const tagLine = formatHashtags(hashtags);
-  const closing = ['全文はこちら 👇', url, ...(tagLine ? [tagLine] : [])].join('\n');
+  const closing = [cta, url, ...(tagLine ? [tagLine] : [])].filter(Boolean).join('\n');
 
   return [opener, ...body, closing].filter((post) => post.trim() !== '');
 }

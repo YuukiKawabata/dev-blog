@@ -344,6 +344,7 @@ async function main() {
             url: entry.url,
             hashtags: entry.config.hashtags ?? [],
             maxPosts: entry.config.max_thread_posts ?? 5,
+            ...(entry.config.cta_post ? { cta: entry.config.cta_post } : {}),
           });
 
     const threadErrors = validateThread(threadPosts);
