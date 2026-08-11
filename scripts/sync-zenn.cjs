@@ -189,10 +189,15 @@ async function main() {
 
     // Zenn cannot point rel=canonical at an external URL, so the only way to
     // signal which copy is the original is to say so in the body.
+    //
+    // Placed at the end on purpose: telling a reader up front that they are
+    // reading a copy lowers the article's perceived value before they have
+    // read it. At the end it reads as "there is more where this came from".
     const canonicalUrl = zennObj.canonical ?? `${siteUrl}/blog/${path.basename(filePath, '.md')}/`;
-    const canonicalNote = zennObj.canonical === false ? '' : `> この記事の初出は個人ブログです: ${canonicalUrl}\n\n`;
+    const canonicalNote =
+      zennObj.canonical === false ? '' : `\n\n---\n\nこの記事は個人ブログにも掲載しています。\n${canonicalUrl}\n`;
 
-    const output = `${frontmatter}\n\n<!-- synced from yuki-dev-blog: ${relSource} -->\n\n${canonicalNote}${body.trimStart()}`;
+    const output = `${frontmatter}\n\n<!-- synced from yuki-dev-blog: ${relSource} -->\n\n${body.trim()}${canonicalNote}`;
     const outPath = path.join(destDir, `${slug}.md`);
 
     if (args.dryRun) {
