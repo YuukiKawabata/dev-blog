@@ -53,10 +53,10 @@ Zennへの同期はもともと作ってあったので、ここにXとnoteを�
 
 最初の記事を自動で投稿してみました。ブログもZennも問題ありませんでした。
 
-問題はXでした。自動生成された投稿がこれです。
+問題はXでした。前回書いた[日本郵便のシステム障害の記事](https://dev-blog-pi-six.vercel.app/blog/20260809-japan-post-outage-system-design/)を告知するために、自動生成された投稿がこれです。
 
 > 全文はこちら 👇
-> （記事のURL）
+> https://dev-blog-pi-six.vercel.app/blog/20260809-japan-post-outage-system-design/
 > #システム設計 #SRE
 
 そして、その前の投稿はこうなっていました。
