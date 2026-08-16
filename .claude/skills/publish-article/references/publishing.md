@@ -34,18 +34,17 @@ mv "$V/発信/記事/下書き/<basename>.md" "$V/発信/記事/公開済み/"
 npm run generate:hero -- --slug <basename> --theme "<記事のテーマを1〜2文で>"
 ```
 
-`GEMINI_API_KEY` があれば、Gemini API（gemini-3.1-flash-image）で自動生成し、
+`OPENAI_API_KEY` があれば OpenAI（gpt-image-1.5, medium品質）で自動生成し、
 `public/images/hero/<basename>.webp` に保存する。1本につきAPI呼び出しは1回だけ。
-失敗しても自動リトライしない（コストが不必要に膨らむため）。
+失敗しても自動リトライしない（コストが不必要に膨らむため）。実測で動作確認済み。
 
-**この画像生成APIは実際のキーでまだ検証できていない。** 初回実行時にエラーが出た場合は、
-エラーメッセージ（レスポンスの生JSON）をそのままユーザーに見せて、スクリプト側の
-レスポンス解析（`scripts/generate-hero-image.mjs` の `extractImageBase64`）を直す。
-黙って手動生成にフォールバックしない — 直せる不具合を放置したまま次の記事に進まない。
+Gemini を使いたい場合は `--provider gemini` を付ける（`GEMINI_API_KEY` が必要）。
+Gemini 側は Google AI Studio の**課金ページで前払いクレジット購入**（最低$10）が要る。
+カードを登録しただけでは quota=0 のまま動かない。
 
 **次のいずれかに該当したら、生成をスキップして手動を待つ。**
 
-- `.env` に `GEMINI_API_KEY` が無い
+- 使うプロバイダのAPIキーが `.env` に無い
 - API呼び出しが2回連続でエラーになった（1回の再試行は許容、2回目で止める）
 - 生成された画像が明らかに記事のテーマと無関係（例: セキュリティ記事なのに無関係な風景）
 
@@ -204,5 +203,5 @@ X API は従量課金。
 - スレッドは最終投稿だけURLを含む設計なので、4投稿で約 $0.25
 - Articles の単価は非公開
 
-画像生成（Gemini API, gemini-3.1-flash-image）は1枚あたり約$0.045。
+画像生成（OpenAI, gpt-image-1.5, medium品質）は1枚あたり約$0.05〜0.06。
 1記事1回、失敗しても自動リトライしないので、想定外の多重課金は起きない設計。

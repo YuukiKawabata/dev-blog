@@ -178,7 +178,7 @@ npm run sync:note  # note に出す場合
 - ブログが公開されデプロイが完了する前に X へ投稿すると、CTAリンクが404の記事を出すことになる
 
 ⑥.5のヒーロー画像は `npm run generate:hero -- --slug <basename> --theme "..."` で
-Gemini API を使って自動生成する。`GEMINI_API_KEY` が無い、または2回連続で失敗したら、
+OpenAI（既定）を使って自動生成する。APIキーが無い、または2回連続で失敗したら、
 ユーザーに手動での用意を依頼して止まる。詳細は `references/publishing.md`。
 
 ## ⑫ 記録（省略しない）

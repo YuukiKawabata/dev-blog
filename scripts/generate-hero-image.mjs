@@ -7,14 +7,13 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 /**
- * Generate a hero image via the Gemini API (Nano Banana / gemini-3.1-flash-image)
- * and save it as public/images/hero/<slug>.webp.
+ * Generate a hero image and save it as public/images/hero/<slug>.webp.
  *
- * Uses the newer Interactions API (POST /v1beta/interactions), not the classic
- * generateContent + inlineData shape used by older image models — this model
- * line returns the image at `output_image.data`, with a `steps[]` fallback for
- * interleaved responses. Response parsing is defensive because this endpoint
- * has not been exercised against a real key yet at the time of writing.
+ * OpenAI (gpt-image-1.5) is the default provider — its images/generations
+ * API is stable and well-documented. Gemini (gemini-3.1-flash-image) is kept
+ * as a fallback via --provider gemini; it needs Google AI Studio prepay
+ * credits, not just a linked card, and uses a newer /v1beta/interactions
+ * endpoint rather than the classic generateContent + inlineData shape.
  */
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -25,11 +24,16 @@ try {
   // no .env — fine
 }
 
-const MODEL = 'gemini-3.1-flash-image';
-const API_URL = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 const HERO_DIR = path.join(REPO_ROOT, 'public/images/hero');
 const WIDTH = 1672;
 const HEIGHT = 941;
+
+const OPENAI_MODEL = 'gpt-image-1.5';
+const OPENAI_QUALITY = 'medium'; // low $0.01-ish / medium $0.05-ish / high $0.20-ish per image
+const OPENAI_SIZE = '1536x1024'; // closest supported landscape size to 16:9; cropped to WIDTH x HEIGHT after
+
+const GEMINI_MODEL = 'gemini-3.1-flash-image';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 
 // Matches the look of the hand-picked hero images already in the repo:
 // dark background, blue-to-purple gradient, abstract/conceptual — never a
@@ -41,7 +45,7 @@ const STYLE_GUIDE = `暗い背景に、青から紫へのグラデーション�
 16:9の横長構図、洗練されたエディトリアルイラストのトーン。`;
 
 function parseArgs(argv) {
-  const args = { force: false, help: false };
+  const args = { provider: 'openai', force: false, help: false };
 
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
@@ -56,6 +60,9 @@ function parseArgs(argv) {
         break;
       case '--out':
         args.out = value();
+        break;
+      case '--provider':
+        args.provider = value();
         break;
       case '--force':
         args.force = true;
@@ -73,45 +80,84 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`generate-hero-image — create a hero image via the Gemini API
+  console.log(`generate-hero-image — create a hero image via an image-generation API
 
 Usage:
-  node scripts/generate-hero-image.mjs --slug <basename> --theme "記事のテーマ" [--force]
+  node scripts/generate-hero-image.mjs --slug <basename> --theme "記事のテーマ" [options]
 
 Options:
-  --slug    Output filename without extension (matches the blog post basename)
-  --theme   Short description of the article's subject, in Japanese or English.
-            Fed into a fixed style guide — do not include text/logo requests,
-            image models render those unreliably.
-  --out     Output directory (default: public/images/hero)
-  --force   Regenerate even if the file already exists
+  --slug      Output filename without extension (matches the blog post basename)
+  --theme     Short description of the article's subject, in Japanese or English.
+              Fed into a fixed style guide — do not include text/logo requests,
+              image models render those unreliably.
+  --provider  openai (default) | gemini
+  --out       Output directory (default: public/images/hero)
+  --force     Regenerate even if the file already exists
 
 Environment:
-  GEMINI_API_KEY   Required. From https://aistudio.google.com → "Get API key"
+  OPENAI_API_KEY   For --provider openai (default). From platform.openai.com.
+  GEMINI_API_KEY   For --provider gemini. From aistudio.google.com — needs
+                   prepay credits (Buy credits on the billing page), a linked
+                   card alone is not enough.
 
-Cost: roughly $0.045 per image at the time of writing. One call per run —
-failures are not retried automatically.
+Cost: OpenAI gpt-image-1.5 at medium quality is roughly $0.05-0.06/image.
+One API call per run — failures are not retried automatically.
 `);
 }
 
-function readGeminiApiKey(env = process.env) {
-  const key = env.GEMINI_API_KEY;
+function readApiKey(envVar, setupHint, env = process.env) {
+  const key = env[envVar];
   if (!key) {
-    throw new Error(
-      'GEMINI_API_KEY が .env にありません。\n' +
-        'https://aistudio.google.com → "Get API key" → "Create API key" で発行し、\n' +
-        '.env に GEMINI_API_KEY=... を追加してください。'
-    );
+    throw new Error(`${envVar} が .env にありません。\n${setupHint}`);
   }
   return key;
 }
 
+async function callOpenAI(prompt, apiKey) {
+  const response = await fetch('https://api.openai.com/v1/images/generations', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: OPENAI_MODEL,
+      prompt,
+      size: OPENAI_SIZE,
+      quality: OPENAI_QUALITY,
+      n: 1,
+    }),
+  });
+
+  const text = await response.text();
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new Error(`OpenAI API returned non-JSON (${response.status}):\n${text.slice(0, 500)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(`OpenAI API error (${response.status}): ${JSON.stringify(json).slice(0, 500)}`);
+  }
+
+  const base64 = json?.data?.[0]?.b64_json;
+  if (!base64) {
+    throw new Error(
+      'レスポンスから画像データ(data[0].b64_json)を取り出せませんでした。API仕様が変わった可能性があります。\n' +
+        `生のレスポンス（先頭1000文字）:\n${JSON.stringify(json, null, 2).slice(0, 1000)}`
+    );
+  }
+
+  return Buffer.from(base64, 'base64');
+}
+
 /**
- * Extract the base64 image payload from an Interactions API response.
+ * Extract the base64 image payload from a Gemini Interactions API response.
  * Tries the documented simple-case field first, then the steps[] fallback
  * used for interleaved text/image output.
  */
-function extractImageBase64(json) {
+function extractGeminiImageBase64(json) {
   const direct = json?.output_image?.data;
   if (direct) return direct;
 
@@ -122,18 +168,18 @@ function extractImageBase64(json) {
 }
 
 async function callGemini(prompt, apiKey) {
-  const response = await fetch(API_URL, {
+  const response = await fetch(GEMINI_API_URL, {
     method: 'POST',
     headers: {
       'x-goog-api-key': apiKey,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: MODEL,
+      model: GEMINI_MODEL,
       input: [{ type: 'text', text: prompt }],
       response_format: {
         type: 'image',
-        mime_type: 'image/png',
+        mime_type: 'image/jpeg',
         aspect_ratio: '16:9',
         image_size: '1K',
       },
@@ -152,7 +198,7 @@ async function callGemini(prompt, apiKey) {
     throw new Error(`Gemini API error (${response.status}): ${JSON.stringify(json).slice(0, 500)}`);
   }
 
-  const base64 = extractImageBase64(json);
+  const base64 = extractGeminiImageBase64(json);
   if (!base64) {
     throw new Error(
       'レスポンスから画像データを取り出せませんでした。API仕様が変わった可能性があります。\n' +
@@ -163,12 +209,38 @@ async function callGemini(prompt, apiKey) {
   return Buffer.from(base64, 'base64');
 }
 
+const PROVIDERS = {
+  openai: {
+    label: `OpenAI (${OPENAI_MODEL})`,
+    readKey: () =>
+      readApiKey(
+        'OPENAI_API_KEY',
+        'https://platform.openai.com → API keys で発行し、.env に OPENAI_API_KEY=... を追加してください。'
+      ),
+    call: callOpenAI,
+  },
+  gemini: {
+    label: `Gemini (${GEMINI_MODEL})`,
+    readKey: () =>
+      readApiKey(
+        'GEMINI_API_KEY',
+        'https://aistudio.google.com → "Get API key" で発行し、.env に GEMINI_API_KEY=... を追加してください。\n' +
+          '加えて課金ページで "Buy credits"（最低$10）が必要です。カード登録だけでは quota=0 のまま動きません。'
+      ),
+    call: callGemini,
+  },
+};
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) return printHelp();
   if (!args.slug) throw new Error('--slug は必須です。');
 
-  const apiKey = readGeminiApiKey();
+  const provider = PROVIDERS[args.provider];
+  if (!provider) {
+    throw new Error(`Unknown provider: ${args.provider} (openai | gemini)`);
+  }
+
   const outDir = args.out ? path.resolve(REPO_ROOT, args.out) : HERO_DIR;
   const outPath = path.join(outDir, `${args.slug}.webp`);
 
@@ -182,10 +254,11 @@ async function main() {
     }
   }
 
+  const apiKey = provider.readKey();
   const prompt = `${STYLE_GUIDE}\n\nテーマ: ${args.theme ?? args.slug}`;
 
-  console.log(`[generate] calling Gemini API (${MODEL})...`);
-  const imageBuffer = await callGemini(prompt, apiKey);
+  console.log(`[generate] calling ${provider.label}...`);
+  const imageBuffer = await provider.call(prompt, apiKey);
 
   await fs.mkdir(outDir, { recursive: true });
   await sharp(imageBuffer).resize(WIDTH, HEIGHT, { fit: 'cover' }).webp({ quality: 90 }).toFile(outPath);
