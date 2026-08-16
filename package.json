@@ -15,7 +15,8 @@
     "newpost": "astro-md-generator",
     "format": "prettier -w .",
     "lint:eslint": "eslint . --ext .js,.ts,.astro",
-    "sync:note": "node scripts/sync-note.mjs"
+    "sync:note": "node scripts/sync-note.mjs",
+    "generate:hero": "node scripts/generate-hero-image.mjs"
   },
   "devDependencies": {
     "@astrojs/mdx": "^4.3.13",
