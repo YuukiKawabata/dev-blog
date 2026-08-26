@@ -78,6 +78,18 @@
       ],
       "threadHash": "d3c8cdd7b6a7d5cd",
       "threadPostedAt": "2026-08-26T04:06:49.095Z"
+    },
+    "claude-code-cloud-local-sandbox": {
+      "threadRootId": "2092610405134962741",
+      "threadIds": [
+        "2092610405134962741",
+        "2092610406749778087",
+        "2092610408523985060",
+        "2092610410277114128",
+        "2092610411996791139"
+      ],
+      "threadHash": "af0f8c079db34c06",
+      "threadPostedAt": "2026-08-26T13:49:35.891Z"
     }
   }
 }
