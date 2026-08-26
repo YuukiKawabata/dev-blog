@@ -66,6 +66,18 @@
       ],
       "threadHash": "e576dcbb08b6b4db",
       "threadPostedAt": "2026-08-16T14:01:31.778Z"
+    },
+    "openai-api-key-leak-warning": {
+      "threadRootId": "2092463744882491766",
+      "threadIds": [
+        "2092463744882491766",
+        "2092463746262372784",
+        "2092463747776540812",
+        "2092463749206839499",
+        "2092463750540644482"
+      ],
+      "threadHash": "d3c8cdd7b6a7d5cd",
+      "threadPostedAt": "2026-08-26T04:06:49.095Z"
     }
   }
 }
