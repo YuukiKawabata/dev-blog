@@ -59,4 +59,16 @@ export const apps: AppItem[] = [
     description: 'AIで未来をちょっと想像する画像生成アプリ。結果は未来までのお楽しみ。',
     stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6786303465' }],
   },
+  {
+    name: 'MimaCam',
+    icon: '/app-icons/mimacam.png',
+    description: '使っていないiPhoneを、もう1台の見守りカメラに。ライブ映像も通知も手元から確認できます。',
+    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6789361362' }],
+  },
+  {
+    name: 'Cootap',
+    icon: '/app-icons/cootap.png',
+    description: '授乳・睡眠・おむつをiPhoneとApple Watchでサッと記録。広告なしの育児ログです。',
+    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6801787210' }],
+  },
 ];

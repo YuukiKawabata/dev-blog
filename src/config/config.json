@@ -1,6 +1,6 @@
 {
   "site": {
-    "title": "河畑祐輝 | 元コンビニ店長、アプリ8本。個人開発の本音",
+    "title": "河畑祐輝 | 元コンビニ店長、アプリ9本。個人開発の本音",
     "brand": "Yuki Kawabata",
     "base_url": "https://dev-blog-pi-six.vercel.app/",
     "base_path": "/",
@@ -9,7 +9,7 @@
     "logoDark": "/baata_tech_note_logo.png",
     "ogImage": "/og-yuki-kawabata-2026.png",
     "lang": "ja",
-    "description": "元コンビニ店長から30歳手前でエンジニアへ。アプリ8本の売上は月の珈琲代以下。AI開発・個人開発の本音と失敗談を大阪から届けます。",
+    "description": "元コンビニ店長から30歳手前でエンジニアへ。アプリ9本の売上は月の珈琲代以下。AI開発・個人開発の本音と失敗談を大阪から届けます。",
     "pageSize": 6
   },
   "features": {
@@ -18,13 +18,13 @@
   },
   "metadata": {
     "meta_author": "河畑祐輝",
-    "meta_description": "元コンビニ店長から30歳手前でエンジニアへ。アプリ8本の売上は月の珈琲代以下。AI開発・個人開発の本音と失敗談を大阪から届けます。",
+    "meta_description": "元コンビニ店長から30歳手前でエンジニアへ。アプリ9本の売上は月の珈琲代以下。AI開発・個人開発の本音と失敗談を大阪から届けます。",
     "twitter": "@Yuki_K25"
   },
   "author": {
     "name": "河畑祐輝",
     "alternateName": "Yuuki Kawabata",
     "avatar": "/k3y3dq.jpg",
-    "bio": "元コンビニ店長からエンジニアへ。アプリ8本を公開し、個人開発で月10万円を目指しています。AI開発と失敗談を、大阪から発信中。"
+    "bio": "元コンビニ店長からエンジニアへ。アプリ9本を公開し、個人開発で月10万円を目指しています。AI開発と失敗談を、大阪から発信中。"
   }
 }
