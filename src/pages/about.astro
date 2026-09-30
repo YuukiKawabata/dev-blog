@@ -1,16 +1,18 @@
 ---
 import Base from '@layouts/Base.astro';
 import Page from '@layouts/Page.astro';
+import { publishedAppCount } from '@config/apps';
 ---
 
 <Base
   meta_title="プロフィール"
-  description="元コンビニ店長から30歳手前でエンジニアへ。アプリを9本公開し、個人開発で月10万円を目指す河畑祐輝のプロフィールです。"
+  description={`元コンビニ店長から30歳手前でエンジニアへ。App Storeにアプリを${publishedAppCount}本公開している河畑祐輝のプロフィールです。`}
 >
   <Page title="元コンビニ店長、いまはアプリを作っています。">
     <p class="lead">
-      河畑祐輝（かわばた
-      ゆうき）です。大阪で、珈琲を飲みながらアプリを作っています。公開したアプリは9本。売上は、まだ月の珈琲代以下です。
+      河畑祐輝（かわばた ゆうき）です。大阪で、珈琲を飲みながらアプリを作っています。App Storeに出したアプリは{
+        publishedAppCount
+      }本。たぶん、まだ誰も知りません。
     </p>
 
     <h2>コンビニ店長を7年半</h2>
@@ -26,12 +28,14 @@ import Page from '@layouts/Page.astro';
       そこでプログラミングを学び、30歳になる手前でエンジニアに転身しました。きれいなキャリア計画があったわけではありません。「作れる側に行きたい」と思って、少しずつ進んだ結果です。
     </p>
     <p>
-      今はAIも使いながら、Webやモバイルのアプリを企画し、作り、ストアに出し、審査で止められ、直して、また出しています。
+      2020年からは本業でWebシステムの開発をしています。個人ではAIも使いながら、Webやモバイルのアプリを企画し、作り、ストアに出し、審査で止められ、直して、また出しています。
     </p>
 
-    <h2>そして、アプリ9本</h2>
+    <h2>アプリ{publishedAppCount}本、いちばん力を入れているのは1本</h2>
     <p>
-      食事と運動を記録する「Respo」、スクショを行動に変える「Atode」、人間の言葉を残す「HitoLog」などを公開しました。9本も出せば何か当たると思っていましたが、世の中はそんなに親切ではありませんでした。
+      健康管理アプリの「Koyori」、スクショを予定やリマインダーに変える「Atode」、元店長の経験を詰め込んだ経営ゲーム「コンビニ帝国」などを公開しています。{
+        publishedAppCount
+      }本も出せば何か当たると思っていましたが、世の中はそんなに親切ではありませんでした。
     </p>
     <p>
       それでも、作って公開すると必ず次の失敗が見つかります。このブログでは、その失敗を成功談に加工しすぎず、個人開発とAI開発の本音として残しています。
@@ -40,10 +44,20 @@ import Page from '@layouts/Page.astro';
     <div
       class="not-prose my-12 rounded-2xl border border-accent-200 bg-accent-50 p-6 dark:border-accent-900 dark:bg-accent-950/35"
     >
-      <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent-700 dark:text-accent-400">Current goal</p>
-      <p class="mt-3 font-heading text-2xl font-semibold text-gray-950 dark:text-white">個人開発で月10万円。</p>
+      <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent-700 dark:text-accent-400">Now</p>
+      <p class="mt-3 font-heading text-2xl font-semibold text-gray-950 dark:text-white">Koyoriを育てています。</p>
       <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-        まずは珈琲代を超えるところから。進捗はトップページで公開しています。
+        食事・睡眠・運動・気分を、1日1分でひとつにまとめる健康管理アプリです。「Respo」として出したものを、2026年9月に名前も見た目も作り直しました。
+      </p>
+      <p class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm font-semibold">
+        <a
+          href="https://apps.apple.com/jp/app/id6759490486"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-track="app:Koyori:about"
+          class="text-accent-700 hover:underline dark:text-accent-400">App Store ↗</a
+        >
+        <a href="/#apps" class="text-gray-700 hover:underline dark:text-gray-300">ほかのアプリ →</a>
       </p>
     </div>
 

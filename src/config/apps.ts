@@ -8,67 +8,45 @@ export type AppItem = {
   icon: string;
   description: string;
   stores: StoreLink[];
+  // 本命アプリだけ大きく表示する。
+  lead?: boolean;
+  badge?: string;
+  story?: StoreLink;
 };
 
+// App Storeで公開中の本数。アプリが増えたらここを更新してください。
+export const publishedAppCount = 10;
+
+export const developerPage = 'https://apps.apple.com/jp/developer/yuuki-kawabata/id1865457350';
+
+// トップに載せるのは数本だけ。残りは otherAppNames として名前だけ出し、App Storeの一覧へ誘導する。
 export const apps: AppItem[] = [
   {
-    name: 'Respo',
-    icon: '/app-icons/respo.png',
-    description: '食事と運動の記録。自分がきれいに挫折したので作りました。',
+    name: 'Koyori',
+    icon: '/app-icons/koyori.png',
+    description:
+      '食事・睡眠・運動・気分を、1日1分でひとつに。Respoとして出したアプリを、名前も見た目も作り直しました。',
     stores: [
       { label: 'App Store', url: 'https://apps.apple.com/jp/app/id6759490486' },
       { label: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.yuukikawabata.respo' },
     ],
+    lead: true,
+    badge: 'いちばん力を入れているアプリ',
+    story: { label: 'Respoを作った理由', url: '/blog/20260307-respo-health-app/' },
   },
   {
     name: 'Atode',
     icon: '/app-icons/atode.png',
-    description: '増えるだけのスクショを、OCRとAIで「あとでやる」に変えます。',
+    description: 'スクショを、予定・リマインダー・買い物リストに。2.0で「整理して終わり」をやめました。',
     stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6778453895' }],
   },
   {
-    name: 'HitoLog',
-    icon: '/app-icons/hitolog.png',
-    description: 'AIがよく喋る時代に、あえて人間の言葉を残すSNSです。',
-    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6772677155' }],
-  },
-  {
-    name: 'AirTalks',
-    icon: '/app-icons/airtalks.png',
-    description: 'ネットも履歴もいらない、その場限りのチャット。潔く消えます。',
-    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6760606408' }],
-  },
-  {
-    name: 'Patto',
-    icon: '/app-icons/patto.png',
-    description: '在庫と買い物をパッと管理。名前を決めた時点では自信満々でした。',
-    stores: [
-      { label: 'App Store', url: 'https://apps.apple.com/jp/app/id6760470920' },
-      { label: 'Google Play', url: 'https://play.google.com/store/apps/details?id=com.yuuki.patto' },
-    ],
-  },
-  {
-    name: '髪型チェッカー',
-    icon: '/app-icons/hairstyle-checker.png',
-    description: '切ってから後悔する前に、髪型を先に試すアプリです。',
-    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6783818588' }],
-  },
-  {
-    name: '未来ベビー',
-    icon: '/app-icons/future-baby.png',
-    description: 'AIで未来をちょっと想像する画像生成アプリ。結果は未来までのお楽しみ。',
-    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6786303465' }],
-  },
-  {
-    name: 'MimaCam',
-    icon: '/app-icons/mimacam.png',
-    description: '使っていないiPhoneを、もう1台の見守りカメラに。ライブ映像も通知も手元から確認できます。',
-    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6789361362' }],
-  },
-  {
-    name: 'Cootap',
-    icon: '/app-icons/cootap.png',
-    description: '授乳・睡眠・おむつをiPhoneとApple Watchでサッと記録。広告なしの育児ログです。',
-    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6801787210' }],
+    name: 'コンビニ帝国',
+    icon: '/app-icons/konbini-empire.png',
+    description: '放置で育てるコンビニ経営ゲーム。元店長が作ったので、時間帯ごとの品揃えにはうるさいです。',
+    stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6807601218' }],
+    story: { label: '10本目を出すまで', url: '/blog/20260903-tenth-app-konbini-empire/' },
   },
 ];
+
+export const otherAppNames = ['HitoLog', 'AirTalks', 'Patto', 'Cootap', 'MimaCam', '髪型チェッカー', '未来ベビー'];

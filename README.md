@@ -22,6 +22,7 @@ npm run dev
 | `npm run sync:x` | X用のダイジェスト＋告知スレッドを生成（送信はしない） |
 | `npm run x:draft` / `x:publish` / `x:thread` | XへArticle下書き作成 / 公開 / スレッド投稿 |
 | `npm run sync:note` | note へ貼り付ける本文を生成（noteは公式APIなしのため手動投稿） |
+| `npm run og:image` | サイト共通のOG画像を再生成（アプリ本数は `src/config/apps.ts` の `publishedAppCount`） |
 
 ## 📝 記事の作成とObsidian同期
 

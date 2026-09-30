@@ -2,6 +2,7 @@
 import config from '@config/config.json';
 import menu from '@config/menu.json';
 import social from '@config/social';
+import { publishedAppCount } from '@config/apps';
 
 const year = new Date().getFullYear();
 const socialItems = social.networks.map((item) => ({
@@ -20,7 +21,7 @@ const socialItems = social.networks.map((item) => ({
         <p class="mt-2 font-heading text-sm font-semibold tracking-wide text-gray-500 dark:text-gray-400">
           元店長<span class="text-accent-600 dark:text-accent-500"> →</span>
            エンジニア<span class="text-accent-600 dark:text-accent-500"> →</span>
-           アプリ9本
+           アプリ{publishedAppCount}本
         </p>
       </div>
 
