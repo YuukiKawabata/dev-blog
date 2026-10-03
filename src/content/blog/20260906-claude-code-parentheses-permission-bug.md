@@ -11,7 +11,7 @@ zenn:
   emoji: "🔓"
   type: "idea"
   topics: ["ai", "claudecode", "セキュリティ"]
-  published: true
+  published: false
 x:
   slug: "claude-code-parentheses-permission-bug"
   article_enabled: false

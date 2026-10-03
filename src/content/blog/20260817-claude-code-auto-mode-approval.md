@@ -11,7 +11,7 @@ zenn:
   emoji: "🔓"
   type: "idea"
   topics: ["ai", "claudecode", "個人開発", "自動化"]
-  published: true
+  published: false
 x:
   slug: "claude-code-auto-mode-approval"
   article_enabled: false

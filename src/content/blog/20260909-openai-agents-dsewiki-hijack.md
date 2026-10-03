@@ -11,7 +11,7 @@ zenn:
   emoji: "🕸️"
   type: "idea"
   topics: ["ai", "openai", "security"]
-  published: true
+  published: false
 x:
   slug: "openai-agents-dsewiki-hijack"
   article_enabled: false

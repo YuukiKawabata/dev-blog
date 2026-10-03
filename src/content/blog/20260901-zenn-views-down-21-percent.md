@@ -10,7 +10,7 @@ zenn:
   emoji: "📉"
   type: "idea"
   topics: ["zenn", "個人開発", "ブログ運営"]
-  published: true
+  published: false
 x:
   slug: "zenn-views-down-21-percent"
   article_enabled: false

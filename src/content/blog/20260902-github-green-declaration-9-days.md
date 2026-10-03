@@ -11,7 +11,7 @@ zenn:
   emoji: "🟩"
   type: "idea"
   topics: ["github", "個人開発", "習慣"]
-  published: true
+  published: false
 x:
   slug: "github-green-declaration-9-days"
   article_enabled: false

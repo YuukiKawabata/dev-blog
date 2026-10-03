@@ -11,7 +11,7 @@ zenn:
   emoji: "🏪"
   type: "idea"
   topics: ["個人開発", "appstore", "ios"]
-  published: true
+  published: false
 x:
   slug: "tenth-app-konbini-empire"
   article_enabled: false

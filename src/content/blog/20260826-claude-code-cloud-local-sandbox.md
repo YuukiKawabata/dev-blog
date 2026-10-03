@@ -11,7 +11,7 @@ zenn:
   emoji: "🌐"
   type: "idea"
   topics: ["ai", "claudecode", "自動化", "個人開発"]
-  published: true
+  published: false
 x:
   slug: "claude-code-cloud-local-sandbox"
   article_enabled: false

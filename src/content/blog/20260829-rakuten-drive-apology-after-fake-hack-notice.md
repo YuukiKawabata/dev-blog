@@ -11,7 +11,7 @@ zenn:
   emoji: "📬"
   type: "tech"
   topics: ["security", "phishing", "rakuten"]
-  published: true
+  published: false
 x:
   slug: "rakuten-drive-apology-after-fake-hack-notice"
   article_enabled: false

@@ -11,7 +11,7 @@ zenn:
   emoji: "🔌"
   type: "idea"
   topics: ["openai", "cursor", "ai"]
-  published: true
+  published: false
 x:
   slug: "openai-cursor-cutoff-vendor-dependency"
   article_enabled: false

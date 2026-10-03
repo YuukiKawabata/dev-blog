@@ -11,7 +11,7 @@ zenn:
   emoji: "🧭"
   type: "idea"
   topics: ["ai", "キャリア", "claudecode", "エンジニア"]
-  published: true
+  published: false
 x:
   slug: "ai-engineer-survival-strategy-2026"
   article_enabled: false

@@ -11,7 +11,7 @@ zenn:
   emoji: "🐦"
   type: "idea"
   topics: ["twitter", "x", "sns"]
-  published: true
+  published: false
 x:
   slug: "twitter-name-lawsuit-and-my-follower-count"
   article_enabled: false

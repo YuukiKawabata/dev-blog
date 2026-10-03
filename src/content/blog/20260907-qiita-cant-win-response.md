@@ -11,7 +11,7 @@ zenn:
   emoji: "🥊"
   type: "idea"
   topics: ["個人開発", "appstore", "ios"]
-  published: true
+  published: false
 x:
   slug: "qiita-cant-win-response"
   article_enabled: false

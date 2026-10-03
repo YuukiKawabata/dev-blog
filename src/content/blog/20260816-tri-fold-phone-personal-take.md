@@ -11,7 +11,7 @@ zenn:
   emoji: "📱"
   type: "idea"
   topics: ["gadget", "スマートフォン", "個人開発", "レビュー"]
-  published: true
+  published: false
 x:
   slug: "tri-fold-phone-personal-opinion"
   article_enabled: false

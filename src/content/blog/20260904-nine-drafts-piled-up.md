@@ -11,7 +11,7 @@ zenn:
   emoji: "📥"
   type: "idea"
   topics: ["ai", "自動化", "個人開発"]
-  published: true
+  published: false
 x:
   slug: "nine-drafts-piled-up"
   article_enabled: false

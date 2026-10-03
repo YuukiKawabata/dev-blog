@@ -10,7 +10,7 @@ zenn:
   emoji: "☁️"
   type: "tech"
   topics: ["cloudflare", "firebase", "openai", "個人開発", "finops"]
-  published: true
+  published: false
 x:
   slug: "photo-app-billing-cloudflare-migration"
   article_enabled: false
