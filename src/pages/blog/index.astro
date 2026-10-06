@@ -1,0 +1,14 @@
+---
+import Base from "@layouts/Base.astro";
+import PostList from "@components/PostList.astro";
+import { getSinglePage } from "@utils/getAllTags";
+
+const posts = (await getSinglePage("blog")).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Base meta_title="記事" description="AI開発、個人開発、Web / モバイル、アプリ公開の記録。">
+  <h1 class="page-title">記事 <span class="font-sans text-base font-normal text-gray-400 dark:text-gray-500">{posts.length}</span></h1>
+  <div class="mt-10">
+    <PostList posts={posts} groupByYear />
+  </div>
+</Base>

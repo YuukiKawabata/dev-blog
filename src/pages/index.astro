@@ -1,31 +1,83 @@
 ---
-import HomePagination from '@components/HomePagination.astro';
-import HomeApps from '@components/HomeApps.astro';
-import FeaturedArticles from '@components/FeaturedArticles.astro';
 import Base from '@layouts/Base.astro';
-import Posts from '@layouts/Posts.astro';
+import PostList from '@components/PostList.astro';
+import config from '@config/config.json';
+import social from '@config/social';
+import { apps, otherAppNames } from '@config/apps';
 import { getSinglePage } from '@utils/getAllTags';
 
 const posts = (await getSinglePage('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const latest = posts.slice(0, 10);
 ---
 
-<Base home>
-  <div class="space-y-20 sm:space-y-24">
-    <HomeApps />
-    <FeaturedArticles />
-    <section
-      id="latest-posts"
-      class="scroll-mt-24 border-t border-gray-200 pt-16 dark:border-gray-800"
-      aria-labelledby="latest-heading"
-    >
-      <p class="font-mono text-xs font-medium uppercase tracking-[0.22em] text-accent-700 dark:text-accent-400">
-        Latest
-      </p>
-      <h2 id="latest-heading" class="mt-4 text-3xl sm:text-4xl">最近書いたもの。</h2>
-      <div class="mt-9">
-        <Posts posts={posts} showIntro={false} />
-      </div>
-      <HomePagination />
-    </section>
-  </div>
+<Base>
+  <section>
+    <h1 class="text-2xl">{config.author.name}</h1>
+    <p class="jp-phrase mt-4 leading-[1.9] text-gray-600 dark:text-gray-400">
+      元コンビニ店長。30歳手前でエンジニアになり、いまはアプリを作っています。<br
+        class="hidden sm:inline"
+      />AI開発・個人開発の本音と失敗談を、大阪から。
+    </p>
+    <p class="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+      {
+        social.networks.map((item) => (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track={`social:${item.name}:home`}
+            class="text-link"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a href="/rss.xml" class="text-link">RSS</a>
+    </p>
+  </section>
+
+  <section class="mt-16" aria-labelledby="posts-heading">
+    <h2 id="posts-heading" class="section-label">記事</h2>
+    <div class="mt-4">
+      <PostList posts={latest} />
+    </div>
+    <a href="/blog/" class="text-link mt-5 inline-block text-sm">すべての記事 →</a>
+  </section>
+
+  <section class="mt-16" aria-labelledby="apps-heading">
+    <h2 id="apps-heading" class="section-label">アプリ</h2>
+    <ul class="mt-4">
+      {
+        apps.map((app) => (
+          <li>
+            <a
+              href={app.stores[0].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track={`app:${app.name}:home`}
+              class="group flex items-center gap-4 py-2.5"
+            >
+              <img
+                src={app.icon}
+                alt=""
+                width={28}
+                height={28}
+                loading="lazy"
+                decoding="async"
+                class="h-7 w-7 shrink-0 rounded-[8px] ring-1 ring-black/5 dark:ring-white/10"
+              />
+              <span class="shrink-0 font-heading text-[17px] font-medium text-gray-900 transition-colors group-hover:text-accent-700 dark:text-gray-100 dark:group-hover:text-accent-400">
+                {app.name}
+              </span>
+              <span class="truncate text-sm text-gray-500 dark:text-gray-400">{app.tagline}</span>
+              <span class="ml-auto text-gray-300 dark:text-gray-600" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href="/apps/" class="text-link mt-5 inline-block text-sm">ほかの{otherAppNames.length}本も見る →</a>
+  </section>
 </Base>

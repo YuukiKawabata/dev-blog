@@ -1,7 +1,5 @@
 ---
 import Header from '@components/Header.astro';
-import Hero from '@components/Hero.astro';
-import FeaturedVideos from '@components/FeaturedVideos.astro';
 import Footer from '@components/Footer.astro';
 import config from '@config/config.json';
 import social from '@config/social';
@@ -28,12 +26,11 @@ export interface Props {
   noindex?: boolean;
   canonical?: string;
   blogpost?: boolean;
-  home?: boolean;
   pubDate?: Date;
   updatedDate?: Date;
 }
 
-const { title, meta_title, description, noindex, blogpost, home, image, pubDate, updatedDate } = Astro.props;
+const { title, meta_title, description, noindex, blogpost, image, pubDate, updatedDate } = Astro.props;
 
 const siteRoot = config.site.base_url.replace(/\/$/, '');
 const toAbsolute = (path: string) => (path.startsWith('http') ? path : `${siteRoot}/${path.replace(/^\//, '')}`);
@@ -162,11 +159,9 @@ if (blogpost && pubDate) {
   </head>
   <body class="bg-paper transition-colors duration-300 dark:bg-gray-950">
     <Header />
-    {home && <Hero />}
-    <main class="mx-auto max-w-3xl px-6 py-12 sm:py-16 lg:px-8">
+    <main class="mx-auto max-w-2xl px-5 pt-14 sm:px-6 sm:pt-20">
       <slot />
     </main>
-    {!blogpost && config.features.youtube && <FeaturedVideos />}
     <Footer />
     <script>
       const bindTrackedLinks = () => {

@@ -11,6 +11,8 @@ import { manifest } from './src/utils/manifest';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://dev-blog-pi-six.vercel.app/',
+  // 記事一覧はページ分けをやめて 1 ページにした。旧 /blog/2 以降は一覧へ寄せる。
+  redirects: Object.fromEntries(Array.from({ length: 19 }, (_, i) => [`/blog/${i + 2}`, '/blog/'])),
   image: {
     remotePatterns: [{ protocol: 'https' }],
   },

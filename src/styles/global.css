@@ -43,7 +43,7 @@
 
   /* Natural Japanese line breaking where supported (progressive enhancement) */
   @supports (word-break: auto-phrase) {
-    h1, h2, h3, .jp-phrase {
+    h1, h2, h3, .jp-phrase, .page-title {
       word-break: auto-phrase;
     }
   }
@@ -51,6 +51,14 @@
   /* Prose Enhancements */
   .prose {
     @apply max-w-none text-gray-700 dark:text-gray-300;
+  }
+
+  /* 狭い画面で本文がはみ出さないように */
+  .prose table {
+    @apply block overflow-x-auto;
+  }
+  .prose :not(pre) > code {
+    overflow-wrap: anywhere;
   }
 
   .prose strong {
@@ -74,6 +82,21 @@
 }
 
 @layer components {
+  /* ページ見出し — 記事タイトル・一覧・固定ページで共通 */
+  .page-title {
+    @apply font-heading text-[1.75rem] font-semibold leading-[1.35] text-gray-950 sm:text-[2.125rem] sm:leading-[1.3] dark:text-white;
+  }
+
+  /* セクション見出し — 小さく静かに */
+  .section-label {
+    @apply font-sans text-sm font-medium tracking-normal text-gray-400 dark:text-gray-500;
+  }
+
+  /* 本文外のテキストリンク */
+  .text-link {
+    @apply text-gray-600 underline decoration-gray-300 decoration-1 underline-offset-4 transition-colors hover:text-accent-700 hover:decoration-accent-400 dark:text-gray-400 dark:decoration-gray-700 dark:hover:text-accent-400 dark:hover:decoration-accent-500;
+  }
+
   /* Animated hairline underline for nav links */
   .nav-link {
     @apply relative text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white;
@@ -127,60 +150,6 @@
 
 /* ——— Motion system(reduced motion 環境ではすべて無効) ——— */
 @media (prefers-reduced-motion: no-preference) {
-  /* Masked line reveal — hero の大型タイポが下からせり上がる */
-  .line-mask {
-    display: block;
-    overflow: hidden;
-    /* ディセンダ(p, g など)がクリップされないよう余白を確保 */
-    padding-bottom: 0.14em;
-    margin-bottom: -0.14em;
-  }
-  .line-rise {
-    display: block;
-    transform: translateY(115%);
-    animation: line-rise 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: var(--d, 0s);
-  }
-  @keyframes line-rise {
-    to { transform: translateY(0); }
-  }
-
-  /* 補助テキスト・著者行のソフトな入場 */
-  .fade-up {
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: var(--d, 0s);
-  }
-  @keyframes fade-up {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* 朱のピリオドは行が着地したあと弾んで現れる */
-  .period-pop {
-    display: inline-block;
-    transform: scale(0);
-    transform-origin: 50% 70%;
-    animation: period-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    animation-delay: var(--d, 0s);
-  }
-  @keyframes period-pop {
-    to { transform: scale(1); }
-  }
-
-  /* スクロールで視界に入った行が浮かび上がる(対応ブラウザのみ) */
-  @supports (animation-timeline: view()) {
-    .scroll-reveal {
-      animation: scroll-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 10% entry 55%;
-    }
-  }
-  @keyframes scroll-rise {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
   /* ページ遷移 — 新しいページがふわりと持ち上がる(ヘッダーは persist で不動) */
   ::view-transition-old(root) {
     animation: vt-fade-out 0.2s ease both;

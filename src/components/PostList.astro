@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { postTitleTransition } from '@utils/transitionName';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+  // 年ごとに見出しを立てる(アーカイブ向け)。
+  groupByYear?: boolean;
+}
+
+const { posts, groupByYear = false } = Astro.props;
+
+const monthDay = (date: Date) =>
+  `${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+
+// groupByYear でなければ、見出しなしの 1 グループとして扱う。
+const groups: { year?: number; posts: CollectionEntry<'blog'>[] }[] = groupByYear
+  ? [...new Set(posts.map((post) => post.data.pubDate.getFullYear()))].map((year) => ({
+      year,
+      posts: posts.filter((post) => post.data.pubDate.getFullYear() === year),
+    }))
+  : [{ posts }];
+---
+
+<div class="space-y-12">
+  {
+    groups.map((group) => (
+      <section>
+        {group.year && <h2 class="mb-3 font-sans text-sm font-medium text-gray-400 dark:text-gray-500">{group.year}</h2>}
+        <ul>
+          {group.posts.map((post) => (
+            <li>
+              <a href={`/blog/${post.slug}/`} class="group flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:gap-5 sm:py-2.5">
+                <time
+                  datetime={post.data.pubDate.toISOString()}
+                  class="w-11 shrink-0 font-mono text-xs tabular-nums text-gray-400 dark:text-gray-500"
+                >
+                  {monthDay(post.data.pubDate)}
+                </time>
+                <span
+                  transition:name={postTitleTransition(post.slug)}
+                  class="jp-phrase font-heading text-[17px] font-medium leading-relaxed text-gray-900 transition-colors group-hover:text-accent-700 dark:text-gray-100 dark:group-hover:text-accent-400"
+                >
+                  {post.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
