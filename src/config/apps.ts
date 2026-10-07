@@ -48,7 +48,7 @@ export const apps: AppItem[] = [
     name: 'コンビニ帝国',
     tagline: '放置系コンビニ経営ゲーム',
     icon: '/app-icons/konbini-empire.png',
-    description: '放置で育てるコンビニ経営ゲーム。元店長が作ったので、時間帯ごとの品揃えにはうるさいです。',
+    description: '放置で育てるコンビニ経営ゲーム。時間帯ごとの品揃えや客足の変化まで作り込みました。',
     stores: [{ label: 'App Store', url: 'https://apps.apple.com/jp/app/id6807601218' }],
     story: { label: '10本目を出すまで', url: '/blog/20260903-tenth-app-konbini-empire/' },
   },

@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    font-family: 'Inter', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+    font-family: 'Inter', 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
     scroll-behavior: smooth;
   }
 
@@ -18,27 +18,12 @@
     @apply bg-gray-950 text-gray-300;
   }
 
-  /* Paper grain — barely-there washi texture over everything */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    pointer-events: none;
-    opacity: 0.028;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-  .dark body::after {
-    opacity: 0.05;
-  }
-
-  /* Headings — Fraunces × 明朝 editorial pairing, tightened JP spacing */
+  /* Headings — 太めのゴシック、和文は詰め組み */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Fraunces', 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, 'Noto Serif JP', Georgia, serif;
     font-feature-settings: 'palt';
-    letter-spacing: 0.01em;
+    letter-spacing: -0.01em;
     text-wrap: balance;
-    @apply font-semibold text-gray-900 dark:text-white;
+    @apply font-bold text-gray-900 dark:text-white;
   }
 
   /* Natural Japanese line breaking where supported (progressive enhancement) */
@@ -84,12 +69,12 @@
 @layer components {
   /* ページ見出し — 記事タイトル・一覧・固定ページで共通 */
   .page-title {
-    @apply font-heading text-[1.75rem] font-semibold leading-[1.35] text-gray-950 sm:text-[2.125rem] sm:leading-[1.3] dark:text-white;
+    @apply text-[1.75rem] font-bold leading-[1.4] tracking-tight text-gray-950 sm:text-[2.125rem] sm:leading-[1.35] dark:text-white;
   }
 
-  /* セクション見出し — 小さく静かに */
+  /* ブランドのラベル — X ヘッダーの「YUKI」「WEB & APP DEVELOPMENT」と同じ組み方 */
   .section-label {
-    @apply font-sans text-sm font-medium tracking-normal text-gray-400 dark:text-gray-500;
+    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-gray-500 dark:text-gray-400;
   }
 
   /* 本文外のテキストリンク */

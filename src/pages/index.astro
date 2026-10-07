@@ -1,7 +1,7 @@
 ---
 import Base from '@layouts/Base.astro';
 import PostList from '@components/PostList.astro';
-import config from '@config/config.json';
+import BrandMark from '@components/BrandMark.astro';
 import social from '@config/social';
 import { apps, otherAppNames } from '@config/apps';
 import { getSinglePage } from '@utils/getAllTags';
@@ -11,12 +11,25 @@ const latest = posts.slice(0, 10);
 ---
 
 <Base>
-  <section>
-    <h1 class="text-2xl">{config.author.name}</h1>
-    <p class="jp-phrase mt-4 leading-[1.9] text-gray-600 dark:text-gray-400">
-      元コンビニ店長。30歳手前でエンジニアになり、いまはアプリを作っています。<br
-        class="hidden sm:inline"
-      />AI開発・個人開発の本音と失敗談を、大阪から。
+  <!-- X のヘッダー画像と同じ構成: YUKI / 日常に、ひとつの工夫。 / WEB & APP DEVELOPMENT / マーク -->
+  <section class="pb-12 pt-4 sm:pb-14 sm:pt-8">
+    <p class="section-label text-gray-900 dark:text-gray-100">Yuki</p>
+    <div class="mt-5 flex items-end justify-between gap-8">
+      <h1
+        class="text-[clamp(2.5rem,9vw,3.75rem)] font-black leading-[1.18] tracking-[-0.02em] text-gray-950 dark:text-white"
+      >
+        日常に、<br />ひとつの工夫<span class="text-accent-500">。</span>
+      </h1>
+      <BrandMark size={72} class="mb-3 hidden text-gray-950 sm:block dark:text-white" />
+    </div>
+    <p class="section-label mt-6 text-gray-900 dark:text-gray-100">Web &amp; App Development</p>
+  </section>
+
+  <section class="border-t border-gray-200 pt-10 dark:border-gray-800">
+    <p class="jp-phrase leading-[1.95] text-gray-700 dark:text-gray-300">
+      Webエンジニア / 個人開発者。<br />
+      日常の「ちょっと不便」を、使いやすいアプリに。<br />
+      開発・設計・改善の工夫と、試して分かったことを書いています。
     </p>
     <p class="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
       {
@@ -36,17 +49,17 @@ const latest = posts.slice(0, 10);
     </p>
   </section>
 
-  <section class="mt-16" aria-labelledby="posts-heading">
-    <h2 id="posts-heading" class="section-label">記事</h2>
-    <div class="mt-4">
+  <section class="mt-20" aria-labelledby="posts-heading">
+    <h2 id="posts-heading" class="section-label">Articles</h2>
+    <div class="mt-5">
       <PostList posts={latest} />
     </div>
     <a href="/blog/" class="text-link mt-5 inline-block text-sm">すべての記事 →</a>
   </section>
 
-  <section class="mt-16" aria-labelledby="apps-heading">
-    <h2 id="apps-heading" class="section-label">アプリ</h2>
-    <ul class="mt-4">
+  <section class="mt-20" aria-labelledby="apps-heading">
+    <h2 id="apps-heading" class="section-label">Apps</h2>
+    <ul class="mt-5">
       {
         apps.map((app) => (
           <li>
@@ -66,7 +79,7 @@ const latest = posts.slice(0, 10);
                 decoding="async"
                 class="h-7 w-7 shrink-0 rounded-[8px] ring-1 ring-black/5 dark:ring-white/10"
               />
-              <span class="shrink-0 font-heading text-[17px] font-medium text-gray-900 transition-colors group-hover:text-accent-700 dark:text-gray-100 dark:group-hover:text-accent-400">
+              <span class="shrink-0 font-bold text-gray-900 transition-colors group-hover:text-accent-600 dark:text-gray-100 dark:group-hover:text-accent-400">
                 {app.name}
               </span>
               <span class="truncate text-sm text-gray-500 dark:text-gray-400">{app.tagline}</span>

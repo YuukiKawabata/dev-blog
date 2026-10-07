@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import menu from '@config/menu.json';
 import config from '@config/config.json';
 import ThemeIcon from '@components/ThemeIcon.astro';
+import BrandMark from '@components/BrandMark.astro';
 
 const { main }: { main: { name: string; url: string }[] } = menu;
 ---
@@ -13,15 +13,8 @@ const { main }: { main: { name: string; url: string }[] } = menu;
 >
   <div class="mx-auto flex max-w-2xl items-center justify-between gap-4 px-5 py-4 sm:px-6">
     <a href="/" class="flex shrink-0 items-center gap-2.5" aria-label="ホーム">
-      <Image
-        src={config.site.logoLight}
-        alt=""
-        class="h-6 w-6 rounded-full object-cover"
-        width={24}
-        height={24}
-        decoding="async"
-      />
-      <span class="font-heading text-[15px] font-semibold tracking-wide text-gray-900 dark:text-white">
+      <BrandMark size={22} class="text-gray-950 dark:text-white" />
+      <span class="text-[15px] font-semibold tracking-tight text-gray-950 dark:text-white">
         {config.site.brand}
       </span>
     </a>

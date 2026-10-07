@@ -26,7 +26,7 @@ const groups: { year?: number; posts: CollectionEntry<'blog'>[] }[] = groupByYea
   {
     groups.map((group) => (
       <section>
-        {group.year && <h2 class="mb-3 font-sans text-sm font-medium text-gray-400 dark:text-gray-500">{group.year}</h2>}
+        {group.year && <h2 class="section-label mb-3">{group.year}</h2>}
         <ul>
           {group.posts.map((post) => (
             <li>
@@ -39,7 +39,7 @@ const groups: { year?: number; posts: CollectionEntry<'blog'>[] }[] = groupByYea
                 </time>
                 <span
                   transition:name={postTitleTransition(post.slug)}
-                  class="jp-phrase font-heading text-[17px] font-medium leading-relaxed text-gray-900 transition-colors group-hover:text-accent-700 dark:text-gray-100 dark:group-hover:text-accent-400"
+                  class="jp-phrase text-[16px] font-medium leading-relaxed text-gray-900 transition-colors group-hover:text-accent-600 dark:text-gray-100 dark:group-hover:text-accent-400"
                 >
                   {post.data.title}
                 </span>
