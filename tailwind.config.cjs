@@ -8,22 +8,16 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "Hiragino Sans", "Yu Gothic", "YuGothic", ...defaultTheme.fontFamily.sans],
-        heading: [
-          "Fraunces",
-          "Hiragino Mincho ProN",
-          "Yu Mincho",
-          "YuMincho",
-          "Noto Serif JP",
-          ...defaultTheme.fontFamily.serif,
-        ],
+        // 見出しも本文も同じゴシック。font-heading は太さ違いで使い分ける。
+        sans: ["Inter", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "YuGothic", ...defaultTheme.fontFamily.sans],
+        heading: ["Inter", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "YuGothic", ...defaultTheme.fontFamily.sans],
         mono: [...defaultTheme.fontFamily.mono],
       },
       colors: {
-        // Warm "washi" grays — paper in light mode, deep sumi ink in dark
+        // Warm grays — off-white paper in light mode, deep ink in dark
         gray: colors.stone,
         paper: '#FBFAF8',
-        // Single vermilion (朱) accent, used sparingly
+        // Single orange accent (the period / mark in the X header), used sparingly
         accent: {
           50: '#fdf4f0',
           100: '#fbe7de',
@@ -96,8 +90,8 @@ module.exports = {
             },
             'h1, h2, h3, h4, h5': {
               fontFamily: theme('fontFamily.heading').join(', '),
-              fontWeight: '600',
-              letterSpacing: '0',
+              fontWeight: '700',
+              letterSpacing: '-0.01em',
             },
             h2: {
               marginTop: '2.4em',
@@ -122,7 +116,6 @@ module.exports = {
             blockquote: {
               fontStyle: 'normal',
               fontWeight: '400',
-              fontFamily: theme('fontFamily.heading').join(', '),
               borderLeftColor: theme('colors.accent.300'),
             },
             '.dark blockquote': {

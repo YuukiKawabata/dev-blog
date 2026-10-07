@@ -1,20 +1,16 @@
 {
   "main": [
     {
-      "name": "ホーム",
-      "url": "/"
+      "name": "記事",
+      "url": "/blog/"
     },
     {
       "name": "アプリ",
-      "url": "/#apps"
+      "url": "/apps/"
     },
     {
-      "name": "記事",
-      "url": "/blog"
-    },
-    {
-      "name": "プロフィール",
-      "url": "/about"
+      "name": "About",
+      "url": "/about/"
     }
   ]
 }

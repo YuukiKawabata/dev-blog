@@ -1,22 +1,20 @@
 ---
 import Header from '@components/Header.astro';
-import Hero from '@components/Hero.astro';
-import FeaturedVideos from '@components/FeaturedVideos.astro';
 import Footer from '@components/Footer.astro';
 import config from '@config/config.json';
 import social from '@config/social';
 
 import '@styles/global.css';
 
-// Font imports — Inter (body) + Fraunces (editorial serif headings)
+// Font imports — Inter (Latin) + Noto Sans JP (Japanese)
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
-import '@fontsource/fraunces/400.css';
-import '@fontsource/fraunces/500.css';
-import '@fontsource/fraunces/600.css';
-import '@fontsource/fraunces/600-italic.css';
+import '@fontsource/noto-sans-jp/400.css';
+import '@fontsource/noto-sans-jp/500.css';
+import '@fontsource/noto-sans-jp/700.css';
+import '@fontsource/noto-sans-jp/900.css';
 
 import { ViewTransitions } from 'astro:transitions';
 
@@ -28,12 +26,11 @@ export interface Props {
   noindex?: boolean;
   canonical?: string;
   blogpost?: boolean;
-  home?: boolean;
   pubDate?: Date;
   updatedDate?: Date;
 }
 
-const { title, meta_title, description, noindex, blogpost, home, image, pubDate, updatedDate } = Astro.props;
+const { title, meta_title, description, noindex, blogpost, image, pubDate, updatedDate } = Astro.props;
 
 const siteRoot = config.site.base_url.replace(/\/$/, '');
 const toAbsolute = (path: string) => (path.startsWith('http') ? path : `${siteRoot}/${path.replace(/^\//, '')}`);
@@ -95,7 +92,8 @@ if (blogpost && pubDate) {
   <head>
     <meta name="google-site-verification" content="Zqz8CHfQz5W8Rbohpg9h4xL2ZIo6B1OpWM1dSLXhjxU" />
     <!-- favicon -->
-    <link rel="shortcut icon" href={config.site.favicon} />
+    <link rel="icon" type="image/svg+xml" href={config.site.favicon} />
+    <link rel="icon" type="image/png" href="/favicons/favicon-192x192.png" sizes="192x192" />
     <meta name="msapplication-TileColor" content="#000000" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FBFAF8" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
@@ -162,11 +160,9 @@ if (blogpost && pubDate) {
   </head>
   <body class="bg-paper transition-colors duration-300 dark:bg-gray-950">
     <Header />
-    {home && <Hero />}
-    <main class="mx-auto max-w-3xl px-6 py-12 sm:py-16 lg:px-8">
+    <main class="mx-auto max-w-2xl px-5 pt-14 sm:px-6 sm:pt-20">
       <slot />
     </main>
-    {!blogpost && config.features.youtube && <FeaturedVideos />}
     <Footer />
     <script>
       const bindTrackedLinks = () => {

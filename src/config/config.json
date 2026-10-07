@@ -1,15 +1,15 @@
 {
   "site": {
-    "title": "河畑祐輝 | 元コンビニ店長、アプリ10本。個人開発の本音",
+    "title": "Yuki Kawabata | Web・アプリ開発",
     "brand": "Yuki Kawabata",
     "base_url": "https://dev-blog-pi-six.vercel.app/",
     "base_path": "/",
-    "favicon": "/baata_tech_note_logo.png",
+    "favicon": "/favicon.svg",
     "logoLight": "/baata_tech_note_logo.png",
     "logoDark": "/baata_tech_note_logo.png",
     "ogImage": "/og-yuki-kawabata.png",
     "lang": "ja",
-    "description": "元コンビニ店長から30歳手前でエンジニアへ。App Storeにアプリを10本出しても、まだ誰にも知られていない個人開発者です。AI開発・個人開発の本音と失敗談を大阪から届けます。",
+    "description": "Webエンジニア / 個人開発者 Yuki Kawabata（河畑祐輝）のブログ。日常の「ちょっと不便」を使いやすいアプリにするための、開発・設計・改善の工夫と、試して分かったことを書いています。",
     "pageSize": 6
   },
   "features": {
@@ -18,13 +18,13 @@
   },
   "metadata": {
     "meta_author": "河畑祐輝",
-    "meta_description": "元コンビニ店長から30歳手前でエンジニアへ。App Storeにアプリを10本出しても、まだ誰にも知られていない個人開発者です。AI開発・個人開発の本音と失敗談を大阪から届けます。",
+    "meta_description": "Webエンジニア / 個人開発者 Yuki Kawabata（河畑祐輝）のブログ。日常の「ちょっと不便」を使いやすいアプリにするための、開発・設計・改善の工夫と、試して分かったことを書いています。",
     "twitter": "@Yuki_K25"
   },
   "author": {
     "name": "河畑祐輝",
     "alternateName": "Yuuki Kawabata",
     "avatar": "/k3y3dq.jpg",
-    "bio": "元コンビニ店長からエンジニアへ。App Storeにアプリを10本公開し、いまはKoyoriに力を入れています。AI開発と失敗談を、大阪から発信中。"
+    "bio": "Webエンジニア / 個人開発者。日常の「ちょっと不便」を、使いやすいアプリに。開発・設計・改善の工夫を発信しています。"
   }
 }

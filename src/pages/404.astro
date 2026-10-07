@@ -3,22 +3,15 @@ import Base from "@layouts/Base.astro";
 ---
 
 <Base meta_title="404 Not Found" noindex>
-  <section class="flex min-h-[55vh] flex-col items-start justify-center">
-    <p class="font-mono text-xs font-medium uppercase tracking-[0.25em] text-accent-700 dark:text-accent-400">
-      404 Not Found
+  <section class="flex min-h-[50vh] flex-col justify-center">
+    <p class="text-sm text-gray-400 dark:text-gray-500">404</p>
+    <h1 class="page-title mt-3">ページが見つかりませんでした</h1>
+    <p class="mt-4 leading-[1.9] text-gray-600 dark:text-gray-400">
+      URLが変更されたか、削除された可能性があります。
     </p>
-    <h1 class="mt-6 font-heading text-5xl font-semibold leading-tight text-gray-950 dark:text-white sm:text-6xl">
-      ページが<br />見つかりませんでした<span class="text-accent-600 dark:text-accent-500">。</span>
-    </h1>
-    <p class="mt-6 max-w-md text-base leading-relaxed text-gray-600 dark:text-gray-400">
-      URLが変更されたか、削除された可能性があります。ホームから記事をお探しください。
+    <p class="mt-6 flex gap-4 text-sm">
+      <a href="/" class="text-link">ホーム →</a>
+      <a href="/blog/" class="text-link">記事一覧 →</a>
     </p>
-    <a
-      href="/"
-      class="group mt-10 inline-flex items-center gap-2 text-sm font-semibold text-gray-900 underline decoration-gray-300 decoration-1 underline-offset-4 transition-colors hover:text-accent-700 hover:decoration-accent-400 dark:text-white dark:decoration-gray-600 dark:hover:text-accent-400"
-    >
-      ホームに戻る
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 transition-transform group-hover:translate-x-1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    </a>
   </section>
 </Base>
