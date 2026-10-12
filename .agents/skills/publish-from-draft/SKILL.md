@@ -54,10 +54,21 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
 
 順番に意味があるので入れ替えない。
 
+0. **③.5 本文の画像を足す**（Coworkの下書きには画像が無い前提で確認する）
+   Coworkのサンドボックスはブラウザを使えず、管理画面やアプリの画面を撮れない。そのため下書きが
+   文字だけで届くことが多い。公開経路に乗せる前に、本文に `![...](/images/articles/...)` があるか確認し、
+   無ければこの端末で画面を撮って足す。撮るもの・保存先・代替テキストの書き方・写してはいけないものは
+   `.Codex/skills/publish-article/references/writing.md` の「本文の画像」に従う（目安3〜6枚）。
+   画像を足したら、Obsidian の `公開済み/<basename>.md`（正本）を直す。ブログ側だけ直すと同期で消える。
+   キャプチャの数字と本文の数字が食い違ったら、本文を直す前にユーザーに伝える（記事の書き直しはしない）
+
 1. **⑥.5 ヒーロー画像を確定させる**（すべての公開より前）
    ```bash
-   npm run generate:hero -- --slug <basename> --theme "<記事のテーマを1〜2文で>"
+   npm run generate:hero -- --slug <basename> --theme "<記事を象徴する物を1〜2個、具体的に>"
    ```
+   スタイル（紙色の背景・墨色の線・オレンジ1点）はスクリプトに固定済み。`--theme` に色や画風、文字・ロゴを書かない。
+   生成後は画像を開いて目で確認する。文字が描かれている・ブログのデザインから明らかに外れている場合の
+   作り直しの条件は `publishing.md` の⑥.5に従う。
    `OPENAI_API_KEY`が無い、または2回連続で失敗したら、画像を`public/images/hero/<basename>.webp`
    に手動で置くよう頼んで止まる。**画像が確定するまで、ブログ・Zenn・Xのどれにも公開しない。**
    Xはリンクカードの画像を投稿時にキャッシュし、後から直せないため。
@@ -67,8 +78,10 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    npm run sync:obsidian
    git status --short src/content/blog/   # 新規1本だけが差分に出ることを確認
    npm run build
-   git add -A && git commit -m "feat: <記事タイトル>を公開" && git push origin main
+   git add src/content/blog/<basename>.md public/images/hero/<basename>.webp public/images/articles/<basename>
+   git commit -m "feat: <記事タイトル>を公開" && git push origin main
    ```
+   `git add -A` は使わない（手元に別作業の変更が残っていることがある）。
    新規1本以外の差分（他記事の変更・削除）が出たら、Obsidian側が壊れている可能性がある。
    止めて報告する。
 
@@ -108,8 +121,10 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    「記事」タブも確認する。
 
 6. **⑪ noteへ配信**（frontmatterに`note:`があるときだけ）
-   `npm run sync:note -- --only <slug>` で生成された`.note/<slug>.json`をブラウザ操作で
-   noteのエディタに流し込み、スクリーンショットで崩れがないか確認してから公開する。
+   `npm run sync:note -- --only <slug>` で生成された`.note/<slug>.json`の`blocks`（本文と画像の並び）と
+   `.note/<slug>/`の画像を、ブラウザ操作でnoteのエディタに入れる。**テキストを全部入れてから画像を
+   各段落の後ろに挿入する**順番を守る（逆にすると画像が消える）。詳細は`publishing.md`の⑪。
+   スクリーンショットで崩れと画像の枚数を確認してから公開する。
 
 7. **⑫ 記録する（省略しない）**
    - `SNS/99_システム/投稿済み台帳/投稿済みX_ID.txt` — 投稿したポストURL全部（追記専用）

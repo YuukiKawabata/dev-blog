@@ -35,7 +35,16 @@ npm run generate:hero -- --slug <basename> --theme "<記事のテーマを1〜2�
 ```
 
 `OPENAI_API_KEY` があれば OpenAI（gpt-image-1.5, medium品質）で自動生成し、
-`public/images/hero/<basename>.webp` に保存する。1本につきAPI呼び出しは1回だけ。
+`public/images/hero/<basename>.webp` に保存する。
+
+**スタイルはスクリプト（`STYLE_GUIDE`）に固定してある。** ブログのデザイン（`tailwind.config.cjs`・
+`public/og-yuki-kawabata.png`）に合わせた、無地のオフホワイト背景・墨色の線と単純な図形・
+オレンジ（#DD5A35）を1点だけ・余白の多いフラットなイラスト。`--theme` で色や画風を指定しない。
+`--theme` には、記事を象徴する**身近な物を1〜2個、具体的に**書く。抽象語（「成長」「AI」）だけだと
+ありがちな図になる。文字・看板・ロゴは頼まない（生成モデルは文字を崩す）。
+
+- 良い例: `無地の本が並ぶ本棚で、2冊だけ少し前に出ている。横に右肩上がりの棒グラフ`
+- 悪い例: `ASOで成長したアプリ`（抽象的）、`App Storeのロゴと「ASO」の文字`（文字・ロゴ）1本につきAPI呼び出しは1回だけ。
 失敗しても自動リトライしない（コストが不必要に膨らむため）。実測で動作確認済み。
 
 Gemini を使いたい場合は `--provider gemini` を付ける（`GEMINI_API_KEY` が必要）。
@@ -47,12 +56,17 @@ Gemini 側は Google AI Studio の**課金ページで前払いクレジット�
 - 使うプロバイダのAPIキーが `.env` に無い
 - API呼び出しが2回連続でエラーになった（1回の再試行は許容、2回目で止める）
 - 生成された画像が明らかに記事のテーマと無関係（例: セキュリティ記事なのに無関係な風景）
+- 画像に文字・数字・ロゴが描かれている、または暗い背景・グラデーション・光の演出など
+  ブログのデザインから明らかに外れている（この2つに当たったときは、`--theme` を具体的にして
+  `--force` で1回だけ作り直してよい。2回目も外れたら手動待ちに切り替える）
 
 手動待ちに切り替えた場合は、「画像を `public/images/hero/<basename>.webp` に
 置いてください。置いたら公開します」と伝えて止まる。**ここで止まるのは待つ価値が
 あるからで、承認を求めているわけではない。**
 
 画像が確定したら（自動生成でも手動でも）、次に進む前に必ずローカルで確認する。
+**ファイルの存在だけでなく、画像そのものを開いて目で見る**（webpはそのまま読めないので
+`sips -s format png` でPNGにしてから Read で見る）。
 
 ```bash
 ls -la public/images/hero/<basename>.webp
@@ -80,11 +94,17 @@ git status --short src/content/blog/
 npm run build
 ```
 
-ビルドが通ることを確認してからコミットする。
+ビルドが通ることを確認してからコミットする。**`git add -A` は使わない。** 別の作業の変更が
+手元に残っていることがあり（2026-10-12 に `package.json` などが混ざりかけた）、記事に関係するファイルだけを足す。
 
 ```bash
-git add -A && git commit -m "feat: <記事タイトル>を公開" && git push origin main
+git add src/content/blog/<basename>.md public/images/hero/<basename>.webp public/images/articles/<basename>
+git commit -m "feat: <記事タイトル>を公開" && git push origin main
 ```
+
+push が non-fast-forward で拒否されたら、`git fetch` してリモートの新しいコミットを確認し、
+`git rebase origin/main` で載せ直す。載せ直したら**もう一度ビルドする**（依存パッケージが増えていたら
+`npm install` が必要。`publish-from-draft` から来た場合は、依存の変更はユーザーに確認してから）。
 
 ## ⑧ デプロイ完了を待つ
 
@@ -161,19 +181,46 @@ node scripts/sync-x.mjs --publish --thread --only <slug>
 
 ## ⑪ note へ配信（`note:` がある場合のみ）
 
-note には公式の投稿APIがない。**ブラウザ操作で投稿する。**
+note には公式の投稿APIがない。**ブラウザ（Claude in Chrome）で note のエディタを操作して投稿する。**
 
 ```bash
 npm run sync:note -- --only <slug>
 ```
 
-`.note/<slug>.json` に `title` と `body` が入る。これをブラウザで note のエディタに流し込む。
+`.note/<slug>.json` に次のものが入る。画像は `.note/<slug>/` に note が受け付けるJPGで書き出される。
 
-1. `https://note.com/notes/new` を開く
-2. タイトル欄に `title` を入力
-3. 本文欄に `body` を入力
-4. **入力後、必ずスクリーンショットで見た目を確認する。** note のエディタは Markdown を解釈しないので、記号が残っていないか、改行が潰れていないかを見る
-5. 問題なければ公開する
+| キー | 中身 |
+| --- | --- |
+| `title` | タイトル |
+| `hero` | 見出し画像（`.note/<slug>/hero.jpg`） |
+| `blocks` | 本文を読む順に並べた配列。`{type:"text", text}` と `{type:"image", file, alt}` が交互に並ぶ |
+| `body` | 画像を除いた本文だけ（画像を入れない場合の予備） |
+
+### 手順
+
+1. `https://note.com/notes/new` を開き、タイトル欄に `title` を入力する
+2. **本文のテキストを先にすべて入れる。** 本文欄にカーソルを置き、`blocks` のテキストを順に入れる。
+   長文は `type` より、本文欄（`.ProseMirror`）に `DataTransfer` を使った `paste` イベントを
+   `javascript_tool` で送る方が速く確実。ブロックの間は Enter で段落を分ける
+3. **画像はあとから入れる。** 画像を入れたい段落（`blocks` で画像の直前にあるテキストの最後の段落）の
+   末尾にカーソルを置き、左の「＋（メニューを開く）」→「画像」で挿入する。画像はその段落の**直後**に入る
+   - 「画像」を押すとOSのファイル選択ダイアログが開いてしまうので、先に `javascript_tool` で
+     `HTMLInputElement.prototype.click` を差し替え、`type="file"` の input を `document.body` に
+     つなぐだけにしておく。その input を `find` で探し、`file_upload` で `.note/<slug>/NN-*.jpg` を渡す
+   - 挿入後、画像の下のキャプション欄（`figcaption`）にカーソルを置いて、短いキャプションを入力してよい。
+     **キャプション欄で Enter や Backspace を押さない**（画像ごと消える）
+4. 見出し画像は、タイトル上の「画像を追加」→「画像をアップロード」で `hero` を同じ方法でアップロードし、
+   トリミング画面で「保存」を押す
+5. **入力後、必ずスクリーンショットで見た目を確認する。** 記号の残り、改行の潰れ、画像の数（`blocks` の
+   画像の数＋見出し画像1枚）、画像の位置を見る。`document.querySelectorAll('figure').length` でも数を確かめる
+6. 問題なければ「公開に進む」→ ハッシュタグを確認 →「投稿する」
+
+### 過去に起きたこと
+
+- **画像を本文の末尾に入れると、その後ろに段落を作れない。** カーソルを下に移そうとして Backspace を
+  押したら画像ごと消えた（2026-10-12）。だから「テキストを全部入れてから、各段落の後ろに画像を入れる」順にする
+- **空の段落にカーソルを置いて画像を入れると、空の段落が画像の上に残る。** 最後に空の段落が残っていないか
+  確認し、あれば消す
 
 崩れていたら公開せずに報告する。note は貼り直しが効くので、慌てて公開しない。
 

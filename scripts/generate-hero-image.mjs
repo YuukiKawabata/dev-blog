@@ -35,14 +35,18 @@ const OPENAI_SIZE = '1536x1024'; // closest supported landscape size to 16:9; cr
 const GEMINI_MODEL = 'gemini-3.1-flash-image';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 
-// Matches the look of the hand-picked hero images already in the repo:
-// dark background, blue-to-purple gradient, abstract/conceptual — never a
-// literal product screenshot, and never text or logos (image models render
-// text unreliably, and a wrong logo would misrepresent a real company).
-const STYLE_GUIDE = `暗い背景に、青から紫へのグラデーションを基調にした、抽象的でコンセプチュアルなテクノロジーイラスト。
-幾何学的な図形、ホログラム的な光の粒子、繊細なグロー効果で構成する。
-文字・ロゴ・実在する企業や人物の顔は描かない。写実的な物撮りではなく、コンセプチュアルなビジュアルにする。
-16:9の横長構図、洗練されたエディトリアルイラストのトーン。`;
+// Matches the blog's design (tailwind.config.cjs / public/og-yuki-kawabata.png):
+// off-white paper (#FBFAF8), warm near-black ink, one vermilion-orange accent
+// (#DD5A35) used once, flat and quiet with lots of empty space. Never text or
+// logos — image models render text unreliably (a misspelled "Producticy" made it
+// into a published hero), and a wrong logo would misrepresent a real company.
+const STYLE_GUIDE = `ミニマルでフラットな、エディトリアル誌の挿絵のような横長イラスト。
+背景は無地のオフホワイト（和紙のような #FBFAF8）。グラデーション・光沢・グロー・光の粒子・3D表現は使わない。
+描くものは、墨色（#1C1917）の太さが均一な線と、塗りつぶしの単純な幾何学図形（四角・円・線）だけ。
+アクセント色はオレンジ（#DD5A35）だけで、画面の中の小さな1か所にだけ使う。ほかの色は温かみのあるグレー（#E7E5E4〜#78716C）まで。
+モチーフはテーマを象徴する身近な物を1〜2個に絞り、画面の中央からやや右に小さめに置き、左側と周囲に大きく余白を残す。
+文字・数字・ロゴ・UIの文字・実在する企業のマーク・人物の顔は一切描かない（看板や背表紙、画面の中も無地にする）。
+写実的な写真ではなく、静かで落ち着いた、スイスデザイン風の構成にする。16:9の横長構図。`;
 
 function parseArgs(argv) {
   const args = { provider: 'openai', force: false, help: false };

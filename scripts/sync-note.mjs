@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import yaml from 'js-yaml';
+import sharp from 'sharp';
 
 /**
  * Blog posts -> note-ready text.
@@ -13,10 +14,18 @@ import yaml from 'js-yaml';
  * The actual posting is done by driving note's editor in a browser, which is
  * why the body is emitted as plain text rather than Markdown: note's editor
  * does not parse pasted Markdown, it takes the characters literally.
+ *
+ * Images can't be pasted as text either, so the body is also emitted as
+ * `blocks` — text and image entries in reading order — and every local image
+ * (plus the hero) is converted to JPEG under <out>/<slug>/ for uploading.
  */
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_SITE = 'https://dev-blog-pi-six.vercel.app';
+
+// Marks where an image sat in the body; split out into `blocks` afterwards.
+const IMAGE_MARK = (index) => `⟦IMAGE:${index}⟧`;
+const IMAGE_MARK_RE = /⟦IMAGE:(\d+)⟧/;
 
 function log(message) {
   // eslint-disable-next-line no-console
@@ -69,8 +78,10 @@ Frontmatter:
     tags: ["個人開発"]       # note hashtags, appended at the end
     canonical: false        # omit the "初出" line
 
-Outputs <out>/<slug>.json  — { title, body, tags } for the browser step
-        <out>/<slug>.txt   — the body alone, ready to paste
+Outputs <out>/<slug>.json  — { title, body, blocks, hero, tags } for the browser step
+                              blocks: [{ type: "text", text } | { type: "image", file, alt }]
+        <out>/<slug>.txt   — the body alone (images left out), ready to paste
+        <out>/<slug>/      — hero.jpg and NN-<name>.jpg, ready to upload to note
 `);
 }
 
@@ -102,7 +113,7 @@ function extractFrontmatter(markdown) {
  * note's editor renders literal characters, so syntax that would look like
  * noise (##, **, |) has to go, while the structure it conveyed has to survive.
  */
-function toNoteText(markdown) {
+function toNoteText(markdown, images = []) {
   const lines = markdown.split('\n');
   const out = [];
   let inFence = false;
@@ -118,6 +129,14 @@ function toNoteText(markdown) {
 
     if (inFence) {
       out.push(line);
+      continue;
+    }
+
+    // Images become a marker on their own line; the caller turns them into blocks.
+    const image = line.match(/^\s*!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)\s*$/);
+    if (image) {
+      images.push({ alt: image[1], src: image[2] });
+      out.push('', IMAGE_MARK(images.length - 1), '');
       continue;
     }
 
@@ -151,6 +170,32 @@ function toNoteText(markdown) {
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+/** Convert a site image (/images/...) to a JPEG note accepts. External URLs are left as is. */
+async function exportImage(src, destPath) {
+  if (!src.startsWith('/')) return null;
+  const sourcePath = path.join(REPO_ROOT, 'public', src);
+  try {
+    await sharp(sourcePath).flatten({ background: '#ffffff' }).jpeg({ quality: 88 }).toFile(destPath);
+    return destPath;
+  } catch (error) {
+    log(`  [warn] could not convert ${src}: ${error.message}`);
+    return null;
+  }
+}
+
+function splitBlocks(text, images) {
+  const blocks = [];
+  for (const chunk of text.split(/\n*(⟦IMAGE:\d+⟧)\n*/)) {
+    const mark = chunk.match(IMAGE_MARK_RE);
+    if (mark) {
+      blocks.push({ type: 'image', ...images[Number(mark[1])] });
+    } else if (chunk.trim()) {
+      blocks.push({ type: 'text', text: chunk.trim() });
+    }
+  }
+  return blocks;
 }
 
 function formatTags(tags = []) {
@@ -187,9 +232,10 @@ async function main() {
     const title = config.title ?? data.title;
     const url = config.url?.trim() || `${siteUrl}/blog/${basename}/`;
 
+    const images = [];
     const sections = [];
     if (config.lead) sections.push(config.lead);
-    sections.push(toNoteText(body));
+    sections.push(toNoteText(body, images));
     if (config.outro) sections.push(config.outro);
     if (config.canonical !== false) {
       sections.push(`この記事は個人ブログにも掲載しています。\n${url}`);
@@ -197,17 +243,50 @@ async function main() {
     const tagLine = formatTags(config.tags ?? data.tags ?? []);
     if (tagLine) sections.push(tagLine);
 
-    const noteBody = sections.join('\n\n');
+    const joined = sections.join('\n\n');
+    const noteBody = joined
+      .replace(/\n*⟦IMAGE:\d+⟧\n*/g, '\n\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    const assetDir = path.join(outDir, slug);
+    await fs.mkdir(assetDir, { recursive: true });
+    for (const [index, image] of images.entries()) {
+      const name = path.basename(image.src).replace(/\.[^.]+$/, '');
+      const dest = path.join(assetDir, `${String(index + 1).padStart(2, '0')}-${name}.jpg`);
+      const file = await exportImage(image.src, dest);
+      image.file = file ? path.relative(REPO_ROOT, file) : null;
+    }
+    const hero = data.heroImage ? await exportImage(data.heroImage, path.join(assetDir, 'hero.jpg')) : null;
+
+    const blocks = splitBlocks(joined, images);
 
     await fs.writeFile(
       path.join(outDir, `${slug}.json`),
-      `${JSON.stringify({ slug, title, url, body: noteBody, tags: config.tags ?? data.tags ?? [] }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          slug,
+          title,
+          url,
+          hero: hero ? path.relative(REPO_ROOT, hero) : null,
+          body: noteBody,
+          blocks,
+          tags: config.tags ?? data.tags ?? [],
+        },
+        null,
+        2
+      )}\n`,
       'utf8'
     );
     await fs.writeFile(path.join(outDir, `${slug}.txt`), `${noteBody}\n`, 'utf8');
 
     written += 1;
-    log(`  [note] ${slug} — ${noteBody.length} chars → ${path.relative(REPO_ROOT, outDir)}/${slug}.{json,txt}`);
+    log(
+      `  [note] ${slug} — ${noteBody.length} chars, ${images.length} images → ${path.relative(
+        REPO_ROOT,
+        outDir
+      )}/${slug}.{json,txt}`
+    );
   }
 
   log(written === 0 ? 'No posts with a `note:` frontmatter key.' : `\nDone: ${written} prepared.`);
