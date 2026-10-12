@@ -1,6 +1,7 @@
 ---
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
+import Analytics from '@components/Analytics.astro';
 import config from '@config/config.json';
 import social from '@config/social';
 
@@ -28,9 +29,18 @@ export interface Props {
   blogpost?: boolean;
   pubDate?: Date;
   updatedDate?: Date;
+  slug?: string;
+  tags?: string[];
 }
 
-const { title, meta_title, description, noindex, blogpost, image, pubDate, updatedDate } = Astro.props;
+const { title, meta_title, description, noindex, blogpost, image, pubDate, updatedDate, slug, tags } = Astro.props;
+
+// 分析用のページ分類。GA4 の content_group に入る。
+const contentGroup = (() => {
+  if (blogpost) return 'article';
+  const [first] = Astro.url.pathname.split('/').filter(Boolean);
+  return first ?? 'top';
+})();
 
 const siteRoot = config.site.base_url.replace(/\/$/, '');
 const toAbsolute = (path: string) => (path.startsWith('http') ? path : `${siteRoot}/${path.replace(/^\//, '')}`);
@@ -88,7 +98,14 @@ if (blogpost && pubDate) {
 ---
 
 <!doctype html>
-<html lang={config.site.lang} class="scroll-smooth">
+<html
+  lang={config.site.lang}
+  class="scroll-smooth"
+  data-content-group={contentGroup}
+  data-article-slug={blogpost ? slug : undefined}
+  data-article-tags={blogpost && tags?.length ? tags.join(',') : undefined}
+  data-published-date={blogpost && pubDate ? new Date(pubDate).toISOString().slice(0, 10) : undefined}
+>
   <head>
     <meta name="google-site-verification" content="Zqz8CHfQz5W8Rbohpg9h4xL2ZIo6B1OpWM1dSLXhjxU" />
     <!-- favicon -->
@@ -148,7 +165,9 @@ if (blogpost && pubDate) {
     <link rel="manifest" href="/manifest.webmanifest" />
     <ViewTransitions />
 
-    <!-- Vercel Web Analyticsが有効な環境では、外部リンクのクリックも記録する。 -->
+    <Analytics />
+
+    <!-- Vercel Web Analytics。Hobbyプランではカスタムイベントは記録されず、PVと参照元のみ。 -->
     <script is:inline>
       window.va =
         window.va ||
@@ -165,26 +184,90 @@ if (blogpost && pubDate) {
     </main>
     <Footer />
     <script>
+      type AnalyticsWindow = Window & {
+        va?: CallableFunction;
+        gtag?: CallableFunction;
+      };
+      const analyticsWindow = window as AnalyticsWindow;
+
+      const sendEvent = (name: string, params: Record<string, string | number>) => {
+        analyticsWindow.gtag?.('event', name, params);
+      };
+
+      // data-track の書式は "種別:名前:補足"（例: app:Koyori:home, app:Atode:App Store, social:x:post）。
       const bindTrackedLinks = () => {
-        const analyticsWindow = window as Window & {
-          va?: CallableFunction;
-        };
         document.querySelectorAll<HTMLAnchorElement>('a[data-track]').forEach((link) => {
           if (link.dataset.trackingBound === 'true') return;
           link.dataset.trackingBound = 'true';
           link.addEventListener('click', () => {
-            const eventName = link.dataset.track;
-            if (!eventName) return;
-            analyticsWindow.va?.('event', {
-              name: 'outbound_click',
-              data: { target: eventName },
+            const target = link.dataset.track;
+            if (!target) return;
+            analyticsWindow.va?.('event', { name: 'outbound_click', data: { target } });
+            sendEvent('outbound_click', {
+              link_target: target,
+              link_url: link.href,
+              link_location: location.pathname,
             });
+            const [kind, name, detail] = target.split(':');
+            if (kind === 'app') {
+              sendEvent('app_store_click', {
+                app_name: name ?? '',
+                link_target: target,
+                link_detail: detail ?? '',
+                link_url: link.href,
+              });
+            }
           });
         });
       };
 
-      bindTrackedLinks();
-      document.addEventListener('astro:page-load', bindTrackedLinks);
+      // 記事本文のどこまで読まれたか。記事の長さに比例した位置に目印を置いて、見えたら送る。
+      let readObserver: IntersectionObserver | undefined;
+      let observedBody: HTMLElement | undefined;
+      const READ_MARKS = [25, 50, 75, 100];
+      const observeReading = () => {
+        const slug = document.documentElement.dataset.articleSlug;
+        const body = document.querySelector<HTMLElement>('article .prose');
+        // 初回表示は直接呼び出しと astro:page-load の両方から来るので、同じ本文には一度だけ仕掛ける。
+        if (!slug || !body || body === observedBody) return;
+        observedBody = body;
+
+        readObserver?.disconnect();
+        const startedAt = Date.now();
+        readObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const percent = Number((entry.target as HTMLElement).dataset.readMark);
+            readObserver?.unobserve(entry.target);
+            entry.target.remove();
+            sendEvent('scroll_depth', { percent, article_slug: slug });
+            if (percent === 100) {
+              sendEvent('article_read_complete', {
+                article_slug: slug,
+                seconds_to_complete: Math.round((Date.now() - startedAt) / 1000),
+              });
+            }
+          });
+        });
+
+        if (getComputedStyle(body).position === 'static') body.style.position = 'relative';
+        READ_MARKS.forEach((percent) => {
+          const mark = document.createElement('span');
+          mark.dataset.readMark = String(percent);
+          mark.setAttribute('aria-hidden', 'true');
+          mark.style.cssText = `position:absolute;left:0;width:1px;height:1px;pointer-events:none;top:calc(${percent}% - 1px)`;
+          body.appendChild(mark);
+          readObserver?.observe(mark);
+        });
+      };
+
+      const onPageLoad = () => {
+        bindTrackedLinks();
+        observeReading();
+      };
+      onPageLoad();
+      document.addEventListener('astro:page-load', onPageLoad);
+      document.addEventListener('astro:before-swap', () => readObserver?.disconnect());
     </script>
     <script>
       // This is a hack to get vite-plugin-pwa to generate a sw.js file.

@@ -18,7 +18,8 @@
     "sync:note": "node scripts/sync-note.mjs",
     "generate:hero": "node scripts/generate-hero-image.mjs",
     "og:image": "node scripts/create-og-image.mjs",
-    "weekly:ai-log": "node scripts/weekly-ai-log.mjs"
+    "weekly:ai-log": "node scripts/weekly-ai-log.mjs",
+    "analytics:report": "node scripts/analytics-report.mjs"
   },
   "devDependencies": {
     "@astrojs/mdx": "^4.3.13",

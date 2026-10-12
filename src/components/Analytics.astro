@@ -1,0 +1,40 @@
+---
+// GA4。測定IDが設定された本番ビルドでだけ読み込む（ローカルやIDなしのプレビューを集計に混ぜない）。
+// ViewTransitions でページ遷移がクライアント側になるため、page_view は自動送信を止めて
+// astro:page-load ごとに手動で送る。
+const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim();
+const enabled = import.meta.env.PROD && Boolean(measurementId);
+
+const snippet = `
+window.dataLayer = window.dataLayer || [];
+window.gtag = function () {
+  window.dataLayer.push(arguments);
+};
+window.gtag('js', new Date());
+window.gtag('config', ${JSON.stringify(measurementId)}, { send_page_view: false });
+
+(() => {
+  // クライアント遷移では document.referrer が初回のまま残るので、直前のURLを自前で持つ。
+  let previousLocation = document.referrer;
+  const sendPageView = () => {
+    const meta = document.documentElement.dataset;
+    window.gtag('event', 'page_view', {
+      page_location: location.href,
+      page_path: location.pathname,
+      page_title: document.title,
+      page_referrer: previousLocation,
+      content_group: meta.contentGroup || 'other',
+      article_slug: meta.articleSlug,
+      article_tags: meta.articleTags,
+      published_date: meta.publishedDate,
+    });
+    previousLocation = location.href;
+  };
+  // astro:page-load は初回表示とクライアント遷移の両方で1回ずつ発火する。
+  document.addEventListener('astro:page-load', sendPageView);
+})();
+`;
+---
+
+{enabled && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />}
+{enabled && <script is:inline set:html={snippet} />}
