@@ -33,36 +33,61 @@ Vercel Web Analytics も残していますが、Hobby プランではカスタ�
 
 ## 初期設定（一度だけ）
 
-### 1. GA4 のタグを有効にする
+人が画面で操作しないといけないのは 1〜4 だけ。GA4 の細かい設定と測定IDの反映は 5 のスクリプトがやる。
 
-1. [Google アナリティクス](https://analytics.google.com/) でプロパティを作り、ウェブストリームを `https://dev-blog-pi-six.vercel.app` で追加する。
-2. ウェブストリームの「拡張計測機能」で **ページビューの「ブラウザの履歴イベントに基づくページの変更」をオフ**にする（ページ遷移はこちらで送っているので二重計上になる）。
-3. 測定ID（`G-XXXXXXX`）を Vercel の Project → Settings → Environment Variables に `PUBLIC_GA_MEASUREMENT_ID` として登録し、再デプロイする。
+### 1. GA4 のプロパティとウェブストリームを作る
 
-### 2. GA4 側の設定
+1. [Google アナリティクス](https://analytics.google.com/) → 管理 → 作成 → プロパティ（タイムゾーン: 日本、通貨: 円）。
+2. データストリーム → ウェブ → URL `dev-blog-pi-six.vercel.app`。
+3. 管理 → プロパティの詳細 の右上にある **数字のプロパティID** を控える（`G-` の測定IDではない）。
 
-- 管理 → イベント（キーイベント）で `app_store_click` と `article_read_complete` をキーイベントにする。
-- 管理 → カスタム定義で、イベントスコープのカスタムディメンションとして `article_slug`、`article_tags`、`link_target`、`app_name`、`percent` を登録する（`content_group` は GA4 標準の「コンテンツグループ」に入るので登録不要）。
-- 管理 → データ保持を 14 か月にする（初期値は 2 か月）。
+### 2. サービスアカウントを作る（Google Cloud）
 
-### 3. Search Console をつなぐ
+1. [Google Cloud Console](https://console.cloud.google.com/) でプロジェクトを作る（課金設定は不要）。
+2. APIとサービス → ライブラリ で **Google Analytics Admin API**、**Google Analytics Data API**、**Google Search Console API** を有効にする。
+3. IAMと管理 → サービスアカウント → 作成（ロールは付けなくてよい）。
+4. 作ったアカウントの「鍵」→ 鍵を追加 → JSON。ダウンロードしたファイルはリポジトリの外に置く（例: `~/.config/keys/dev-blog-analytics.json`）。
 
-- Search Console のプロパティは所有権確認済み（`Base.astro` の `google-site-verification`）。
-- GA4 の管理 → Search Console のリンクから関連付ける。
+### 3. サービスアカウントに権限を付ける
 
-### 4. レポートスクリプト用の認証
+- GA4: 管理 → プロパティのアクセス管理 → ＋ → サービスアカウントのメールアドレス（`…@….iam.gserviceaccount.com`）を **編集者** で追加。
+- Search Console: 設定 → ユーザーと権限 → ユーザーを追加 → 同じアドレスを **制限付き** で追加。
 
-1. Google Cloud でプロジェクトを作り、**Google Analytics Data API** と **Google Search Console API** を有効にする。
-2. サービスアカウントを作って JSON 鍵をダウンロードする（リポジトリの外に置く）。
-3. GA4 の管理 → プロパティのアクセス管理で、サービスアカウントのメールアドレスに「閲覧者」を付ける。
-4. Search Console の設定 → ユーザーと権限で、同じメールアドレスを「制限付き」で追加する。
-5. `.env` に書く:
+### 4. Search Console を GA4 にリンクする
+
+GA4 の 管理 → サービスとのリンク → Search Console のリンク → `https://dev-blog-pi-six.vercel.app/` を選んでウェブストリームと関連付ける（API が無いので手作業）。
+
+### 5. セットアップスクリプトを実行する
+
+`.env` に書く:
 
 ```sh
-GA4_PROPERTY_ID=123456789          # 管理 → プロパティの詳細（G- の測定IDではない）
+GA4_PROPERTY_ID=123456789
 GSC_SITE_URL=https://dev-blog-pi-six.vercel.app/   # ドメインプロパティなら sc-domain:example.com
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+GOOGLE_APPLICATION_CREDENTIALS=/Users/<you>/.config/keys/dev-blog-analytics.json
 ```
+
+```sh
+npm run analytics:setup -- --dry-run   # 何をするか確認
+npm run analytics:setup
+git add src/config/config.json && git commit -m "chore: GA4の測定IDを設定" && git push
+```
+
+スクリプトがやること（何度実行しても同じ状態になる）:
+
+- ウェブストリームの測定IDを `src/config/config.json` の `analytics.ga4MeasurementId` に書き込む
+- 拡張計測の「ブラウザの履歴イベントに基づくページの変更」をオフ（page_view はサイト側で送るので二重計上を防ぐ）
+- `app_store_click` と `article_read_complete` をキーイベントに
+- イベントスコープのカスタムディメンション（`article_slug`、`article_tags`、`published_date`、`link_target`、`link_detail`、`app_name`、`percent`）を作成
+- イベントデータの保持期間を 14 か月に（初期値は 2 か月）
+
+測定IDを push すると、Vercel の **本番デプロイでだけ** GA4 が読み込まれる（`VERCEL_ENV=production`）。プレビューやローカルは集計に混ざらない。ローカルで動作確認したいときは `PUBLIC_GA_MEASUREMENT_ID=G-XXXX npm run build && npm run preview`。
+
+確認: 自分のブログを開いて GA4 の レポート → リアルタイム に出れば成功（広告ブロッカーが入っているブラウザでは出ない）。
+
+### 任意: 自分のアクセスを除外する
+
+データストリーム → タグ設定を行う → 内部トラフィックの定義 で自宅の IP を登録し、管理 → データフィルタ で「Internal Traffic」を有効にする。
 
 ## レポートを出す
 

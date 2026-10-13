@@ -1,9 +1,16 @@
 ---
-// GA4。測定IDが設定された本番ビルドでだけ読み込む（ローカルやIDなしのプレビューを集計に混ぜない）。
-// ViewTransitions でページ遷移がクライアント側になるため、page_view は自動送信を止めて
+import config from '@config/config.json';
+
+// GA4。ViewTransitions でページ遷移がクライアント側になるため、page_view は自動送信を止めて
 // astro:page-load ごとに手動で送る。
-const measurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim();
-const enabled = import.meta.env.PROD && Boolean(measurementId);
+//
+// 測定IDは config.json に置き、Vercel の本番デプロイでだけ読み込む（プレビューやローカルを集計に混ぜない）。
+// 環境変数 PUBLIC_GA_MEASUREMENT_ID を渡したビルドは、ローカル確認用に環境を問わず有効にする。
+const envId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim();
+const configId = config.analytics.ga4MeasurementId.trim();
+const measurementId = envId || configId;
+const enabled =
+  import.meta.env.PROD && (Boolean(envId) || (Boolean(configId) && process.env.VERCEL_ENV === 'production'));
 
 const snippet = `
 window.dataLayer = window.dataLayer || [];
