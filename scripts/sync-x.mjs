@@ -10,6 +10,7 @@ import yaml from 'js-yaml';
 import { collectImageUrls, parseMarkdown, toContentState } from './lib/x-content-state.mjs';
 import { buildDigestTree, extractPoints } from './lib/x-digest.mjs';
 import { buildThread, validateThread, weightedLength } from './lib/x-thread.mjs';
+import utm from './lib/utm.cjs';
 import { createArticleDraft, createPost, publishArticle, readCredentials, uploadImage } from './lib/x-client.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -179,6 +180,10 @@ async function writeState(statePath, state) {
   await fs.writeFile(statePath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
 }
 
+function withoutUtm(value, entry) {
+  return JSON.parse(JSON.stringify(value).split(entry.url).join(entry.canonicalUrl));
+}
+
 function hashOf(value) {
   return crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 }
@@ -270,13 +275,14 @@ async function collectEntries(args, siteUrl) {
 
     // The CTA link is the whole point of the digest — a relative or malformed
     // URL would silently ship a dead link into a published Article.
-    const url = config.url?.trim() || `${siteUrl}/blog/${basename}/`;
-    if (!/^https?:\/\/[^/]+\//.test(url)) {
+    const canonicalUrl = config.url?.trim() || `${siteUrl}/blog/${basename}/`;
+    if (!/^https?:\/\/[^/]+\//.test(canonicalUrl)) {
       throw new Error(
-        `Resolved a non-absolute URL for ${slug}: "${url}".\n` +
+        `Resolved a non-absolute URL for ${slug}: "${canonicalUrl}".\n` +
           'Set SITE_URL in .env (with scheme and host) or add an absolute `x.url` to the frontmatter.'
       );
     }
+    const url = utm.withUtm(canonicalUrl, { source: 'x', campaign: basename });
 
     entries.push({
       filePath,
@@ -284,6 +290,7 @@ async function collectEntries(args, siteUrl) {
       title,
       description: config.description ?? data.description ?? '',
       url,
+      canonicalUrl,
       config: { mode: 'digest', ...config },
       tree: parseMarkdown(body),
     });
@@ -378,8 +385,10 @@ async function main() {
     if (!args.apply) continue;
 
     const record = state.articles[entry.slug] ?? {};
-    const articleHash = hashOf(contentState);
-    const threadHash = hashOf(threadPosts);
+    // UTM を付ける前に投稿済みの記事・スレッドを「変更あり」と判定して再投稿しないよう、
+    // ハッシュは UTM なしのURLに戻してから取る。
+    const articleHash = hashOf(withoutUtm(contentState, entry));
+    const threadHash = hashOf(withoutUtm(threadPosts, entry));
 
     // Most posts only want the thread — an Article never reaches the timeline,
     // so creating one for every post costs money and clutters the 記事 tab.

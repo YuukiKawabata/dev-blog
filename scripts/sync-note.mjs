@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 import sharp from 'sharp';
 
+import utm from './lib/utm.cjs';
+
 /**
  * Blog posts -> note-ready text.
  *
@@ -230,7 +232,7 @@ async function main() {
     if (args.only && args.only !== slug) continue;
 
     const title = config.title ?? data.title;
-    const url = config.url?.trim() || `${siteUrl}/blog/${basename}/`;
+    const url = utm.withUtm(config.url?.trim() || `${siteUrl}/blog/${basename}/`, { source: 'note', campaign: basename });
 
     const images = [];
     const sections = [];

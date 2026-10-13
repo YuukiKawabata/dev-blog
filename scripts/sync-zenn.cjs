@@ -3,6 +3,7 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const yaml = require('js-yaml');
+const { withUtm } = require('./lib/utm.cjs');
 
 const DEFAULT_SITE = 'https://dev-blog-pi-six.vercel.app';
 
@@ -193,7 +194,11 @@ async function main() {
     // Placed at the end on purpose: telling a reader up front that they are
     // reading a copy lowers the article's perceived value before they have
     // read it. At the end it reads as "there is more where this came from".
-    const canonicalUrl = zennObj.canonical ?? `${siteUrl}/blog/${path.basename(filePath, '.md')}/`;
+    const basename = path.basename(filePath, '.md');
+    const canonicalUrl = withUtm(zennObj.canonical || `${siteUrl}/blog/${basename}/`, {
+      source: 'zenn',
+      campaign: basename,
+    });
     const canonicalNote =
       zennObj.canonical === false ? '' : `\n\n---\n\nこの記事は個人ブログにも掲載しています。\n${canonicalUrl}\n`;
 

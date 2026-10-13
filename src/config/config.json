@@ -12,6 +12,9 @@
     "description": "Webエンジニア / 個人開発者 Yuki Kawabata（河畑祐輝）のブログ。日常の「ちょっと不便」を使いやすいアプリにするための、開発・設計・改善の工夫と、試して分かったことを書いています。",
     "pageSize": 6
   },
+  "analytics": {
+    "ga4MeasurementId": ""
+  },
   "features": {
     "youtube": false,
     "dark_mode": true

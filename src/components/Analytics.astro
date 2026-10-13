@@ -1,0 +1,47 @@
+---
+import config from '@config/config.json';
+
+// GA4。ViewTransitions でページ遷移がクライアント側になるため、page_view は自動送信を止めて
+// astro:page-load ごとに手動で送る。
+//
+// 測定IDは config.json に置き、Vercel の本番デプロイでだけ読み込む（プレビューやローカルを集計に混ぜない）。
+// 環境変数 PUBLIC_GA_MEASUREMENT_ID を渡したビルドは、ローカル確認用に環境を問わず有効にする。
+const envId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID?.trim();
+const configId = config.analytics.ga4MeasurementId.trim();
+const measurementId = envId || configId;
+const enabled =
+  import.meta.env.PROD && (Boolean(envId) || (Boolean(configId) && process.env.VERCEL_ENV === 'production'));
+
+const snippet = `
+window.dataLayer = window.dataLayer || [];
+window.gtag = function () {
+  window.dataLayer.push(arguments);
+};
+window.gtag('js', new Date());
+window.gtag('config', ${JSON.stringify(measurementId)}, { send_page_view: false });
+
+(() => {
+  // クライアント遷移では document.referrer が初回のまま残るので、直前のURLを自前で持つ。
+  let previousLocation = document.referrer;
+  const sendPageView = () => {
+    const meta = document.documentElement.dataset;
+    window.gtag('event', 'page_view', {
+      page_location: location.href,
+      page_path: location.pathname,
+      page_title: document.title,
+      page_referrer: previousLocation,
+      content_group: meta.contentGroup || 'other',
+      article_slug: meta.articleSlug,
+      article_tags: meta.articleTags,
+      published_date: meta.publishedDate,
+    });
+    previousLocation = location.href;
+  };
+  // astro:page-load は初回表示とクライアント遷移の両方で1回ずつ発火する。
+  document.addEventListener('astro:page-load', sendPageView);
+})();
+`;
+---
+
+{enabled && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />}
+{enabled && <script is:inline set:html={snippet} />}

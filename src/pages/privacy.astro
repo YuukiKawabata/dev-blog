@@ -1,0 +1,46 @@
+---
+import Base from '@layouts/Base.astro';
+import Page from '@layouts/Page.astro';
+---
+
+<Base meta_title="プライバシーポリシー" description="このサイトでのアクセス解析と外部送信について。">
+  <Page title="プライバシーポリシー">
+    <p>
+      このサイトでは、記事の改善や、どの記事がどこから読まれているかを知るために、アクセス解析ツールを使っています。個人を特定する目的では使いません。
+    </p>
+
+    <h2>利用しているツール</h2>
+    <h3>Google アナリティクス 4（Google LLC）</h3>
+    <p>
+      Cookie
+      を使って、閲覧したページ、参照元、ページ内のスクロール位置、リンクのクリック、おおまかな地域、端末やブラウザの種類などを
+      Google に送信しています。
+    </p>
+    <ul>
+      <li>
+        <a href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener noreferrer"
+          >Google のサービスを使用するサイトやアプリから収集した情報の Google による使用</a
+        >
+      </li>
+      <li>
+        無効にしたい場合は
+        <a href="https://tools.google.com/dlpage/gaoptout?hl=ja" target="_blank" rel="noopener noreferrer"
+          >Google アナリティクス オプトアウト アドオン</a
+        >を使うか、ブラウザで Cookie をブロックしてください。
+      </li>
+    </ul>
+
+    <h3>Vercel Web Analytics（Vercel Inc.）</h3>
+    <p>Cookie を使わずに、閲覧したページと参照元、端末やブラウザの種類などを集計しています。</p>
+    <ul>
+      <li>
+        <a href="https://vercel.com/docs/analytics/privacy-policy" target="_blank" rel="noopener noreferrer"
+          >Vercel Web Analytics のプライバシーについて</a
+        >
+      </li>
+    </ul>
+
+    <h2>お問い合わせ</h2>
+    <p>このページの内容についてのお問い合わせは、<a href="/about/">About</a> にある連絡先からお願いします。</p>
+  </Page>
+</Base>
