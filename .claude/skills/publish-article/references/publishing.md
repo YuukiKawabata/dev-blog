@@ -19,13 +19,14 @@
 すでに投稿済みのカードには**遡って反映されない**。貼り直す以外に直す方法がない。
 この非対称性（ブログ・Zennは後から直せる、Xは直せない）が、画像を最優先に置く理由。
 
-## ⑥ Obsidian の `公開済み` へ移す
+## ⑥ ブログへ配置する
 
-記事のマスターは Obsidian。まず `下書き` から `公開済み` へ移動する。
+公開済み記事の正本は `src/content/blog/`。点検が通った下書きを `hasshin` から移す（`$H` は `references/persona.md` を参照）。
 
 ```bash
-V="/Users/yuki/Library/Mobile Documents/iCloud~md~obsidian/Documents/YukiKawabata /個人"
-mv "$V/発信/記事/下書き/<basename>.md" "$V/発信/記事/公開済み/"
+cp "$H/articles/下書き/<basename>.md" src/content/blog/
+git -C "$H" rm -q "articles/下書き/<basename>.md"
+git -C "$H" commit -m "articles: <basename> を dev-blog へ移して公開" && git -C "$H" push
 ```
 
 ## ⑥.5 ヒーロー画像を生成する（すべての公開の前に、ここで完結させる）
@@ -83,12 +84,10 @@ file public/images/hero/<basename>.webp
 - X の CTA リンクの飛び先が404になる
 
 ```bash
-npm run sync:obsidian
 git status --short src/content/blog/
 ```
 
-`sync:obsidian` は `rsync --delete` なので、**新規1本だけが差分に出ることを必ず確認する。**
-他の記事が消える差分が出たら、Obsidian 側が欠けている。止めて報告する。
+**新規1本だけが差分に出ることを必ず確認する。** 他の記事に差分が出ていたら、止めて報告する。
 
 ```bash
 npm run build
