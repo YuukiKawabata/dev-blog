@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# analytics reports (npm run analytics:report -- --out reports/...)
+reports/
