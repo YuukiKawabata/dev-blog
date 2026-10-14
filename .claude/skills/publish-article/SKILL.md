@@ -129,7 +129,7 @@ yuki-dev-blog/src/content/blog/        ← 同期先
 ```yaml
 x:
   thread:
-    - "AIに.envを勝手に上書きされて、APIキーが全部消えた。\nOpenAIとXのキーを取り直す羽目になった話と、AIに値を見せずに書き戻した方法を書いた。\nhttps://dev-blog-pi-six.vercel.app/blog/<basename>/"
+    - "AIに.envを勝手に上書きされて、APIキーが全部消えた。\nOpenAIとXのキーを取り直す羽目になった。\nhttps://dev-blog-pi-six.vercel.app/blog/<basename>/"
 ```
 
 URLは素のブログURLで書けばよい。`sync-x` が `utm_source=x` を自動で付ける（2026-10-14〜）。
