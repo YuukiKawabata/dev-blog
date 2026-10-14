@@ -143,22 +143,16 @@ npm run sync:zenn
 cd ../zenn-articles && git status --short
 ```
 
-**新規記事1本だけが差分に出ることを確認する。** 他の記事に差分が出ていたら、中身を見る。
-
-- 差分が**記事末尾の「この記事は個人ブログにも掲載しています」のリンクにUTM（`?utm_source=zenn&...`）が付いただけ**なら、
-  2026-10-14 に入ったUTM付与（`scripts/lib/utm.cjs`）による想定どおりの差分。止めずに `git checkout -- <ファイル>` で戻す。
-  **まとめてpushしない。** Zennには直近24時間の投稿数の上限があり（数は非公開）、超えた記事は後から自動では公開されない。
-  既存記事に反映するかどうかは本人が決める（決まるまでは戻す）
-- それ以外の差分（本文の変化など）は、意図しない再生成なので止めて報告する
-
+**新規記事1本（と、その本文画像）だけが差分に出ることを確認する。** 他の記事に差分が出ていたら、意図しない再生成なので止めて報告する。
 `.DS_Store` はコミットしない。
 
-本文に画像がある記事は、**画像もZenn側へコピーする。** `sync:zenn` は記事のMarkdownしか運ばない。
-本文の画像パスは `/images/articles/<basename>/...` のまま出力されるので、同じパスに置けばZennが取り込む。
+`sync:zenn` は次の2つを自動でやる（2026-10-14〜）。
+
+- 本文が参照している `/images/articles/<basename>/` を、`zenn-articles/images/articles/<basename>/` に同じパスでコピーする（Zennが取り込む）
+- 末尾の「この記事は個人ブログにも掲載しています」のリンクに、`pubDate` が 2026-10-14 以降の記事だけUTMを付ける。
+  それより前の記事は書き換えない（まとめて変わると、Zennの直近24時間の投稿数上限で新規記事ごと止まるため）
 
 ```bash
-mkdir -p ../zenn-articles/images/articles/<basename>
-cp public/images/articles/<basename>/* ../zenn-articles/images/articles/<basename>/
 cd ../zenn-articles && git add articles/<slug>.md images/articles/<basename> && git commit -m "feat: <タイトル>を追加" && git push origin main
 ```
 
@@ -183,7 +177,8 @@ curl -s -o /dev/null -w "画像: %{http_code}\n" -L "$BASE/images/hero/<画像�
 node scripts/sync-x.mjs --publish --thread --only <slug>
 ```
 
-`article_enabled: false` の場合はスレッドのみ投稿される（Articleの下書きも作られない）。
+`article_enabled: false` の場合は告知の投稿だけが出る（Articleの下書きも作られない）。
+`--thread` は `x.thread` の配列をそのまま投稿するオプション。要素が1つなら単体の投稿になる。
 
 ### 確認は必ずブラウザで
 
@@ -191,7 +186,7 @@ node scripts/sync-x.mjs --publish --thread --only <slug>
 
 ブラウザツールで確認する:
 
-- プロフィール `https://x.com/Yuki_K25` の「ポスト」タブ → スレッドが並んでいるか
+- 投稿URL（`https://x.com/Yuki_K25/status/<threadRootId>`）を開き、本文とリンクカードの画像が出ているか
 - 「記事」タブ → Article を出した場合、そこに出る（ポストのタイムラインには**流れない**）
 
 ## ⑪ note へ配信（`note:` がある場合のみ）
@@ -242,7 +237,7 @@ npm run sync:note -- --only <slug>
 ## ⑫ state.json をコミットする
 
 **忘れると次回に二重投稿する。** `.x/state.json` には article_id・post_id・本文ハッシュが入っており、
-これが無いと「未投稿」と判定されて記事もスレッドも再投稿される。
+これが無いと「未投稿」と判定されて記事も告知も再投稿される。
 
 ```bash
 git add .x/state.json && git commit -m "chore: update X sync state" && git push origin main
@@ -262,7 +257,7 @@ git add .x/state.json && git commit -m "chore: update X sync state" && git push 
 X API は従量課金。
 
 - ポスト作成 $0.015/件、**URLを含むポストは $0.20/件**
-- スレッドは最終投稿だけURLを含む設計なので、4投稿で約 $0.25
+- 記事の告知はURL入りの1投稿なので、約 $0.20
 - Articles の単価は非公開
 
 画像生成（OpenAI, gpt-image-1.5, medium品質）は1枚あたり約$0.05〜0.06。

@@ -28,7 +28,7 @@ Vercel Web Analytics も残していますが、Hobby プランではカスタ�
 転載先からのリンクには UTM を付けています（`scripts/lib/utm.cjs`）。
 
 - X: `utm_source=x&utm_medium=social&utm_campaign=<記事ファイル名>`
-- Zenn: `utm_source=zenn&utm_medium=referral&...`
+- Zenn: `utm_source=zenn&utm_medium=referral&...`（`pubDate` が 2026-10-14 以降の記事だけ。既存記事を一斉に書き換えるとZennの投稿数上限に当たるため）
 - note: `utm_source=note&utm_medium=referral&...`
 
 ## 初期設定（一度だけ）

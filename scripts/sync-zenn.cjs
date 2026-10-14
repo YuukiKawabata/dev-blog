@@ -7,6 +7,34 @@ const { withUtm } = require('./lib/utm.cjs');
 
 const DEFAULT_SITE = 'https://dev-blog-pi-six.vercel.app';
 
+// UTM 付きの末尾リンクは、この日以降に公開した記事だけに付ける。
+// 既存の記事まで書き換わると Zenn の投稿数上限（直近24時間）に引っかかり、新規記事ごと止まるため。
+const UTM_SINCE = '2026-10-14';
+
+function toDateString(value) {
+  if (!value) return '';
+  const date = value instanceof Date ? value : new Date(String(value));
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+}
+
+// 本文が参照している /images/articles/<dir>/ を、Zenn リポジトリの images/ に同じパスでコピーする。
+// Zenn は GitHub 連携リポジトリ直下の images/ を取り込むので、パスを書き換えずに済む。
+async function copyArticleImages({ body, blogRepoRoot, zennRepoRoot, dryRun }) {
+  const dirs = new Set([...body.matchAll(/\(\/images\/articles\/([^/)\s]+)\//g)].map((m) => m[1]));
+  for (const dir of dirs) {
+    const from = path.join(blogRepoRoot, 'public', 'images', 'articles', dir);
+    const to = path.join(zennRepoRoot, 'images', 'articles', dir);
+    if (dryRun) {
+      // eslint-disable-next-line no-console
+      console.log(`[dry-run] copy images ${path.relative(blogRepoRoot, from)} -> ${path.relative(blogRepoRoot, to)}`);
+      continue;
+    }
+    await fs.cp(from, to, { recursive: true, filter: (src) => !path.basename(src).startsWith('.') });
+    // eslint-disable-next-line no-console
+    console.log(`[images] ${path.relative(blogRepoRoot, to)}`);
+  }
+}
+
 function parseArgs(argv) {
   const args = {
     dryRun: false,
@@ -195,10 +223,9 @@ async function main() {
     // reading a copy lowers the article's perceived value before they have
     // read it. At the end it reads as "there is more where this came from".
     const basename = path.basename(filePath, '.md');
-    const canonicalUrl = withUtm(zennObj.canonical || `${siteUrl}/blog/${basename}/`, {
-      source: 'zenn',
-      campaign: basename,
-    });
+    const blogUrl = zennObj.canonical || `${siteUrl}/blog/${basename}/`;
+    const canonicalUrl =
+      toDateString(data?.pubDate) >= UTM_SINCE ? withUtm(blogUrl, { source: 'zenn', campaign: basename }) : blogUrl;
     const canonicalNote =
       zennObj.canonical === false ? '' : `\n\n---\n\nこの記事は個人ブログにも掲載しています。\n${canonicalUrl}\n`;
 
@@ -213,6 +240,7 @@ async function main() {
       // eslint-disable-next-line no-console
       console.log(`[write] ${path.relative(blogRepoRoot, outPath)}`);
     }
+    await copyArticleImages({ body, blogRepoRoot, zennRepoRoot: path.dirname(destDir), dryRun: args.dryRun });
 
     generated += 1;
   }

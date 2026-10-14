@@ -102,12 +102,10 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    ```bash
    npm run sync:zenn
    cd ../zenn-articles && git status --short   # 新規1本だけか確認
-   mkdir -p images/articles/<basename> && cp ../yuki-dev-blog/public/images/articles/<basename>/* images/articles/<basename>/   # 本文画像がある場合
    git add articles/<slug>.md images/articles/<basename> && git commit -m "feat: <タイトル>を追加" && git push origin main
    ```
-   既存記事に**末尾リンクのUTMだけの差分**が出たら、想定どおりの差分なので `git checkout --` で戻す。
-   まとめてpushしない（Zennの投稿数上限で新規記事ごと止まる）。それ以外の差分なら止めて報告する。
-   `sync:zenn` は本文画像を運ばないので、上のコピーを忘れるとZennで画像が出ない。詳細は `publish-article/references/publishing.md` の⑨。
+   `sync:zenn` が本文画像を `images/articles/<basename>/` へ自動でコピーする。既存記事に差分が出たら止めて報告する
+   （まとめてpushするとZennの投稿数上限で新規記事ごと止まる）。詳細は `publish-article/references/publishing.md` の⑨。
    push後、**Zenn URLを実際にブラウザで開いて記事が存在することを目視確認する。**
    `published: true`でも実際には反映されない事故が過去にある（記事研究.md A14）。
    ステータスコード200は当てにならない（存在しないslugでも200を返す）。
@@ -121,7 +119,7 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    node scripts/sync-x.mjs --publish --thread --only <slug>
    ```
    投稿できたかどうかは**必ずブラウザで確認する**（x.comはSPAなのでcurlの200は無意味）。
-   プロフィールの「ポスト」タブにスレッドが並んでいるか、`article_enabled: true`の場合は
+   投稿URLを開いて本文とリンクカードの画像が出ているか、`article_enabled: true`の場合は
    「記事」タブも確認する。
 
 6. **⑪ noteへ配信**（frontmatterに`note:`があるときだけ）
@@ -131,7 +129,7 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    スクリーンショットで崩れと画像の枚数を確認してから公開する。
 
 7. **⑫ 記録する（省略しない）**
-   - `個人/発信/記事/実績/記事実績.csv` — 公開直後は数値空でよい。Xスレッド1投稿目のURLを「X告知URL」列に入れる
+   - `個人/発信/記事/実績/記事実績.csv` — 公開直後は数値空でよい。X告知の投稿URLを「X告知URL」列に入れる
    - SNS側の台帳・投稿実績CSV（`SNS/99_システム/`）は 2026-10-03 のv7切り替えで廃止。書かない
    - `個人/発信/記事/記事研究.md` — 学びをA番号の仮説として追記
    - `.x/state.json` をコミットする（忘れると次回二重投稿する）
@@ -152,7 +150,7 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
   ネイティブモジュールの環境差異をトラブルシュートしようとして無断でこれを行い、
   リポジトリに一時的な差分を残してしまった事故がある（2026-08-26）
 - Coworkが書いた下書きは既にですます調・一人称・コード例なしのはずだが、
-  **Xスレッドが常体・絵文字なしになっているかだけは投稿前に自分の目でも確認する**
+  **Xの告知が1投稿で、1行目に事件が来ていて短く平易か（140字前後）、常体・絵文字なしかは投稿前に自分の目でも確認する**（書き方は `publish-article/references/persona.md` の「記事告知の投稿」）
   （`.claude/skills/publish-article/references/persona.md`の「AIっぽさが出る典型」参照）
 - 途中で止まった場合、次に呼ばれたときは同じslugから再開できるよう、
   どこまで終えたかを報告に明記する

@@ -184,6 +184,15 @@ function withoutUtm(value, entry) {
   return JSON.parse(JSON.stringify(value).split(entry.url).join(entry.canonicalUrl));
 }
 
+// frontmatter で手書きした投稿文の記事URLにも、自動生成と同じ UTM を付ける。
+// 投稿済みかの判定（threadHash）は withoutUtm で外してから取るので、既存のスレッドは再投稿されない。
+function withUtmInPosts(posts, entry) {
+  if (!posts) return posts;
+  const escaped = entry.canonicalUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const bare = new RegExp(`${escaped}(?![?#\\w])`, 'g');
+  return posts.map((post) => post.replace(bare, entry.url));
+}
+
 function hashOf(value) {
   return crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 }
@@ -343,7 +352,7 @@ async function main() {
     const threadPosts =
       entry.config.thread_enabled === false
         ? []
-        : entry.config.thread ??
+        : withUtmInPosts(entry.config.thread, entry) ??
           buildThread({
             title: entry.title,
             description: entry.description,
