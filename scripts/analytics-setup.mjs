@@ -30,10 +30,10 @@ const CUSTOM_DIMENSIONS = [
   { parameterName: 'article_slug', displayName: '記事スラッグ' },
   { parameterName: 'article_tags', displayName: '記事タグ' },
   { parameterName: 'published_date', displayName: '記事公開日' },
-  { parameterName: 'link_target', displayName: 'リンク先（data-track）' },
+  { parameterName: 'link_target', displayName: 'リンク先 data track' },
   { parameterName: 'link_detail', displayName: 'リンク補足' },
   { parameterName: 'app_name', displayName: 'アプリ名' },
-  { parameterName: 'percent', displayName: '読了位置（%）' },
+  { parameterName: 'percent', displayName: '読了位置 percent' },
 ];
 
 const dryRun = process.argv.includes('--dry-run');
