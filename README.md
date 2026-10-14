@@ -17,36 +17,18 @@ npm run dev
 | `npm run build` | ビルド |
 | `npm run preview` | ビルド成果物のプレビュー |
 | `npm run newpost` | 新規記事ファイルの作成 |
-| `npm run sync:obsidian` | Obsidianから記事を同期（下記参照） |
 | `npm run sync:zenn` | Zenn用記事を別リポジトリへ同期（下記参照） |
 | `npm run sync:x` | X用のダイジェスト＋告知スレッドを生成（送信はしない） |
 | `npm run x:draft` / `x:publish` / `x:thread` | XへArticle下書き作成 / 公開 / スレッド投稿 |
 | `npm run sync:note` | note へ貼り付ける本文を生成（noteは公式APIなしのため手動投稿） |
 | `npm run og:image` | サイト共通のOG画像を再生成（アプリ本数は `src/config/apps.ts` の `publishedAppCount`） |
 
-## 📝 記事の作成とObsidian同期
+## 📝 記事の置き場所（2026-10-14〜）
 
-当ブログは **Obsidian を記事のマスター（執筆元）** として運用しています。
-
-### 1) Obsidianで記事を書く
-
-iPhoneやMacのObsidianを開き、以下のフォルダで記事を作成・編集します。
-- **公開用（同期対象）**: `個人/発信/記事/公開済み`
-- **下書き（同期対象外）**: `個人/発信/記事/下書き`
-
-### 2) ブログへ同期する
-
-記事を書き終え、ブログへ反映させたい場合は、ターミナルで以下のコマンドを実行します。
-
-```bash
-npm run sync:obsidian
-```
-
-> **注意**: このコマンドを実行すると、Obsidianの `published` フォルダの中身が `src/content/blog/` に一方通行で同期（コピー）されます。ブログリポジトリ側で直接Markdownを編集すると、次回の同期時にObsidian側の内容で上書きされるため注意してください。
-
-### 3) デプロイ
-
-同期によって `src/content/blog/` に変更が加わったら、通常通りGitでコミットしてPushしてください。
+- **公開済み記事の正本は `src/content/blog/`**。ここに置いてコミットすると公開される
+- ネタ・下書き・実績・記事研究は、非公開の発信メモリポジトリ `YuukiKawabata/hasshin` の `articles/` に置く
+- 書いてから公開するまでの手順は `.claude/skills/publish-article/SKILL.md`。スマホからもクラウドの Claude Code で実行できる
+- 以前は Obsidian（iCloud）の `個人/発信/記事/公開済み` を `npm run sync:obsidian`（rsync --delete）で同期していたが、廃止した
 
 ## 記事の追加
 

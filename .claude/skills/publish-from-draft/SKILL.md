@@ -1,9 +1,11 @@
 ---
 name: publish-from-draft
-description: Coworkのスケジュールタスク（記事ネタ受信箱チェック）が下書き止まりで作った記事（Obsidianの`個人/発信/記事/公開済み/`にfrontmatter込みで保存済み）を受け取り、ヒーロー画像生成からブログ・Zenn・X公開・実績記録まで仕上げる。Coworkのサンドボックスはapi.openai.com/vercel.app/zenn.dev/x.comへのネットワーク接続が構造的にできないため、この続きはこの端末（Mac）のClaude Codeから手動で実行する。ユーザーが「さっきの下書きを公開して」「記事を公開まで進めて」「公開済みフォルダの記事を出して」と言ったとき、または対象slugを指定してきたときに使う。
+description: 廃止（2026-10-14）。Coworkが iCloud の公開済みフォルダに置いた下書きを仕上げるためのスキルだったが、その運用は終わった。記事の公開は publish-article を使う。このスキルは使わない。
 ---
 
-# publish-from-draft
+# publish-from-draft（廃止）
+
+> **2026-10-14 に廃止。** 記事の正本を `src/content/blog/` に移し、Obsidianからの同期をやめたため、このスキルの前提が無くなった。記事の公開は `publish-article` を使う。以下は記録として残している。
 
 ## これは何のためのスキルか
 

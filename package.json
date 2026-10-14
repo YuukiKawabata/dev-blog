@@ -11,7 +11,6 @@
     "x:draft": "node scripts/sync-x.mjs --apply",
     "x:publish": "node scripts/sync-x.mjs --publish",
     "x:thread": "node scripts/sync-x.mjs --thread",
-    "sync:obsidian": "sh scripts/sync-obsidian.sh",
     "newpost": "astro-md-generator",
     "format": "prettier -w .",
     "lint:eslint": "eslint . --ext .js,.ts,.astro",
