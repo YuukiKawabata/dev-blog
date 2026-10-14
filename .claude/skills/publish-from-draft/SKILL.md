@@ -102,8 +102,12 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    ```bash
    npm run sync:zenn
    cd ../zenn-articles && git status --short   # 新規1本だけか確認
-   git add articles/<slug>.md && git commit -m "feat: <タイトル>を追加" && git push origin main
+   mkdir -p images/articles/<basename> && cp ../yuki-dev-blog/public/images/articles/<basename>/* images/articles/<basename>/   # 本文画像がある場合
+   git add articles/<slug>.md images/articles/<basename> && git commit -m "feat: <タイトル>を追加" && git push origin main
    ```
+   既存記事に**末尾リンクのUTMだけの差分**が出たら、想定どおりの差分なので `git checkout --` で戻す。
+   まとめてpushしない（Zennの投稿数上限で新規記事ごと止まる）。それ以外の差分なら止めて報告する。
+   `sync:zenn` は本文画像を運ばないので、上のコピーを忘れるとZennで画像が出ない。詳細は `publish-article/references/publishing.md` の⑨。
    push後、**Zenn URLを実際にブラウザで開いて記事が存在することを目視確認する。**
    `published: true`でも実際には反映されない事故が過去にある（記事研究.md A14）。
    ステータスコード200は当てにならない（存在しないslugでも200を返す）。
@@ -127,9 +131,8 @@ frontmatterが `draft: true` や `zenn.published: false` になっているフ�
    スクリーンショットで崩れと画像の枚数を確認してから公開する。
 
 7. **⑫ 記録する（省略しない）**
-   - `SNS/99_システム/投稿済み台帳/投稿済みX_ID.txt` — 投稿したポストURL全部（追記専用）
-   - `SNS/99_システム/実績/投稿実績.csv` — スロット`記事配信`、型`記事告知スレッド(n/m)`
-   - `個人/発信/記事/実績/記事実績.csv` — 公開直後は数値空でよい
+   - `個人/発信/記事/実績/記事実績.csv` — 公開直後は数値空でよい。Xスレッド1投稿目のURLを「X告知URL」列に入れる
+   - SNS側の台帳・投稿実績CSV（`SNS/99_システム/`）は 2026-10-03 のv7切り替えで廃止。書かない
    - `個人/発信/記事/記事研究.md` — 学びをA番号の仮説として追記
    - `.x/state.json` をコミットする（忘れると次回二重投稿する）
    ```bash
