@@ -90,7 +90,19 @@ file public/images/hero/<basename>.webp
 ## ⑦ ブログ公開のPRを作る（マージは本人）
 
 **dev-blog の `main` には直接 push しない。** ブランチに積んでPRを作り、本人がプレビューを確かめてマージする（2026-10-15〜）。
-マージされた時点がブログの公開になる。AIはマージしない。
+マージされた時点がブログの公開になる。**この記事PRはAIがマージしない。**
+
+本人がマージするのは、この記事PRの1回だけ（2026-10-15〜）。記事PRのマージを公開の承認とみなし、
+その後に続く作業は本人のマージを待たずに進める。
+
+| 後続 | 誰がどう進めるか |
+| --- | --- |
+| Zenn | Sync Zenn が、新しい記事と画像だけの変更なら、ブログの公開（200）を確かめてから zenn-articles の main に直接反映する。既存記事の書き換え・削除が混ざるときだけPRになる（⑨） |
+| `.x/state.json` | Actions から投稿したなら workflow が直接コミットする。手で投稿したときの記録PRは、AIが自分でマージする（⑫） |
+| デプロイが起動しないときの空コミット | AIがPRを作り、自分でマージする（⑧） |
+
+AIが自分でマージしてよいのは、上の表のPRだけ。記事の本文・画像・手順書（このスキル）・workflow・スクリプトを
+変えるPRは、これまでどおり本人がマージする。
 
 最初にブログ。理由は2つ。
 
@@ -119,7 +131,7 @@ git commit -m "feat: <記事タイトル>を公開" && git push -u origin <ブ�
 push したら、`main` 向けのPRを作る。本文には次のことを書く。
 
 - 追加したファイル（新規記事1本と画像だけであること）
-- 配信先（`zenn:` / `x:` / `note:` の有無）と、マージで何が動くか（Sync Zenn は zenn-articles にPRを作る。Sync X は組み立てだけで投稿しない）
+- 配信先（`zenn:` / `x:` / `note:` の有無）と、マージで何が動くか（Sync Zenn はブログの公開を待ってから Zenn に自動で反映する。Sync X は組み立てだけで投稿しない）
 - 確認したこと（ビルド、`sync:x` の告知の字数など）
 
 PRを作ったら、ここで一度報告して止まる。**マージを待つのは承認ゲートではなく、公開の操作を本人が持つため。**
@@ -147,7 +159,7 @@ done
 - GitHub App（Vercel）の権限更新が承認待ちだった。承認しても過去のpushは遡って処理されないので、**`main` に新しいコミットが1つ入ると起動する**
 - Vercel のデプロイ一覧に対象コミットが「キューにも失敗にも出ていない」ならこれ
 
-この場合も `main` には直接 push しない。空コミットのPRを作り、本人にマージを頼む。
+この場合も `main` には直接 push しない。空コミットのPRを作り、**AIが自分でマージする**（中身のないコミットなので本人の確認は要らない）。
 
 ```bash
 git fetch origin main && git checkout -b claude/trigger-deployment origin/main
@@ -162,6 +174,20 @@ curl -s -o /dev/null -w "%{http_code}\n" -L "https://dev-blog-pi-six.vercel.app/
 ```
 
 ## ⑨ Zenn へ配信
+
+**通常は何もしなくてよい。** 記事PRが main にマージされると、GitHub Actions の Sync Zenn が動き、
+変更が新しい記事と画像の追加だけなら、ブログの記事ページが200になるのを待ってから（最大10分）
+zenn-articles の main に直接反映する（2026-10-15〜）。AIは Actions の実行結果を確かめるだけでよい。
+
+次のときだけ、Sync Zenn は zenn-articles にPRを作って止まる。PRができていたら、理由（PR本文に書かれる）を本人に伝える。
+
+- 既存の記事の書き換え・削除が混ざっている（Zennの直近24時間の投稿数上限で、新規記事ごと止まることがあるため）
+- ブログが10分待っても公開されなかった
+- zenn-articles の main に直接 push できなかった（ブランチ保護など）
+
+反映後の確認は、下の「push後」の段落と同じ。
+
+以下は、Actions を使わずに手元（Mac）から反映するときの手順。
 
 ```bash
 npm run sync:zenn
@@ -267,13 +293,18 @@ npm run sync:note -- --only <slug>
 GitHub Actions の `Sync X` から投稿した場合は、workflow が `.x/state.json` を自分でコミットするので、ここは不要
 （反映されているかだけ `git log origin/main -- .x/state.json` で確かめる）。
 
-手元（Mac）から投稿した場合は、ブランチに積んでPRを作り、本人にマージを頼む。**マージされるまでは、
-同じ記事の X 投稿を手元からもう一度実行しない**（`main` の state.json がまだ古いため）。
+手元（Mac）から投稿した場合や、本人がXのアプリから手で投稿した場合は、ブランチに積んでPRを作り、
+**AIが自分でマージする**（変更が `.x/state.json` だけであることを確かめてから）。**マージされるまでは、
+同じ記事の X 投稿をもう一度実行しない**（`main` の state.json がまだ古いため）。
 
 ```bash
 git fetch origin main && git checkout -b claude/x-state-<slug> origin/main
 git add .x/state.json && git commit -m "chore: update X sync state" && git push -u origin claude/x-state-<slug>
 ```
+
+手で投稿したときは、`threadHash` を sync-x.mjs と同じ方法で計算して入れる（`.x/drafts/<slug>.json` の
+`thread` から記事URLのUTMを外し、JSONにして sha256 の先頭16文字）。既存の記事で同じ計算をして、
+記録済みの値と一致することを先に確かめる。投稿時刻は投稿IDから割り出せる（`(ID >> 22) + 1288834974657` ミリ秒）。
 
 ## 完了報告
 

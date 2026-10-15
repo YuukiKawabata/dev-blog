@@ -50,7 +50,11 @@ jobs:
       - name: Generate Zenn articles into zenn-articles repo
         run: npm run sync:zenn -- --dest ./zenn-articles/articles
 
-      - name: Create PR in zenn-articles if changed
+      # 新しい記事（と、その画像）を足すだけの変更は、ブログの公開を確かめてから main へ直接 push する。
+      # ブログ側のPRを本人がマージした時点で公開の承認は済んでいるので、ここでもう一度マージを求めない（2026-10-15〜）。
+      # 既存の記事を書き換える・消す変更は、Zenn の直近24時間の投稿数上限で新規記事ごと止まることがあるので
+      # （2026-10-03）、これまでどおりPRにして本人の確認を待つ。
+      - name: Publish to zenn-articles (direct for new articles, PR otherwise)
         env:
           GH_TOKEN: ${{ secrets.ZENN_SYNC_TOKEN }}
         run: |
@@ -67,22 +71,61 @@ jobs:
             exit 0
           fi
 
-          BRANCH="sync/zenn-from-dev-blog-${GITHUB_RUN_ID}"
-          git checkout -b "$BRANCH"
-
           git add -A
-          git commit -m "chore: sync articles from dev-blog"
-          git push -u origin "$BRANCH"
+          echo "Changes:"
+          git status --porcelain
 
-          # Avoid duplicate PRs when re-running a job
-          EXISTING=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number')
-          if [[ -n "${EXISTING:-}" ]]; then
-            echo "PR already exists: #$EXISTING"
+          create_pr() {
+            local reason="$1"
+            BRANCH="sync/zenn-from-dev-blog-${GITHUB_RUN_ID}"
+            git checkout -b "$BRANCH"
+            git commit -m "chore: sync articles from dev-blog"
+            git push -u origin "$BRANCH"
+
+            # Avoid duplicate PRs when re-running a job
+            EXISTING=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number')
+            if [[ -n "${EXISTING:-}" ]]; then
+              echo "PR already exists: #$EXISTING"
+              return 0
+            fi
+
+            gh pr create \
+              --title "chore: sync articles from dev-blog" \
+              --body "Automated sync from dev-blog via GitHub Actions. ${reason}" \
+              --base main \
+              --head "$BRANCH"
+            echo "::notice title=Zenn::PRを作成しました。本人のマージが必要です（${reason}）"
+          }
+
+          # 追加（A）だけなら自動で公開する。書き換え（M）・削除（D）・名前変更（R）が1つでもあればPRに回す。
+          if git status --porcelain | grep -qv '^A '; then
+            create_pr "既存の記事に変更があるため、自動では公開していません。"
             exit 0
           fi
 
-          gh pr create \
-            --title "chore: sync articles from dev-blog" \
-            --body "Automated sync from dev-blog via GitHub Actions." \
-            --base main \
-            --head "$BRANCH"
+          # ブログが先に公開されていることを確かめる（Zennが原典より先に出ないように）。
+          # 新しい記事の末尾にある「この記事は個人ブログにも掲載しています」のURLが200になるまで待つ（最大10分）。
+          URLS=$(git diff --cached --name-only --diff-filter=A -- 'articles/*.md' \
+            | xargs -r grep -ohE 'https://dev-blog-pi-six\.vercel\.app/blog/[^/?[:space:]]+/' \
+            | sort -u || true)
+          for url in $URLS; do
+            for i in $(seq 1 30); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' -L "${url}?cb=$(date +%s)")
+              echo "[$i] $code $url"
+              if [[ "$code" == "200" ]]; then break; fi
+              if [[ "$i" == "30" ]]; then
+                create_pr "ブログ（${url}）が10分待っても公開されなかったため、自動では公開していません。"
+                exit 0
+              fi
+              sleep 20
+            done
+          done
+
+          git commit -m "feat: sync new articles from dev-blog"
+          if git push origin HEAD:main; then
+            echo "::notice title=Zenn::新しい記事を zenn-articles の main に反映しました（PRなし）"
+          else
+            # ブランチ保護などで直接 push できないときは、従来どおりPRにする
+            git reset -q --soft HEAD~1
+            create_pr "main への直接 push が拒否されたため。"
+          fi
