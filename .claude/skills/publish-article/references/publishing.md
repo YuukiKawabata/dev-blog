@@ -76,7 +76,10 @@ file public/images/hero/<basename>.webp
 
 拡張子は frontmatter の `heroImage` と一致させる。違うならどちらかを合わせる。
 
-## ⑦ ブログへ同期して公開する
+## ⑦ ブログ公開のPRを作る（マージは本人）
+
+**dev-blog の `main` には直接 push しない。** ブランチに積んでPRを作り、本人がプレビューを確かめてマージする（2026-10-15〜）。
+マージされた時点がブログの公開になる。AIはマージしない。
 
 最初にブログ。理由は2つ。
 
@@ -97,13 +100,22 @@ npm run build
 手元に残っていることがあり（2026-10-12 に `package.json` などが混ざりかけた）、記事に関係するファイルだけを足す。
 
 ```bash
+git fetch origin main && git checkout -b <ブランチ名> origin/main   # 例: claude/<basename>
 git add src/content/blog/<basename>.md public/images/hero/<basename>.webp public/images/articles/<basename>
-git commit -m "feat: <記事タイトル>を公開" && git push origin main
+git commit -m "feat: <記事タイトル>を公開" && git push -u origin <ブランチ名>
 ```
 
-push が non-fast-forward で拒否されたら、`git fetch` してリモートの新しいコミットを確認し、
-`git rebase origin/main` で載せ直す。載せ直したら**もう一度ビルドする**（依存パッケージが増えていたら
-`npm install` が必要。`publish-from-draft` から来た場合は、依存の変更はユーザーに確認してから）。
+push したら、`main` 向けのPRを作る。本文には次のことを書く。
+
+- 追加したファイル（新規記事1本と画像だけであること）
+- 配信先（`zenn:` / `x:` / `note:` の有無）と、マージで何が動くか（Sync Zenn は zenn-articles にPRを作る。Sync X は組み立てだけで投稿しない）
+- 確認したこと（ビルド、`sync:x` の告知の字数など）
+
+PRを作ったら、ここで一度報告して止まる。**マージを待つのは承認ゲートではなく、公開の操作を本人が持つため。**
+⑧以降は、本人から「マージした」と言われてから（または同じセッションでマージを確認してから）進める。
+
+ブランチが古くなってコンフリクトしたら、`origin/main` を取り込んで直し、**もう一度ビルドしてから** push する
+（依存パッケージが増えていたら `npm install` が必要）。
 
 ## ⑧ デプロイ完了を待つ
 
@@ -121,11 +133,14 @@ done
 
 **404 のまま5分以上経つ場合**、デプロイが起動していない可能性がある。過去に実際にあった原因:
 
-- GitHub App（Vercel）の権限更新が承認待ちだった。承認しても過去のpushは遡って処理されないので、**空コミットを1つ push すると起動する**
+- GitHub App（Vercel）の権限更新が承認待ちだった。承認しても過去のpushは遡って処理されないので、**`main` に新しいコミットが1つ入ると起動する**
 - Vercel のデプロイ一覧に対象コミットが「キューにも失敗にも出ていない」ならこれ
 
+この場合も `main` には直接 push しない。空コミットのPRを作り、本人にマージを頼む。
+
 ```bash
-git commit --allow-empty -m "chore: trigger deployment" && git push origin main
+git fetch origin main && git checkout -b claude/trigger-deployment origin/main
+git commit --allow-empty -m "chore: trigger deployment" && git push -u origin claude/trigger-deployment
 ```
 
 デプロイ後、画像とOGPも確認する（⑥.5で画像は既に確定しているはずなので、ここは反映確認）。
@@ -238,8 +253,15 @@ npm run sync:note -- --only <slug>
 **忘れると次回に二重投稿する。** `.x/state.json` には article_id・post_id・本文ハッシュが入っており、
 これが無いと「未投稿」と判定されて記事も告知も再投稿される。
 
+GitHub Actions の `Sync X` から投稿した場合は、workflow が `.x/state.json` を自分でコミットするので、ここは不要
+（反映されているかだけ `git log origin/main -- .x/state.json` で確かめる）。
+
+手元（Mac）から投稿した場合は、ブランチに積んでPRを作り、本人にマージを頼む。**マージされるまでは、
+同じ記事の X 投稿を手元からもう一度実行しない**（`main` の state.json がまだ古いため）。
+
 ```bash
-git add .x/state.json && git commit -m "chore: update X sync state" && git push origin main
+git fetch origin main && git checkout -b claude/x-state-<slug> origin/main
+git add .x/state.json && git commit -m "chore: update X sync state" && git push -u origin claude/x-state-<slug>
 ```
 
 ## 完了報告
