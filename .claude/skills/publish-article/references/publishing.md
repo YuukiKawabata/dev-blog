@@ -38,6 +38,17 @@ npm run generate:hero -- --slug <basename> --theme "<記事のテーマを1〜2�
 `OPENAI_API_KEY` があれば OpenAI（gpt-image-1.5, medium品質）で自動生成し、
 `public/images/hero/<basename>.webp` に保存する。
 
+**クラウド（スマホから頼んだとき）では `NODE_USE_ENV_PROXY=1` を付けて実行する。**
+
+```bash
+NODE_USE_ENV_PROXY=1 npm run generate:hero -- --slug <basename> --theme "..."
+```
+
+クラウドの環境では、OpenAIのキーは通信の途中でプロキシが差し込む方式で、`OPENAI_API_KEY` には
+ダミーの値しか入っていない。Node の `fetch` は、この指定がないとプロキシを通らずに直接つながるため、
+ダミーのキーのまま送られて 401（`Incorrect API key provided`）になる（2026-10-15 に実際に起きた）。
+Mac では `.env` に本物のキーがあるので、付けなくても動く（付けても害はない）。
+
 **スタイルはスクリプト（`STYLE_GUIDE`）に固定してある。** ブログのデザイン（`tailwind.config.cjs`・
 `public/og-yuki-kawabata.png`）に合わせた、無地のオフホワイト背景・墨色の線と単純な図形・
 オレンジ（#DD5A35）を1点だけ・余白の多いフラットなイラスト。`--theme` で色や画風を指定しない。

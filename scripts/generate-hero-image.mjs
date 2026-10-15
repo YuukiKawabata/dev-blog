@@ -100,6 +100,10 @@ Options:
 
 Environment:
   OPENAI_API_KEY   For --provider openai (default). From platform.openai.com.
+  NODE_USE_ENV_PROXY=1
+                   Required in Claude Code cloud sessions: the key is injected
+                   by the HTTPS proxy, and Node's fetch skips the proxy without
+                   this (the request then fails with 401).
   GEMINI_API_KEY   For --provider gemini. From aistudio.google.com — needs
                    prepay credits (Buy credits on the billing page), a linked
                    card alone is not enough.
