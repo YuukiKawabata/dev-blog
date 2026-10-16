@@ -17,6 +17,8 @@ x:
   article_enabled: false
   thread:
     - "メモをiCloudに置いていたせいで、スマホのAIからは1ファイルも見えていなかった。\nObsidianはやめずに、置き場所だけGitHubに移した。\nhttps://dev-blog-pi-six.vercel.app/blog/20261015-phone-first-setup/"
+note:
+  tags: ["個人開発", "AI", "ClaudeCode"]
 ---
 
 個人開発でアプリを作りながら、このブログとXで発信しています。作業はほとんどMacの前でやっていて、AIに頼むのもMacのClaude Codeからでした。
