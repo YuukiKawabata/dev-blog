@@ -54,7 +54,7 @@ H="${HASSHIN_DIR:-$HOME/dev/hasshin}"
 PRを作ったら報告して止まり、マージされてから⑧以降（デプロイ待ち・Zenn・X・note・記録）に進む。
 
 **本人がマージするのは、この記事PRの1回だけ。** その後は本人のマージを待たない（2026-10-15 ユーザーの指示）。
-Zenn は Sync Zenn がブログの公開を待って自動で反映する。`.x/state.json` の記録PRと、デプロイを起こすための
+Zenn は Sync Zenn が、X の告知は Sync X が、ブログの公開を待って自動で反映・投稿する（X は 2026-10-16〜）。`.x/state.json` の記録PRと、デプロイを起こすための
 空コミットのPRは、AIが自分でマージする。記事の本文・画像・手順書・workflow・スクリプトを変えるPRは、本人がマージする。
 詳細は `references/publishing.md` の⑦。
 
