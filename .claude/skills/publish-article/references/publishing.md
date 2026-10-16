@@ -240,7 +240,11 @@ node scripts/sync-x.mjs --publish --thread --only <slug>
 - 投稿URL（`https://x.com/Yuki_K25/status/<threadRootId>`）を開き、本文とリンクカードの画像が出ているか
 - 「記事」タブ → Article を出した場合、そこに出る（ポストのタイムラインには**流れない**）
 
-## ⑪ note へ配信（`note:` がある場合のみ）
+## ⑪ note へ配信（本人がPCから依頼したときだけ）
+
+note は、記事を書いたセッションでは投稿しない。本人がPC（Claude in Chrome が使える環境）から
+「noteに投稿して」と別に依頼したときに、ここから進める。Zenn に出した記事でも出してよい（2026-10-16〜）。
+記事に `note:` が無いときは、先に `note:`（ハッシュタグ）を足すPRを作る。
 
 note には公式の投稿APIがない。**ブラウザ（Claude in Chrome）で note のエディタを操作して投稿する。**
 
