@@ -1,7 +1,8 @@
 name: Sync X (Articles + thread)
 
-# Pushes only build and validate the payloads — nothing is sent to X.
-# Every outbound action is a deliberate manual run.
+# Pushes build and validate the payloads. The one exception: a push that *adds*
+# a blog post with a hand-written x.thread announces that post (once the blog
+# page and hero image are live). Everything else on X is a deliberate manual run.
 on:
   push:
     branches:
@@ -48,6 +49,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Auto-post compares the pushed commits to find newly added posts.
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -124,10 +128,75 @@ jobs:
           path: .x/drafts/
           if-no-files-found: ignore
 
+      # 記事PRがマージされたら、そのpushで新しく追加された記事の告知を自動で投稿する（2026-10-16〜）。
+      # 対象は「追加された」記事だけで、既存記事の編集では投稿しない。手書きの x.thread が無い記事と、
+      # x.auto: false の記事も投稿しない。ブログの記事ページとヒーロー画像が200になるまで待ち（最大10分）、
+      # 開けなければ投稿しない（リンク先が404の告知や、画像なしのリンクカードは後から直せないため）。
+      - name: Auto-post new articles
+        id: autopost
+        if: github.event_name == 'push'
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          TARGETS=$(node scripts/x-new-articles.mjs "$BEFORE" "$AFTER")
+          if [[ -z "$TARGETS" ]]; then
+            echo "No new articles to announce."
+            exit 0
+          fi
+
+          for name in X_API_KEY X_API_SECRET X_ACCESS_TOKEN X_ACCESS_TOKEN_SECRET; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error title=Missing secret::$name is not set. 告知は投稿していません。"
+              exit 1
+            fi
+          done
+
+          BASE="${SITE_URL:-https://dev-blog-pi-six.vercel.app}"
+          BASE="${BASE%/}"
+
+          wait_for() {
+            local url="$1"
+            for i in $(seq 1 30); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' -L "${url}?cb=$(date +%s)")
+              echo "[$i] $code $url"
+              if [[ "$code" == "200" ]]; then return 0; fi
+              sleep 20
+            done
+            return 1
+          }
+
+          FAILED=0
+          while IFS=$'\t' read -r slug basename hero; do
+            [[ -z "$slug" ]] && continue
+            echo "::group::$slug"
+            if ! wait_for "$BASE/blog/$basename/"; then
+              echo "::error title=X::$slug — ブログが10分待っても開けなかったので、告知は投稿していません"
+              FAILED=1; echo "::endgroup::"; continue
+            fi
+            if [[ -n "$hero" ]] && ! wait_for "$BASE$hero"; then
+              echo "::error title=X::$slug — ヒーロー画像が開けなかったので、告知は投稿していません"
+              FAILED=1; echo "::endgroup::"; continue
+            fi
+            node scripts/sync-x.mjs --thread --only "$slug" | tee -a "$RUNNER_TEMP/sync-x.log"
+            echo "::notice title=X::$slug の告知を投稿しました"
+            echo "::endgroup::"
+          done <<< "$TARGETS"
+
+          echo "ran=true" >> "$GITHUB_OUTPUT"
+          exit "$FAILED"
+
       # Article ids and thread ids live in .x/state.json; without committing it
       # back, the next run would create duplicates.
       - name: Commit state
-        if: steps.flags.outputs.action != 'build'
+        if: always() && (steps.flags.outputs.action != 'build' || steps.autopost.outputs.ran == 'true')
         run: |
           set -euo pipefail
 
