@@ -10,6 +10,7 @@ const blog = defineCollection({
     categories: z.array(z.string()).default(['others']),
     tags: z.array(z.string()).default(['others']),
     authors: z.array(z.string()).default(['Yuki']),
+    series: z.enum(['weekly-log']).optional(),
     draft: z.boolean().optional(),
   }),
 });

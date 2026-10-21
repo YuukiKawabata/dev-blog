@@ -74,6 +74,7 @@ const auth = new google.auth.GoogleAuth({
 });
 
 // ---------- 記事タイトル ----------
+const weeklySlugs = new Set();
 function loadPostTitles() {
   const titles = new Map();
   for (const file of fs.readdirSync(BLOG_DIR)) {
@@ -83,6 +84,7 @@ function loadPostTitles() {
     if (!match) continue;
     const data = yaml.load(match[1]) ?? {};
     if (data.title) titles.set(file.replace(/\.mdx?$/, ''), data.title);
+    if (data.series === 'weekly-log' && !data.draft) weeklySlugs.add(file.replace(/\.mdx?$/, ''));
   }
   return titles;
 }
@@ -116,7 +118,7 @@ async function runReport(analyticsdata, body) {
     requestBody: { dateRanges: [{ startDate: FROM, endDate: TO }], limit: 1000, ...body },
   });
   return (res.data.rows ?? []).map((row) => ({
-    dims: row.dimensionValues.map((v) => v.value),
+    dims: (row.dimensionValues ?? []).map((v) => v.value),
     mets: row.metricValues.map((v) => Number(v.value)),
   }));
 }
@@ -223,6 +225,42 @@ async function ga4Section() {
     )
   );
 
+  // 継続読者の指標は追加セクションとして取得し、失敗しても既存レポートを残す。
+  out.push(
+    await section('認知・継続・次の接点', true, async () => {
+      const [users, returning, clicks] = await Promise.all([
+        runReport(analyticsdata, { metrics: [{ name: 'totalUsers' }] }),
+        runReport(analyticsdata, {
+          metrics: [{ name: 'totalUsers' }],
+          dimensionFilter: {
+            filter: { fieldName: 'newVsReturning', stringFilter: { matchType: 'EXACT', value: 'returning' } },
+          },
+        }),
+        runReport(analyticsdata, {
+          dimensions: [{ name: 'customEvent:link_target' }],
+          metrics: [{ name: 'eventCount' }],
+          dimensionFilter: eventIs('outbound_click'),
+        }),
+      ]);
+      const total = users[0]?.mets[0] ?? 0;
+      const repeat = returning[0]?.mets[0] ?? 0;
+      const weekly = pages.filter((r) => weeklySlugs.has(slugOfPath(r.dims[0])) || /^\/weekly\/?$/.test(r.dims[0]));
+      return [
+        '## 認知・継続・次の接点\n',
+        `- ユーザー数（totalUsers）: ${num(total)}`,
+        `- 再訪ユーザー数（newVsReturning=returning）: ${num(repeat)}`,
+        `- 再訪ユーザー / 全ユーザー: ${total ? pct(repeat / total) : '-'}`,
+        `- Weekly Log記事・一覧の合計PV: ${num(weekly.reduce((sum, r) => sum + r.mets[0], 0))}`,
+        '\n※ 再訪はGA4で識別できた範囲。ファン数ではありません。クリックは延べ回数で、遷移完了やXフォローを意味しません。',
+        '\n### Xプロフィール・記事回遊のクリック\n',
+        table(
+          ['リンク識別子', 'クリック'],
+          clicks.filter((r) => /^(social:x:|reading:)/.test(r.dims[0])).map((r) => [r.dims[0], num(r.mets[0])])
+        ),
+        'Xフォロワー純増・繰り返しの反応は運用記録に手動記入。取得できない値は未取得とします。',
+      ].join('\n');
+    })
+  );
   return out.join('\n');
 }
 

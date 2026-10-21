@@ -97,3 +97,16 @@ npm run analytics:report -- --from 2026-10-01 --to 2026-10-31 --out reports/2026
 ```
 
 記事別の PV・滞在・読了率・アプリ送客、流入元、記事 × 流入元、Search Console の記事別表示回数・CTR・順位・上位クエリを Markdown で出します。
+
+## 認知・継続読者の計測
+
+運用方針は `docs/audience-growth.md`。レポートにサイト全体の `totalUsers`、
+`newVsReturning=returning` に該当するユーザー数と全ユーザーに対する割合、Weekly Log記事・一覧PVを追加しています。
+再訪ユーザーはファン数ではありません。データが少ないときは28日単位の実数を中心に見ます。
+
+既存の `outbound_click` を内部回遊にも使用します（イベント名は互換性のため維持）。
+`link_target` の `social:x:*` はXプロフィール、`reading:<slug>:related` は関連記事、
+`reading:<slug>:start` はおすすめ記事、`reading:<slug>:series-*` は連載の前後・初回です。
+クリックは延べ回数で、到達・フォローを保証しません。記事別ユーザー数を合計して全体ユーザー数にしないでください。
+追加セクションの取得に失敗した場合は「取得失敗」と表示し、既存のPV等は残します。
+Xフォロワー数と繰り返しの反応は手動で記録します。

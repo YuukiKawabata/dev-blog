@@ -11,7 +11,7 @@ const { main }: { main: { name: string; url: string }[] } = menu;
   transition:persist="site-header"
   class="sticky top-0 z-50 w-full border-b border-gray-200/60 bg-paper/85 backdrop-blur-md transition-colors duration-300 dark:border-gray-800/60 dark:bg-gray-950/85"
 >
-  <div class="mx-auto flex max-w-2xl items-center justify-between gap-4 px-5 py-4 sm:px-6">
+  <div class="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-6">
     <a href="/" class="flex shrink-0 items-center gap-2.5" aria-label="ホーム">
       <BrandMark size={22} class="text-gray-950 dark:text-white" />
       <span class="text-[15px] font-semibold tracking-tight text-gray-950 dark:text-white">
@@ -19,11 +19,11 @@ const { main }: { main: { name: string; url: string }[] } = menu;
       </span>
     </a>
 
-    <div class="flex items-center gap-4 sm:gap-6">
+    <div class="flex w-full items-center justify-between gap-4 sm:w-auto sm:gap-6">
       <nav class="flex items-center gap-4 sm:gap-6" aria-label="メインナビゲーション">
         {
           main.map((item) => (
-            <a href={item.url} class="nav-link">
+            <a href={item.url} class="nav-link whitespace-nowrap">
               {item.name}
             </a>
           ))

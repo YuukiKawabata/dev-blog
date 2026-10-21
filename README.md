@@ -30,6 +30,10 @@ npm run dev
 - 書いてから公開するまでの手順は `.claude/skills/publish-article/SKILL.md`。スマホからもクラウドの Claude Code で実行できる
 - 以前は Obsidian（iCloud）の `個人/発信/記事/公開済み` を `npm run sync:obsidian`（rsync --delete）で同期していたが、廃止した
 
+## 認知・継続読者を育てる運用
+
+記事制作前に [90日運用方針](docs/audience-growth.md) を参照してください。週1本の主力記事とWeekly Logを基本に、ブログとXで継続的な接点を作ります。連載用・振り返り用テンプレートは `docs/templates/`、計測仕様は [アクセス解析](docs/analytics.md) にあります。
+
 ## 記事の追加
 
 新規記事ファイルを作る:

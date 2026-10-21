@@ -1,24 +1,32 @@
 ---
-import { type CollectionEntry } from "astro:content";
+import { type CollectionEntry } from 'astro:content';
 
-import BlogPost from "@layouts/BlogPost.astro";
-import Code from "@components/mdx/Code.astro";
-import { getSinglePage } from "@utils/getAllTags";
+import BlogPost from '@layouts/BlogPost.astro';
+import Code from '@components/mdx/Code.astro';
+import { getSinglePage } from '@utils/getAllTags';
 
 export async function getStaticPaths() {
-  const posts = (await getSinglePage("blog")).sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
-  return posts.map((post, index) => {
-    // posts は新しい順。prev = ひとつ古い記事、next = ひとつ新しい記事。
-    const prev = posts[index + 1];
-    const next = posts[index - 1];
+  const posts = (await getSinglePage('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const weekly = posts.filter((p) => p.data.series === 'weekly-log');
+  const link = (p: (typeof posts)[number] | undefined) => (p ? { slug: p.slug, title: p.data.title } : null);
+  return posts.map((post) => {
+    const seriesIndex = weekly.findIndex((p) => p.slug === post.slug);
+    const candidates = posts
+      .filter((p) => p.slug !== post.slug)
+      .map((p) => ({
+        post: p,
+        score: p.data.tags.filter((tag) => tag !== 'others' && post.data.tags.includes(tag)).length,
+      }))
+      .filter((p) => p.score > 0)
+      .sort((a, b) => b.score - a.score || b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf());
     return {
       params: { slug: post.slug },
       props: {
         post,
-        prevPost: prev ? { slug: prev.slug, title: prev.data.title } : null,
-        nextPost: next ? { slug: next.slug, title: next.data.title } : null,
+        relatedPost: link(candidates[0]?.post),
+        firstPost: seriesIndex >= 0 && weekly.at(-1)?.slug !== post.slug ? link(weekly.at(-1)) : null,
+        prevPost: seriesIndex >= 0 ? link(weekly[seriesIndex + 1]) : null,
+        nextPost: seriesIndex >= 0 ? link(weekly[seriesIndex - 1]) : null,
       },
     };
   });
@@ -26,15 +34,25 @@ export async function getStaticPaths() {
 
 type PostLink = { slug: string; title: string } | null;
 type Props = {
-  post: CollectionEntry<"blog">;
+  post: CollectionEntry<'blog'>;
+  relatedPost: PostLink;
+  firstPost: PostLink;
   prevPost: PostLink;
   nextPost: PostLink;
 };
 
-const { post, prevPost, nextPost } = Astro.props;
+const { post, prevPost, nextPost, firstPost, relatedPost } = Astro.props;
 const { Content } = await post.render();
 ---
 
-<BlogPost {...post.data} slug={post.slug} body={post.body} prevPost={prevPost} nextPost={nextPost}>
+<BlogPost
+  {...post.data}
+  slug={post.slug}
+  body={post.body}
+  prevPost={prevPost}
+  nextPost={nextPost}
+  firstPost={firstPost}
+  relatedPost={relatedPost}
+>
   <Content components={{ pre: Code }} />
 </BlogPost>

@@ -9,7 +9,7 @@
     "logoDark": "/baata_tech_note_logo.png",
     "ogImage": "/og-yuki-kawabata.png",
     "lang": "ja",
-    "description": "Webエンジニア / 個人開発者 Yuki Kawabata（河畑祐輝）のブログ。日常の「ちょっと不便」を使いやすいアプリにするための、開発・設計・改善の工夫と、試して分かったことを書いています。",
+    "description": "Yuki Kawabata（河畑祐輝）のブログ。AI・開発・ガジェット・日常について、自分で試したこと、迷った判断、暮らしや仕事の変化を書いています。",
     "pageSize": 6
   },
   "analytics": {
@@ -21,13 +21,13 @@
   },
   "metadata": {
     "meta_author": "河畑祐輝",
-    "meta_description": "Webエンジニア / 個人開発者 Yuki Kawabata（河畑祐輝）のブログ。日常の「ちょっと不便」を使いやすいアプリにするための、開発・設計・改善の工夫と、試して分かったことを書いています。",
+    "meta_description": "Yuki Kawabata（河畑祐輝）のブログ。AI・開発・ガジェット・日常について、自分で試したこと、迷った判断、暮らしや仕事の変化を書いています。",
     "twitter": "@Yuki_K25"
   },
   "author": {
     "name": "河畑祐輝",
     "alternateName": "Yuuki Kawabata",
     "avatar": "/k3y3dq.jpg",
-    "bio": "Webエンジニア / 個人開発者。日常の「ちょっと不便」を、使いやすいアプリに。開発・設計・改善の工夫を発信しています。"
+    "bio": "Webエンジニア / 個人開発者。気になったものを自分で試し、作り、暮らしや仕事がどう変わったかを書いています。"
   }
 }

@@ -1,5 +1,6 @@
 ---
-title: 'AI Weekly Log #02 — いちばん大きな改修をした土曜日が、集計では「0回」だった'
+series: weekly-log
+title: 'いちばん大きな改修をした土曜日が、集計では「0回」だった — AI Weekly Log #02'
 description: '開発のほぼすべてをClaude CodeとCodexに任せている個人開発者の、1週間の実データです。今週は依頼143回。6本のアプリのストア更新と、記事を出す仕組みの作り直しに時間を使いました。一方で、クラウドのAIに頼んだ大改修は、集計に1回も出てきませんでした。'
 pubDate: '2026-10-19'
 heroImage: '/images/hero/20261018-ai-weekly-log-02.webp'

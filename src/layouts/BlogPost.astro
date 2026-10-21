@@ -1,28 +1,44 @@
 ---
-import Base from "@layouts/Base.astro";
-import type { CollectionEntry } from "astro:content";
-import FormattedDate from "@components/FormattedDate.astro";
-import { Image } from "astro:assets";
-import config from "@config/config.json";
-import social from "@config/social";
-import { slugify } from "@utils/slug";
-import { postTitleTransition } from "@utils/transitionName";
+import Base from '@layouts/Base.astro';
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from '@components/FormattedDate.astro';
+import { Image } from 'astro:assets';
+import config from '@config/config.json';
+import social from '@config/social';
+import { slugify } from '@utils/slug';
+import { postTitleTransition } from '@utils/transitionName';
 
 type PostLink = { slug: string; title: string } | null;
 
-type Props = CollectionEntry<"blog">["data"] & {
+type Props = CollectionEntry<'blog'>['data'] & {
   slug: string;
   body?: string;
+  relatedPost?: PostLink;
+  firstPost?: PostLink;
   prevPost?: PostLink;
   nextPost?: PostLink;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags, slug, body, prevPost, nextPost } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  tags,
+  slug,
+  body,
+  prevPost,
+  nextPost,
+  firstPost,
+  relatedPost,
+  series,
+} = Astro.props;
 
 // 日本語は平均 500〜600字/分。コード・記号込みでゆるめに見積もる。
 const readingMinutes = body ? Math.max(1, Math.round(body.length / 550)) : null;
 
-const xProfile = social.networks.find((n) => n.name === "x");
+const xProfile = social.networks.find((n) => n.name === 'x');
 ---
 
 <Base
@@ -83,7 +99,10 @@ const xProfile = social.networks.find((n) => n.name === "x");
       )
     }
 
-    <aside class="mt-12 flex items-start gap-4 border-t border-gray-200 pt-8 dark:border-gray-800" aria-label="書いた人">
+    <aside
+      class="mt-12 flex items-start gap-4 border-t border-gray-200 pt-8 dark:border-gray-800"
+      aria-label="書いた人"
+    >
       <Image
         alt=""
         class="h-10 w-10 shrink-0 rounded-full"
@@ -95,7 +114,10 @@ const xProfile = social.networks.find((n) => n.name === "x");
       />
       <div class="text-sm leading-[1.85]">
         <p>
-          <a href="/about/" class="font-medium text-gray-900 hover:text-accent-700 dark:text-white dark:hover:text-accent-400">
+          <a
+            href="/about/"
+            class="font-medium text-gray-900 hover:text-accent-700 dark:text-white dark:hover:text-accent-400"
+          >
             {config.site.brand}
           </a>
         </p>
@@ -116,23 +138,55 @@ const xProfile = social.networks.find((n) => n.name === "x");
       </div>
     </aside>
 
+    <section class="mt-10 border-t border-gray-200 pt-6 dark:border-gray-800" aria-label="次に読む記事">
+      <h2 class="text-lg font-bold">次に読む</h2>
+      {
+        relatedPost ? (
+          <a
+            href={`/blog/${relatedPost.slug}/`}
+            data-track={`reading:${relatedPost.slug}:related`}
+            class="text-link mt-3 inline-block"
+          >
+            {relatedPost.title} →
+          </a>
+        ) : (
+          <a href="/start/" data-track="reading:start:related" class="text-link mt-3 inline-block">
+            初めての方におすすめの3本 →
+          </a>
+        )
+      }
+    </section>
     {
-      (prevPost || nextPost) && (
-        <nav class="mt-10 space-y-3 text-sm" aria-label="前後の記事">
-          {nextPost && (
-            <a href={`/blog/${nextPost.slug}/`} class="group flex gap-3">
-              <span class="shrink-0 text-gray-400 dark:text-gray-500">次</span>
-              <span class="jp-phrase text-gray-700 transition-colors group-hover:text-accent-700 dark:text-gray-300 dark:group-hover:text-accent-400">
-                {nextPost.title}
-              </span>
+      series === 'weekly-log' && (
+        <nav class="mt-8 space-y-4 text-sm" aria-label="Weekly Logの前後の記事">
+          <a class="text-link block" href="/weekly/">
+            Weekly Log 一覧 →
+          </a>
+          {firstPost && (
+            <a
+              class="text-link block"
+              href={`/blog/${firstPost.slug}/`}
+              data-track={`reading:${firstPost.slug}:series-first`}
+            >
+              初回：{firstPost.title}
             </a>
           )}
           {prevPost && (
-            <a href={`/blog/${prevPost.slug}/`} class="group flex gap-3">
-              <span class="shrink-0 text-gray-400 dark:text-gray-500">前</span>
-              <span class="jp-phrase text-gray-700 transition-colors group-hover:text-accent-700 dark:text-gray-300 dark:group-hover:text-accent-400">
-                {prevPost.title}
-              </span>
+            <a
+              class="text-link block"
+              href={`/blog/${prevPost.slug}/`}
+              data-track={`reading:${prevPost.slug}:series-prev`}
+            >
+              前回：{prevPost.title}
+            </a>
+          )}
+          {nextPost && (
+            <a
+              class="text-link block"
+              href={`/blog/${nextPost.slug}/`}
+              data-track={`reading:${nextPost.slug}:series-next`}
+            >
+              次回：{nextPost.title}
             </a>
           )}
         </nav>

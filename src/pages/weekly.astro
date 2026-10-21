@@ -1,0 +1,28 @@
+---
+import Base from '@layouts/Base.astro';
+import PostList from '@components/PostList.astro';
+import { getSinglePage } from '@utils/getAllTags';
+const posts = (await getSinglePage('blog'))
+  .filter((post) => post.data.series === 'weekly-log')
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const first = posts.at(-1);
+---
+
+<Base meta_title="Weekly Log" description="試したこと、迷った判断、考えが変わったこと。Yukiの試行錯誤を追う週次連載。">
+  <h1 class="page-title">Weekly Log</h1>
+  <p class="mt-6 leading-relaxed">
+    試したこと、迷った判断、考えが変わったこと。うまくいかなかったことも含めて、次に試すことまで残していく連載です。
+  </p>
+  {
+    first && (
+      <a
+        class="text-link mt-6 inline-block"
+        href={`/blog/${first.slug}/`}
+        data-track={`reading:${first.slug}:series-first`}
+      >
+        初回から読む →
+      </a>
+    )
+  }
+  <div class="mt-8"><PostList posts={posts} /></div>
+</Base>

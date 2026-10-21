@@ -1,5 +1,6 @@
 ---
-title: 'AI Weekly Log #01 — AIに138回頼んで、5本のアプリをストアに提出した1週間'
+series: weekly-log
+title: 'AIに138回頼んで、5本のアプリをストアに提出した1週間 — AI Weekly Log #01'
 description: '開発のほぼすべてをClaude CodeとCodexに任せている個人開発者が、1週間の履歴を実データで公開します。何を頼み、何が終わり、どこでつまずいたか。2つのAIの使い分けと、来週の挑戦まで。'
 pubDate: '2026-10-12'
 heroImage: '/images/hero/20261011-ai-weekly-log-01.webp'
