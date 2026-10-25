@@ -8,6 +8,11 @@
 //   node scripts/weekly-ai-log.mjs --out /path/to/digest.md
 //
 // 出力は記事の「素材」であって公開物ではない。公開前に必ず人の目で確認すること。
+//
+// コミットの数え方:
+//   - git worktree（同じリポジトリを別フォルダで開いたもの）は、本体のリポジトリにまとめて1回だけ数える
+//   - PRをスカッシュでマージしたときのブランチ側のコミットは、main 側の (#NN) 付きの1件にまとめる
+//   - 本文にクラウドの Claude Code の会話リンクがあるコミットは「クラウド」として別に数える（依頼数には入らない）
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -228,30 +233,68 @@ function collectCodex() {
 }
 
 // ---------- git ----------
+const gitOut = (dir, gitArgs) =>
+  execFileSync('git', ['-C', dir, ...gitArgs], {
+    encoding: 'utf8',
+    env: { ...process.env, TZ: 'Asia/Tokyo' },
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
+
+// クラウドの Claude Code が作ったコミットには、本文に会話へのリンクが入る
+const CLOUD_SESSION_RE = /https:\/\/claude\.ai\/code\/session_[A-Za-z0-9]+/;
+
 function collectGit() {
-  const repos = [];
-  if (!fs.existsSync(DEV_DIR)) return repos;
-  for (const name of fs.readdirSync(DEV_DIR)) {
+  // git worktree は別フォルダでも同じリポジトリなので、共通の .git ごとにまとめて1回だけ数える
+  const groups = new Map();
+  if (!fs.existsSync(DEV_DIR)) return [];
+  for (const name of fs.readdirSync(DEV_DIR).sort()) {
     const dir = path.join(DEV_DIR, name);
     if (!fs.existsSync(path.join(dir, '.git'))) continue;
-    let log = '';
+    let common;
     try {
-      log = execFileSync(
-        'git',
-        ['-C', dir, 'log', '--all', '--no-merges', `--since=${FROM}T00:00:00+09:00`, `--until=${TO}T23:59:59+09:00`, '--date=format-local:%m/%d', '--pretty=%ad\t%s'],
-        { encoding: 'utf8', env: { ...process.env, TZ: 'Asia/Tokyo' }, stdio: ['ignore', 'pipe', 'ignore'] },
-      );
+      common = gitOut(dir, ['rev-parse', '--path-format=absolute', '--git-common-dir']).trim();
     } catch {
       continue;
     }
-    const commits = log
-      .split('\n')
+    if (!groups.has(common)) groups.set(common, []);
+    groups.get(common).push(name);
+  }
+
+  const repos = [];
+  for (const [common, names] of groups) {
+    // 表示名は本体のフォルダ名（.git の親）。見つからなければ最初のフォルダ名
+    const mainName = path.basename(common) === '.git' ? path.basename(path.dirname(common)) : null;
+    const name = names.includes(mainName) ? mainName : names[0];
+    let log = '';
+    try {
+      log = gitOut(path.join(DEV_DIR, name), [
+        'log', '--all', '--no-merges',
+        `--since=${FROM}T00:00:00+09:00`, `--until=${TO}T23:59:59+09:00`,
+        '--date=format-local:%Y-%m-%d', '--pretty=%H%x1f%cd%x1f%s%x1f%b%x1e',
+      ]);
+    } catch {
+      continue;
+    }
+    let commits = log
+      .split('\x1e')
+      .map((rec) => rec.replace(/^\n/, ''))
       .filter(Boolean)
-      .map((l) => {
-        const [date, subject] = l.split('\t');
-        return { date, subject: redact(subject ?? '') };
+      .map((rec) => {
+        const [hash, day, subject, body] = rec.split('\x1f');
+        const session = (body ?? '').match(CLOUD_SESSION_RE)?.[0] ?? null;
+        return { hash, day, date: day.slice(5).replace('-', '/'), subject: redact(subject ?? ''), session };
       });
-    if (commits.length) repos.push({ name, commits });
+    // PRをスカッシュでマージすると、ブランチ側と main 側に同じ件名のコミットが残る（main 側は末尾に (#NN)）。
+    // --all で両方拾うので、ブランチ側は main 側の1件にまとめ、どちらかがクラウド製ならクラウド扱いにする。
+    // 件名がたまたま同じ別のコミット（定型の chore など）はまとめない
+    const PR_SUFFIX = /\s*\(#\d+\)$/;
+    const merged = new Map(commits.filter((c) => PR_SUFFIX.test(c.subject)).map((c) => [c.subject.replace(PR_SUFFIX, ''), c]));
+    commits = commits.filter((c) => {
+      const squashed = !PR_SUFFIX.test(c.subject) && merged.get(c.subject);
+      if (squashed) squashed.session ??= c.session;
+      return !squashed;
+    });
+    if (commits.length) repos.push({ name, worktrees: names.filter((n) => n !== name), commits });
   }
   return repos.sort((a, b) => b.commits.length - a.commits.length);
 }
@@ -262,6 +305,11 @@ function render(claude, codex, git) {
   const promptCount = (ss) => ss.reduce((n, s) => n + s.prompts.length, 0);
   const projects = new Set(all.map((s) => shortCwd(s.cwd)));
   const commitTotal = git.reduce((n, r) => n + r.commits.length, 0);
+  // クラウドのセッションは手元に会話が残らないので、依頼数の代わりにコミットで数える
+  const cloud = git.flatMap((r) => r.commits.filter((c) => c.session).map((c) => ({ ...c, repo: r.name })));
+  const cloudSessions = new Set(cloud.map((c) => c.session));
+  const cloudByDate = new Map();
+  for (const c of cloud) cloudByDate.set(c.day, (cloudByDate.get(c.day) ?? 0) + 1);
 
   // 時間帯・曜日分布
   const hours = Array(24).fill(0);
@@ -291,14 +339,29 @@ function render(claude, codex, git) {
   L.push(`| 出力トークン / 総トークン | ${claude.reduce((n, s) => n + s.outputTokens, 0).toLocaleString()} (output) | ${codex.reduce((n, s) => n + s.totalTokens, 0).toLocaleString()} (total) | - |`);
   L.push(`| うち Claude→Codex 引き継ぎ | - | ${codex.filter((s) => s.handoff).length} | - |`);
   L.push(`| git コミット | - | - | ${commitTotal}（${git.length}リポジトリ） |`);
+  L.push(`| うちクラウドのAIが作ったコミット（依頼数に入らない） | - | - | ${cloud.length}（${cloudSessions.size}セッション） |`);
   L.push('');
 
   L.push('## 日別の依頼数');
   L.push('');
   L.push('```');
-  for (const [d, n] of [...byDate].sort()) L.push(`${d} ${String(n).padStart(4)} ${bar(n, maxDate)}`);
+  // 依頼が0回の日も、クラウドのコミットがあることがあるので7日すべて出す
+  for (let t = fromMs; t <= toMs; t += 24 * 60 * 60 * 1000) {
+    const d = jstDate(new Date(t).toISOString());
+    const n = byDate.get(d) ?? 0;
+    const c = cloudByDate.get(d);
+    L.push(`${d} ${String(n).padStart(4)} ${bar(n, maxDate)}${c ? `  （クラウドのコミット ${c}件）` : ''}`);
+  }
   L.push('```');
   L.push('');
+  if (cloud.length) {
+    L.push('## クラウドのAIが作ったコミット（集計外）');
+    L.push('');
+    L.push(`クラウドの Claude Code の会話は手元に残らないため、上の依頼数には入っていない。コミット本文に会話へのリンクがあるものを数えた（${cloudSessions.size}セッション）。`);
+    L.push('');
+    for (const c of cloud.sort((a, b) => a.day.localeCompare(b.day))) L.push(`- ${c.date} ${c.repo}: ${c.subject}`);
+    L.push('');
+  }
   L.push('## 時間帯別の依頼数（JST）');
   L.push('');
   L.push('```');
@@ -309,8 +372,9 @@ function render(claude, codex, git) {
   L.push('## git コミット');
   L.push('');
   for (const r of git) {
-    L.push(`### ${r.name}（${r.commits.length}）`);
-    for (const c of r.commits.slice(0, 15)) L.push(`- ${c.date} ${c.subject}`);
+    const wt = r.worktrees.length ? ` ※worktree ${r.worktrees.join('・')} を含む` : '';
+    L.push(`### ${r.name}（${r.commits.length}）${wt}`);
+    for (const c of r.commits.slice(0, 15)) L.push(`- ${c.date} ${c.session ? '[クラウド] ' : ''}${c.subject}`);
     if (r.commits.length > 15) L.push(`- …ほか ${r.commits.length - 15} 件`);
     L.push('');
   }
