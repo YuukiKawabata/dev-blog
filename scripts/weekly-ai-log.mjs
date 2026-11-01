@@ -62,6 +62,7 @@ function redact(text) {
     .replace(/(ghp|gho|ghs|github_pat)_[A-Za-z0-9_]{16,}/g, '[REDACTED_TOKEN]')
     .replace(/xox[abprs]-[A-Za-z0-9-]{10,}/g, '[REDACTED_TOKEN]')
     .replace(/AKIA[0-9A-Z]{16}/g, '[REDACTED_KEY]')
+    .replace(/AuthKey_[A-Za-z0-9]{6,}/g, 'AuthKey_[REDACTED]')
     .replace(/Bearer\s+[A-Za-z0-9._-]{16,}/g, 'Bearer [REDACTED]')
     .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[EMAIL]')
     .replace(/\b[A-Za-z0-9_-]{40,}\b/g, '[REDACTED_LONG]');
@@ -71,6 +72,8 @@ function cleanPrompt(text, max = 220) {
   const t = text
     .replace(/<\/?pasted_content[^>]*>/g, '')
     .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/g, '')
+    .replace(IN_APP_BROWSER_RE, '')
+    .replace(/^\s*## My request[^:\n]*:\s*/, '')
     .replace(/\[external unsupported block: \w+\]/g, '')
     .replace(/# Files mentioned by the user:[\s\S]*?## My request[^:\n]*:\s*/, '[添付あり] ')
     .replace(/<\/?image[^>]*>/g, '')
@@ -80,8 +83,11 @@ function cleanPrompt(text, max = 220) {
   return r.length > max ? `${r.slice(0, max)}…` : r;
 }
 
+// Codex のアプリ内ブラウザを開いていると、依頼の前に画面の状態が自動で付く。依頼本文は「## My request:」の後ろ
+const IN_APP_BROWSER_RE = /<in-app-browser-context[^>]*>[\s\S]*?<\/in-app-browser-context>/g;
+
 function isNoisePrompt(text) {
-  const t = text.replace(/<\/?pasted_content[^>]*>/g, '').trim();
+  const t = text.replace(/<\/?pasted_content[^>]*>/g, '').replace(IN_APP_BROWSER_RE, '').trim();
   return (
     !t ||
     t.startsWith('<') || // command / environment / AGENTS.md 注入
@@ -185,48 +191,55 @@ function collectCodex() {
     }
     return set;
   };
-  // 範囲の前日〜翌日のディレクトリを見る（ファイル名はUTCではなくローカル日付のため余裕を持たせる）
-  const days = [];
-  for (let t = fromMs - 864e5; t <= toMs + 864e5; t += 864e5) {
-    const d = new Date(t + TZ_OFFSET_MS).toISOString().slice(0, 10).split('-');
-    days.push(path.join(CODEX_DIR, 'sessions', ...d));
-  }
-  for (const dir of days) {
-    if (!fs.existsSync(dir)) continue;
-    for (const f of fs.readdirSync(dir)) {
-      if (!f.endsWith('.jsonl')) continue;
-      let id;
-      let cwd;
-      const prompts = [];
-      let first;
-      let last;
-      let totalTokens = 0;
-      for (const r of readJsonl(path.join(dir, f))) {
-        const p = r.payload ?? {};
-        if (r.type === 'session_meta') {
-          id = p.id;
-          cwd = p.cwd;
-          continue;
-        }
-        if (!r.timestamp || !inRange(r.timestamp)) continue;
-        if (p.type === 'token_count') {
-          totalTokens = p.info?.total_token_usage?.total_tokens ?? totalTokens;
-        }
-        if (r.type !== 'response_item' || p.type !== 'message' || p.role !== 'user') continue;
-        const text = textOf(p.content);
-        if (isNoisePrompt(text)) continue;
-        prompts.push({ ts: r.timestamp, text: cleanPrompt(text) });
+  // セッションのファイルは始めた日のフォルダに入り、続きを話すと同じファイルに追記される。
+  // 週より前に始めた会話も拾うため、日付フォルダではなく更新日時で選ぶ
+  const files = [];
+  const walk = (dir) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.name.endsWith('.jsonl') && fs.statSync(p).mtimeMs >= fromMs) files.push(p);
+    }
+  };
+  const sessionsDir = path.join(CODEX_DIR, 'sessions');
+  if (fs.existsSync(sessionsDir)) walk(sessionsDir);
+  for (const file of files) {
+    let id;
+    let cwd;
+    const prompts = [];
+    let first;
+    let last;
+    let totalTokens = 0;
+    let tokensBefore = 0; // 累計値なので、週が始まる前までの分を引く
+    for (const r of readJsonl(file)) {
+      const p = r.payload ?? {};
+      if (r.type === 'session_meta') {
+        id = p.id;
+        cwd = p.cwd;
+        continue;
       }
-      const importedFrom = imports.get(id);
-      const copied = importedFrom ? claudePromptsOf(importedFrom) : new Set();
-      // 取り込みスレッドは丸ごとコピーなので、トークン数も Claude 側と重複する
-      if (importedFrom) totalTokens = 0;
-      const own = prompts.filter((p) => !copied.has(p.text));
-      if (own.length) {
-        first = own[0].ts;
-        last = own.at(-1).ts;
-        sessions.push({ tool: 'Codex', id, name: names.get(id), cwd, prompts: own, first, last, totalTokens, handoff: Boolean(importedFrom) });
+      if (p.type === 'token_count' && r.timestamp && Date.parse(r.timestamp) < fromMs) {
+        tokensBefore = p.info?.total_token_usage?.total_tokens ?? tokensBefore;
       }
+      if (!r.timestamp || !inRange(r.timestamp)) continue;
+      if (p.type === 'token_count') {
+        totalTokens = p.info?.total_token_usage?.total_tokens ?? totalTokens;
+      }
+      if (r.type !== 'response_item' || p.type !== 'message' || p.role !== 'user') continue;
+      const text = textOf(p.content);
+      if (isNoisePrompt(text)) continue;
+      prompts.push({ ts: r.timestamp, text: cleanPrompt(text) });
+    }
+    const importedFrom = imports.get(id);
+    const copied = importedFrom ? claudePromptsOf(importedFrom) : new Set();
+    // 取り込みスレッドは丸ごとコピーなので、トークン数も Claude 側と重複する
+    totalTokens = Math.max(0, totalTokens - tokensBefore);
+    if (importedFrom) totalTokens = 0;
+    const own = prompts.filter((p) => !copied.has(p.text));
+    if (own.length) {
+      first = own[0].ts;
+      last = own.at(-1).ts;
+      sessions.push({ tool: 'Codex', id, name: names.get(id), cwd, prompts: own, first, last, totalTokens, handoff: Boolean(importedFrom) });
     }
   }
   return sessions;
