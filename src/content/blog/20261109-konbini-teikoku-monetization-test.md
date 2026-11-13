@@ -18,7 +18,13 @@ note:
 
 ## コンビニ帝国の現在地
 
-コンビニ帝国は、コンビニ経営を題材にした放置系のシミュレーションゲームです。90日間の数字はこうでした。
+コンビニ帝国は、コンビニ経営を題材にした放置系のシミュレーションゲームです。
+
+<video controls playsinline preload="metadata" width="360" style="max-width:100%;height:auto" aria-label="レジ応援、スタッフ雇用の案内、留守中の売上を紹介する15秒のゲーム動画" src="/videos/konbini-empire.mp4"></video>
+
+[コンビニ帝国をApp Storeで見る](https://apps.apple.com/jp/app/id6807601218)
+
+90日間の数字はこうでした。
 
 - ダウンロード: 1,450件（アカウント全体の74%）
 - インプレッション: 約73,600回、商品ページ閲覧: 約11,900回
