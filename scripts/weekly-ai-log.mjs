@@ -108,9 +108,37 @@ function textOf(content) {
   return '';
 }
 
+// 1行ずつ読む。Codexのセッションは画像を含むと1ファイルが数百MBになり、
+// 一度に文字列へ読むと Node の上限（約512MB）を超えて止まる（2026-11-15、896MB）
+function* readLines(file) {
+  const fd = fs.openSync(file, 'r');
+  const buf = Buffer.alloc(16 * 1024 * 1024);
+  let rest = [];
+  const flush = () => {
+    const b = Buffer.concat(rest);
+    rest = [];
+    return b.length < 0x1fffffe8 ? b.toString('utf8') : ''; // 1行だけで上限を超える行は捨てる
+  };
+  try {
+    let n;
+    while ((n = fs.readSync(fd, buf, 0, buf.length, null)) > 0) {
+      let start = 0;
+      for (let i = buf.indexOf(10, 0); i !== -1 && i < n; i = buf.indexOf(10, i + 1)) {
+        rest.push(Buffer.from(buf.subarray(start, i)));
+        yield flush();
+        start = i + 1;
+      }
+      if (start < n) rest.push(Buffer.from(buf.subarray(start, n)));
+    }
+    if (rest.length) yield flush();
+  } finally {
+    fs.closeSync(fd);
+  }
+}
+
 function readJsonl(file) {
   const out = [];
-  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
+  for (const line of readLines(file)) {
     if (!line) continue;
     try {
       out.push(JSON.parse(line));
@@ -128,6 +156,10 @@ const jstDate = (ts) => new Date(Date.parse(ts) + TZ_OFFSET_MS).toISOString().sl
 // ---------- Claude Code ----------
 function collectClaude() {
   const sessions = [];
+  // 会話を途中から分岐させると、分岐前の発言が同じ uuid のまま新しいファイルにも入る。
+  // 同じ発言を2回数えないよう、uuid で一度だけ数える（2026-11-15、14件の重複）
+  const seenPrompts = new Set();
+  const seenReplies = new Set();
   if (!fs.existsSync(CLAUDE_DIR)) return sessions;
   for (const proj of fs.readdirSync(CLAUDE_DIR)) {
     const dir = path.join(CLAUDE_DIR, proj);
@@ -144,12 +176,17 @@ function collectClaude() {
       for (const r of readJsonl(file)) {
         if (!r.timestamp || !inRange(r.timestamp)) continue;
         cwd ??= r.cwd;
-        if (r.type === 'assistant' && r.message?.usage) {
+        if (r.type === 'assistant' && r.message?.usage && !seenReplies.has(r.uuid)) {
+          if (r.uuid) seenReplies.add(r.uuid);
           outputTokens += r.message.usage.output_tokens ?? 0;
         }
         if (r.type !== 'user' || r.isMeta || r.isSidechain) continue;
         const text = textOf(r.message?.content);
         if (isNoisePrompt(text)) continue;
+        if (r.uuid) {
+          if (seenPrompts.has(r.uuid)) continue;
+          seenPrompts.add(r.uuid);
+        }
         prompts.push({ ts: r.timestamp, text: cleanPrompt(text) });
         first ??= r.timestamp;
         last = r.timestamp;
