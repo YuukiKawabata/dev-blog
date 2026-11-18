@@ -1,8 +1,9 @@
-// 転載先（X / Zenn / note）からブログに戻ってきた読者を GA4 で区別するための UTM 付与。
+// 転載先（X / Threads / Zenn / note）からブログに戻ってきた読者を GA4 で区別するための UTM 付与。
 // canonical は Base.astro がパスだけで組み立てるので、クエリを付けても SEO には影響しない。
 
 const MEDIUM = {
   x: 'social',
+  threads: 'social',
   zenn: 'referral',
   note: 'referral',
 };

@@ -1,0 +1,71 @@
+name: Refresh Threads token
+
+# Threads の長期アクセストークンは60日で切れ、60日更新しないと二度と更新できない。
+# 月2回更新して、新しいトークンを Secrets（THREADS_ACCESS_TOKEN）に書き戻す。
+# 失敗したら workflow が赤くなる（GitHub からメールが来る）ので、その時点で docs/threads-sync.md の「トークンを取り直す」をやる。
+# Secrets の書き換えには、dev-blog の Secrets: Read and write だけを持つ fine-grained PAT（THREADS_SECRETS_PAT）を使う。
+on:
+  schedule:
+    # 毎月1日と15日の 12:17 JST
+    - cron: '17 3 1,15 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-threads-token
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check secrets
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_SECRETS_PAT: ${{ secrets.THREADS_SECRETS_PAT }}
+        run: |
+          set -euo pipefail
+          for name in THREADS_ACCESS_TOKEN THREADS_SECRETS_PAT; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error title=Missing secret::$name is not set（docs/threads-sync.md）"
+              exit 1
+            fi
+          done
+
+      # threads-token.mjs は新しいトークンを画面に出さず、ファイル（権限600）にだけ書く。
+      - name: Refresh token
+        id: refresh
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+        run: node scripts/threads-token.mjs refresh --out "$RUNNER_TEMP/threads-token"
+
+      - name: Write back to secrets
+        env:
+          GH_TOKEN: ${{ secrets.THREADS_SECRETS_PAT }}
+        run: |
+          set -euo pipefail
+          gh secret set THREADS_ACCESS_TOKEN -R "$GITHUB_REPOSITORY" < "$RUNNER_TEMP/threads-token"
+          rm -f "$RUNNER_TEMP/threads-token"
+
+      - name: Check expiry
+        run: |
+          set -euo pipefail
+          DAYS=$(( ${{ steps.refresh.outputs.expires_in || 0 }} / 86400 ))
+          if (( DAYS < 30 )); then
+            echo "::error::更新後の残りが ${DAYS} 日しかありません。トークンを取り直してください（docs/threads-sync.md）"
+            exit 1
+          fi
+          {
+            echo '## Threads token refreshed'
+            echo "新しいトークンの残り: ${DAYS} 日（$(date -u -d "+${DAYS} days" +%Y-%m-%d) ごろまで）"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,190 @@
+name: Sync Threads (article announcement)
+
+# 記事PRがマージされたら、そのpushで新しく追加された記事の告知を Threads にも自動で投稿する（2026-11〜）。
+# Sync X とは別の workflow なので、どちらかが失敗してももう片方は動く。
+# 文面は threads.text、無ければ x.thread[0]（本人の声で書いた告知）。threads.auto: false / x.auto: false の記事は投稿しない。
+# 手順書: docs/threads-sync.md
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - src/content/blog/**
+  workflow_dispatch:
+    inputs:
+      action:
+        description: dry-run = 文面を出すだけ / publish = 投稿する / record = 投稿せずに「投稿済み」と記録する（手で投稿したとき）
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - publish
+          - record
+      slug:
+        description: 対象の記事の slug（x.slug、無ければファイル名）。publish と record では必須
+        required: false
+        type: string
+      post_id:
+        description: record のときだけ。手で投稿した Threads の投稿ID（任意）
+        required: false
+        type: string
+      permalink:
+        description: record のときだけ。手で投稿した Threads の投稿URL（任意）
+        required: false
+        type: string
+      force:
+        description: 投稿済みでも、auto false でも投稿する
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: sync-threads-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Manual run
+        id: manual
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          ACTION: ${{ inputs.action }}
+          SLUG: ${{ inputs.slug }}
+          POST_ID: ${{ inputs.post_id }}
+          PERMALINK: ${{ inputs.permalink }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          ARGS=()
+          case "$ACTION" in
+            dry-run) ;;
+            publish) ARGS+=(--publish) ;;
+            record)  ARGS+=(--record) ;;
+            *) echo "::error::Unknown action: $ACTION"; exit 1 ;;
+          esac
+          if [[ -n "${SLUG:-}" ]]; then ARGS+=(--only "$SLUG"); fi
+          if [[ -n "${POST_ID:-}" ]]; then ARGS+=(--post-id "$POST_ID"); fi
+          if [[ -n "${PERMALINK:-}" ]]; then ARGS+=(--permalink "$PERMALINK"); fi
+          if [[ "${FORCE:-false}" == "true" ]]; then ARGS+=(--force); fi
+          node scripts/sync-threads.mjs "${ARGS[@]}" | tee "$RUNNER_TEMP/sync-threads.log"
+
+      # x-new-articles.mjs と同じ考え方で、「追加された」記事だけを対象にする。既存記事の編集では投稿しない。
+      # ブログの記事ページとヒーロー画像が200になるまで待ち（最大10分）、開けなければ投稿しない。
+      - name: Auto-post new articles
+        id: autopost
+        if: github.event_name == 'push'
+        env:
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          TARGETS=$(node scripts/threads-new-articles.mjs "$BEFORE" "$AFTER")
+          if [[ -z "$TARGETS" ]]; then
+            echo "No new articles to announce."
+            exit 0
+          fi
+
+          for name in THREADS_ACCESS_TOKEN THREADS_USER_ID; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error title=Missing secret::$name is not set. Threads の告知は投稿していません（docs/threads-sync.md）。"
+              exit 1
+            fi
+          done
+
+          BASE="${SITE_URL:-https://dev-blog-pi-six.vercel.app}"
+          BASE="${BASE%/}"
+
+          wait_for() {
+            local url="$1"
+            for i in $(seq 1 30); do
+              code=$(curl -s -o /dev/null -w '%{http_code}' -L "${url}?cb=$(date +%s)")
+              echo "[$i] $code $url"
+              if [[ "$code" == "200" ]]; then return 0; fi
+              sleep 20
+            done
+            return 1
+          }
+
+          echo "ran=true" >> "$GITHUB_OUTPUT"
+          FAILED=0
+          while IFS=$'\t' read -r slug basename hero; do
+            [[ -z "$slug" ]] && continue
+            echo "::group::$slug"
+            if ! wait_for "$BASE/blog/$basename/"; then
+              echo "::error title=Threads::$slug — ブログが10分待っても開けなかったので、告知は投稿していません"
+              FAILED=1; echo "::endgroup::"; continue
+            fi
+            if [[ -n "$hero" ]] && ! wait_for "$BASE$hero"; then
+              echo "::error title=Threads::$slug — ヒーロー画像が開けなかったので、告知は投稿していません"
+              FAILED=1; echo "::endgroup::"; continue
+            fi
+            if node scripts/sync-threads.mjs --publish --only "$slug" | tee -a "$RUNNER_TEMP/sync-threads.log"; then
+              echo "::notice title=Threads::$slug の告知を処理しました"
+            else
+              echo "::error title=Threads::$slug の告知に失敗しました（ログを確認。トークン切れなら docs/threads-sync.md）"
+              FAILED=1
+            fi
+            echo "::endgroup::"
+          done <<< "$TARGETS"
+
+          exit "$FAILED"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '## sync-threads'
+            echo '```'
+            cat "$RUNNER_TEMP/sync-threads.log" 2>/dev/null || echo 'no output'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 投稿IDは .threads/state.json に残す。コミットしないと次回に二重投稿する。
+      - name: Commit state
+        if: always() && (steps.autopost.outputs.ran == 'true' || (github.event_name == 'workflow_dispatch' && inputs.action != 'dry-run'))
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [[ ! -f .threads/state.json ]] || [[ -z "$(git status --porcelain .threads/state.json)" ]]; then
+            echo "state unchanged"
+            exit 0
+          fi
+
+          git add .threads/state.json
+          git commit -m "chore: update Threads sync state [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep 5
+          done
+          echo "::error::state.json を push できませんでした。次回に二重投稿しないよう、手で記録してください"
+          exit 1
