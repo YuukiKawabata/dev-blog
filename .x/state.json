@@ -342,6 +342,14 @@
       ],
       "threadHash": "50f53105739a587c",
       "threadPostedAt": "2026-11-15T14:58:23.261Z"
+    },
+    "gemini-decision-vs-jev": {
+      "threadRootId": "2122928233301623187",
+      "threadIds": [
+        "2122928233301623187"
+      ],
+      "threadHash": "f66c0a707e654738",
+      "threadPostedAt": "2026-11-18T05:41:47.741Z"
     }
   }
 }
