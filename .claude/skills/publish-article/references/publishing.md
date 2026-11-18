@@ -134,7 +134,8 @@ push したら、`main` 向けのPRを作る。本文には次のことを書く
 - 配信先（`zenn:` / `x:` / `note:` の有無）と、マージで何が動くか（Sync Zenn はブログの公開を待ってから Zenn に自動で反映する。Sync X はブログの公開を待ってから告知を自動で投稿する）
 - 確認したこと（ビルド、`sync:x` の告知の字数など）
 - **Xに自動で投稿される告知文をそのまま貼る。** マージすると、この文面がそのままXに出る。本人がマージ前に読めるのはここだけ
-- 本人に「Xには投稿しないで」と言われた記事は、`x.auto: false` を入れ、PR本文にも「Xには自動投稿しない」と書く
+- 本人に「Xには投稿しないで」と言われた記事は、`x.auto: false` を入れ、PR本文にも「Xには自動投稿しない」と書く（`x.auto: false` は Threads も止める）
+- 本人に「Threadsには投稿しないで」と言われた記事は、`threads.auto: false` を入れ、PR本文にも「Threadsには自動投稿しない」と書く
 
 PRを作ったら、ここで一度報告して止まる。**マージを待つのは承認ゲートではなく、公開の操作を本人が持つため。**
 ⑧以降は、本人から「マージした」と言われてから（または同じセッションでマージを確認してから）進める。
@@ -219,6 +220,13 @@ push後、Zennの記事URLを**ブラウザで開いて、本文と画像が表�
 （最大10分）、`x.thread` の告知を自動で投稿する（2026-10-16〜）。投稿IDは workflow が `.x/state.json` に
 直接コミットする。AIは Actions の実行結果（Auto-post new articles）を確かめ、投稿URL
 （`https://x.com/Yuki_K25/status/<threadRootId>`）を記録に使う。
+
+**Threads も同じタイミングで自動で投稿される**（2026-11〜）。GitHub Actions の Sync Threads が、同じ条件
+（追加された記事・ブログとヒーロー画像が200）で `threads.text`（無ければ `x.thread[0]`）を1投稿する。
+URLには `utm_source=threads` が付き、リンクカードが出る。投稿URLは `.threads/state.json` の
+`articles.<x.slug>.permalink`（workflow が直接コミットする）にあり、記録に使う。Sync X と Sync Threads は別の workflow なので、
+片方が失敗してももう片方は動く。失敗した方だけ、原因を直してから手動実行する（Threads は action `publish` と slug）。
+500字を超える告知は Threads ではエラーになる。`threads.text` に短い版を書く。トークン切れなどは dev-blog の `docs/threads-sync.md`。
 
 自動で投稿されないもの:
 

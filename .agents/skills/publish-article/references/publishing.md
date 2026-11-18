@@ -179,6 +179,13 @@ node scripts/sync-x.mjs --publish --thread --only <slug>
 - プロフィール `https://x.com/Yuki_K25` の「ポスト」タブ → スレッドが並んでいるか
 - 「記事」タブ → Article を出した場合、そこに出る（ポストのタイムラインには**流れない**）
 
+### Threads（2026-11〜）
+
+記事PRが main にマージされると、GitHub Actions の Sync Threads が X と同じタイミングで告知を1投稿する。
+文面は `threads.text`、無ければ `x.thread[0]`。URLには `utm_source=threads` が付く。出したくない記事は `threads.auto: false`
+（`x.auto: false` も Threads を止める）。投稿IDは workflow が `.threads/state.json` にコミットする。
+手で投稿したときは Sync Threads を action `record` と slug で手動実行する。詳細は `docs/threads-sync.md`。
+
 ## ⑪ note へ配信（`note:` がある場合のみ）
 
 note には公式の投稿APIがない。**ブラウザ（Claude in Chrome）で note のエディタを操作して投稿する。**

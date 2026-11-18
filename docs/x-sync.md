@@ -2,6 +2,7 @@
 
 Zenn 連携（`npm run sync:zenn`）と同じ作法で、`src/content/blog/*.md` から X へ配信する仕組み。
 記事本文はブログに残し、X には**ダイジェスト（Article）**と**告知スレッド**を出して流入を戻す。
+同じ告知は Threads にも自動で投稿される（[threads-sync.md](./threads-sync.md)、2026-11〜）。
 
 ```
 src/content/blog/*.md ─┬─ sync:zenn → ../zenn-articles/articles/*.md

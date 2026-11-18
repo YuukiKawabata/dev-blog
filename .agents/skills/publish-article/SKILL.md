@@ -29,7 +29,7 @@ yuki-dev-blog/src/content/blog/        ← 同期先
         ↓
         ⑥Obsidianへ配置 → ⑥.5ヒーロー画像を生成・確定 → ⑦ブログ同期・公開 → ⑧デプロイ待ち
         ↓
-        ⑨Zenn → ⑩X → ⑪note → ⑫記録（実績CSV・台帳・state.json）→ ⑬報告
+        ⑨Zenn → ⑩X・Threads → ⑪note → ⑫記録（実績CSV・台帳・state.json）→ ⑬報告
 ```
 
 **本文には画像を入れる。** 文字だけの記事にしない。読者が状況を思い浮かべられるよう、
