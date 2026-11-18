@@ -8,9 +8,9 @@ categories: ['Development']
 author: 'Yuki'
 zenn:
   slug: 'gemini-decision-1-vs-jev'
-  emoji: '🗳️'
+  emoji: '🤖'
   type: 'tech'
-  topics: ['gemini', 'ai', 'llm', 'jev', '個人開発']
+  topics: ['gemini', 'ai', 'llm', 'jev']
   published: true
 x:
   slug: 'gemini-decision-vs-jev'
