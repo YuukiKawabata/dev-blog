@@ -238,8 +238,13 @@ function collectCodex() {
       else if (e.name.endsWith('.jsonl') && fs.statSync(p).mtimeMs >= fromMs) files.push(p);
     }
   };
-  const sessionsDir = path.join(CODEX_DIR, 'sessions');
-  if (fs.existsSync(sessionsDir)) walk(sessionsDir);
+  // Codex Desktop で「アーカイブ」した会話は archived_sessions に移る。
+  // 週の途中でアーカイブした会話も、その週の依頼として数える
+  for (const dir of ['sessions', 'archived_sessions']) {
+    const p = path.join(CODEX_DIR, dir);
+    if (fs.existsSync(p)) walk(p);
+  }
+  const seenIds = new Set();
   for (const file of files) {
     let id;
     let cwd;
@@ -267,6 +272,9 @@ function collectCodex() {
       if (isNoisePrompt(text)) continue;
       prompts.push({ ts: r.timestamp, text: cleanPrompt(text) });
     }
+    // 移動の途中などで両方のフォルダに同じ会話があっても、1回だけ数える
+    if (id && seenIds.has(id)) continue;
+    if (id) seenIds.add(id);
     const importedFrom = imports.get(id);
     const copied = importedFrom ? claudePromptsOf(importedFrom) : new Set();
     // 取り込みスレッドは丸ごとコピーなので、トークン数も Claude 側と重複する
