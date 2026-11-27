@@ -9,7 +9,7 @@ SNS（X）の運用は 2026-10-03 に v7 へ切り替わった（`hasshin/sns/RE
 AIは週1回の下書きと振り返りだけを用意する。v6 までの台帳・投稿実績CSV・研究ノートは
 iCloud の `個人/SNS/_バックアップ_v6_2026-10-03/` に移されて**廃止**されている。触らない。
 
-記事配信で X に投稿した告知は、**記事側の記録（`記事実績.csv` の「X告知URL」列）にだけ残す。**
+記事配信で X・Threads に投稿した告知は、**記事側の記録（`記事実績.csv` の「X告知URL」「Threads告知URL」列）にだけ残す。**
 SNS側に別の記録を作らない。データが二重管理になって両方が腐る。
 
 ## 記事を公開したら必ず記録する（⑫の実体）
@@ -19,6 +19,7 @@ SNS側に別の記録を作らない。データが二重管理になって両�
 `$H/articles/実績/記事実績.csv` に1行足す。公開直後は数値が空でよい。
 X告知の投稿URL（`https://x.com/Yuki_K25/status/<threadRootId>`）を「X告知URL」列に入れる。
 `threadRootId` は `.x/state.json` の `articles.<x.slug>` にある。
+Threads告知の投稿URLは「Threads告知URL」列に入れる。`.threads/state.json` の `articles.<x.slug>.permalink` にある。
 
 ### 2. 記事研究ノートへ
 

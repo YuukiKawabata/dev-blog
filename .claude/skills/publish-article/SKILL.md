@@ -37,7 +37,7 @@ H="${HASSHIN_DIR:-$HOME/dev/hasshin}"
         ↓
         ⑥ブログへ配置 → ⑥.5ヒーロー画像を生成・確定 → ⑦ブログ公開のPR作成 →（本人がマージ）→ ⑧デプロイ待ち
         ↓
-        ⑨Zenn → ⑩X → ⑪note → ⑫記録（記事実績CSV・記事研究・state.json）→ ⑬報告
+        ⑨Zenn → ⑩X・Threads → ⑪note → ⑫記録（記事実績CSV・記事研究・state.json）→ ⑬報告
 ```
 
 **本文には画像を入れる。** 文字だけの記事にしない。読者が状況を思い浮かべられるよう、
@@ -54,7 +54,7 @@ H="${HASSHIN_DIR:-$HOME/dev/hasshin}"
 PRを作ったら報告して止まり、マージされてから⑧以降（デプロイ待ち・Zenn・X・note・記録）に進む。
 
 **本人がマージするのは、この記事PRの1回だけ。** その後は本人のマージを待たない（2026-10-15 ユーザーの指示）。
-Zenn は Sync Zenn が、X の告知は Sync X が、ブログの公開を待って自動で反映・投稿する（X は 2026-10-16〜）。`.x/state.json` の記録PRと、デプロイを起こすための
+Zenn は Sync Zenn が、X の告知は Sync X が、Threads の告知は Sync Threads が、ブログの公開を待って自動で反映・投稿する（X は 2026-10-16〜、Threads は 2026-11〜）。`.x/state.json`・`.threads/state.json` の記録PRと、デプロイを起こすための
 空コミットのPRは、AIが自分でマージする。記事の本文・画像・手順書・workflow・スクリプトを変えるPRは、本人がマージする。
 詳細は `references/publishing.md` の⑦。
 
@@ -154,6 +154,10 @@ x:
 URLは素のブログURLで書けばよい。`sync-x` が `utm_source=x` を自動で付ける（2026-10-14〜）。
 URL入りの投稿は1件$0.20。
 
+**Threads にも同じ文面が自動で出る**（2026-11〜）。`sync-threads` が `x.thread[0]` を使い、URLに `utm_source=threads` を付ける。
+Threads だけ文面を変えたいときは `threads.text`（500字まで）、Threads に出したくないときは `threads.auto: false` を足す。
+詳細は dev-blog の `docs/threads-sync.md`。
+
 ## ⑤ frontmatter を組み立てて自己点検
 
 キーの有無がそのまま配信先になる。
@@ -225,9 +229,10 @@ OpenAI（既定）を使って自動生成する。スタイルはスクリプ�
 
 `references/review.md` に従い、記録を残す。
 
-- `$H/articles/実績/記事実績.csv` — 1行追記。X告知の投稿URLは「X告知URL」列に入れる
+- `$H/articles/実績/記事実績.csv` — 1行追記。X告知の投稿URLは「X告知URL」列に、Threads告知の投稿URLは「Threads告知URL」列に入れる
 - `$H/articles/記事研究.md` — 研究ログに、その日の学びと仮説（A番号）を追記
 - `.x/state.json` — Actions から投稿したなら workflow がコミットする。手元やXのアプリから投稿したならPRにしてAIが自分でマージする（忘れると次回二重投稿する）
+- `.threads/state.json` — 同じ。Threads のアプリから手で投稿したときは、Sync Threads を action `record` と slug で手動実行して記録する
 
 SNS側の台帳・投稿実績CSV（`SNS/99_システム/`）は 2026-10-03 の運用切り替え（v7）で廃止された。
 書かない。旧データは iCloud の `個人/SNS/_バックアップ_v6_2026-10-03/` にあり、触らない。
@@ -251,7 +256,7 @@ SNS側の台帳・投稿実績CSV（`SNS/99_システム/`）は 2026-10-03 の�
 - **前職（コンビニ店長）のネタや自虐オチで締めた** → 2026-10 の方針変更に反する。古いノートや過去の投稿案ログに引きずられやすい
 - **curl で x.com の200を見て「投稿成功」と判断した** → SPAなので常に200。確認は必ずブラウザで
 - **ブログのデプロイを待たずにXへ投稿した** → CTAリンクが404だった
-- **`.x/state.json` をコミットし忘れた** → 次回に二重投稿する
+- **`.x/state.json` をコミットし忘れた** → 次回に二重投稿する（`.threads/state.json` も同じ）
 - **X Articles が「投稿されていない」ように見える** → 「記事」タブにあるだけ。仕様
 - **画像が無いままXへ投稿した** → リンクカードは投稿時にキャッシュされ、後から画像を足しても
   遡って反映されない。貼り直す以外に直せない。**⑥.5で画像を確定させてから、どの媒体にも公開しない**
